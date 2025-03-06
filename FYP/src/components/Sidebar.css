@@ -1,0 +1,105 @@
+/* Sidebar Container */
+.sidebar {
+  width: 250px;
+  background-color: #303134;
+  color: white;
+  padding: 20px;
+  min-height: 100vh;
+  transition: width 0.5s ease-in-out;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Collapsed Sidebar */
+.sidebar.collapsed {
+  width: 80px;
+}
+
+/* Sidebar Toggle Button */
+.sidebar-toggle {
+  position: absolute;
+  top: 10px;
+  left: 15px;
+  font-size: 22px;
+  cursor: pointer;
+  color: white;
+  /* transition: transform 0.5s ease-in-out; */
+
+}
+
+/* Sidebar Title */
+.sidebar-title {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  text-align: center;
+  font-weight: bold;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.sidebar-title.hidden {
+  opacity: 0;
+  height: 0;
+}
+
+/* Sidebar Menu */
+.sidebar-menu {
+  list-style: none;
+  padding: 0;
+  margin-top: 40px;
+}
+
+/* Sidebar Items */
+.sidebar-menu li {
+  padding: 12px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background 0.3s ease-in-out;
+}
+
+/* Sidebar Links */
+.sidebar-menu li a {
+  text-decoration: none;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Hover Effect */
+.sidebar-menu li:hover {
+  background-color: #25eb4d;
+}
+
+/* Active Item */
+.sidebar-menu .active {
+  background-color: #2563eb;
+  font-weight: bold;
+}
+.sidebar.collapsed .sidebar-menu li{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.sidebar.collapsed .sidebar-menu li:hover {
+  width: 100%;
+}
+
+/* Collapsed Sidebar - Hide Text */
+.sidebar.collapsed .sidebar-menu li a {
+  justify-content: center;
+}
+
+.sidebar.collapsed .sidebar-menu li a span {
+  display: none;
+}
+
+
+
+/* Responsive Design */
+@media (max-width: 320px) {
+  .sidebar {
+    display: none;
+  
+  }
+}

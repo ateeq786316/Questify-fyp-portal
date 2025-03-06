@@ -1,0 +1,38 @@
+.student-request-supervisor {
+    background-size: cover;
+    background-position: center;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.dashboard-container {
+    display: flex;
+    flex: 1;
+    padding-top: 0px; /* Prevents content from hiding under navbar */
+}
+
+.dashboard-content {
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.9); /* Light background for readability */
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 20px;
+    width: 100%;
+    overflow: auto;
+}
+
+.supervisor-list table {
+    width: 100%;
+}
+
+.request-form {
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 5px;
+}
+
+.alert {
+    margin-top: 15px;
+    font-size: 18px;
+}

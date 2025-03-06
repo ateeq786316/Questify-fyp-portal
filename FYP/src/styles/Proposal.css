@@ -1,0 +1,96 @@
+/* Apply Background & Layout */
+.proposal-page {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background: url("../assets/lgubgimg.jpg") no-repeat center center;
+    background-size: cover;
+}
+
+/* Align Content */
+.content {
+    display: flex;
+    flex: 1;
+    padding-top: 20px;
+}
+
+/* Proposal Form Styling */
+.proposal-container {
+    flex: 1;
+    padding: 30px;
+    background: #ffffffE6; /* 90% opacity white */
+    border-radius: 15px;
+    margin: auto;
+    margin-top: 40px;
+    max-width: 500px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 1s ease-in-out;
+}
+
+.title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #003366;
+}
+
+/* Input Fields */
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+    color: #000000;
+}
+
+.input-group input,
+.input-group textarea,
+.input-group select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    transition: all 0.3s ease;
+}
+
+.input-group input:focus,
+.input-group textarea:focus,
+.input-group select:focus {
+    border-color: #0056b3;
+    box-shadow: 0px 0px 10px rgba(0, 86, 179, 0.3);
+}
+
+/* Button */
+.submit-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #0056b3;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+.submit-btn:hover {
+    background-color: #003366;
+    transform: scale(1.05);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

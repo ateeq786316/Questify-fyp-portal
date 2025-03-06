@@ -1,0 +1,174 @@
+/* Background & Overlay */
+.login-container {
+  background: url("../assets/lgubgimg.jpg") no-repeat center center fixed;
+  background-size: cover;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+body {
+  font-family: "Poppins", sans-serif;
+}
+
+
+.overlay {
+  /* background: rgba(0, 0, 0, 0.6); */
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Glassmorphism Card */
+.login-card {
+  color: white;
+  background: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.436);
+  backdrop-filter: blur(2px);
+  border-radius: 15px;
+  padding: 30px;
+  width: 550px;
+  box-shadow: 0px 8px 16px rgba(255, 255, 255, 0.1);
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.login-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0px 6px 20px rgba(255, 255, 255, 0.2);
+}
+
+/* Title */
+.card-title {
+  text-align: center;
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #000000;
+  margin-bottom: 20px;
+}
+
+/* Input Fields */
+.input-group {
+  margin-bottom: 15px;
+}
+
+.input-group label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 5px;
+  color: #fff;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  outline: none;
+  transition: 0.3s;
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.input-group input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.input-group input:focus {
+  background: rgba(255, 255, 255, 0.3);
+  box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.3);
+}
+
+/* Options */
+.options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #fff;
+  font-size: 0.9rem;
+  margin-bottom: 15px;
+}
+
+.forgot-link {
+  color: #ffd700;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+.forgot-link:hover {
+  text-decoration: underline;
+}
+
+/* Login Button */
+.btn-primary {
+  width: 100%;
+  padding: 12px;
+  background-color: #ffd700;
+  color: black;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s ease-in-out;
+}
+
+.btn-primary:hover {
+  background-color: #ffbb00; /* Slightly brighter than #ffcc00 */
+  box-shadow: 0px 0px 10px rgba(255, 217, 0, 0.6);
+  transform: scale(1.05);
+}
+
+/* Social Login */
+.social-login {
+  display: flex;
+  justify-content: center;
+  margin-top: 15px;
+}
+
+.social-login button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 15px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: 0.3s;
+  border: none;
+}
+
+.google-btn {
+  background-color: #db4437;
+  color: white;
+  margin-right: 10px;
+}
+
+.google-btn:hover {
+  background-color: #c1351d;
+}
+
+.facebook-btn {
+  background-color: #3b5998;
+  color: white;
+}
+
+.facebook-btn:hover {
+  background-color: #2e4476;
+}
+
+/* Responsive */
+@media (max-width: 400px) {
+  .input-group input {
+    padding: 10px;
+    font-size: 0.9rem;
+  }
+  .login-card {
+    width: 90%;
+    padding: 20px;
+  }
+}

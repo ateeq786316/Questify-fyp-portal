@@ -1,0 +1,70 @@
+/* Page Background */
+.about-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100vw;
+  background: url("../assets/lgubgimg.jpg") no-repeat center center fixed;
+  background-size: cover;
+  padding-top: 80px;
+}
+
+.about-us-page {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.hero {
+  position: relative;
+  text-align: center;
+  color: white;
+}
+
+.hero-image {
+  width: 100%;
+  height: 400px; /* Adjust height as needed */
+  object-fit: cover;
+  filter: brightness(70%); /* Darken image for better text readability */
+}
+
+.hero-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.feature-card {
+  border: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+}
+
+.feature-card img {
+  height: 200px; /* Adjust image height */
+  object-fit: cover;
+}
+
+.mission-vision {
+  padding: 55px;
+  background-color: #ffffff;
+  border-radius: 8px;
+}
+
+.team {
+  background-color: #e9ecef;
+  padding: 50px 0;
+  text-align: center;
+}
+
+.team-image {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  margin-bottom: 20px;
+}

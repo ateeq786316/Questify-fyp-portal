@@ -1,0 +1,57 @@
+.student-track-progress {
+    background-size: cover;
+    background-position: center;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.dashboard-container {
+    display: flex;
+    flex: 1;
+    padding-left: 50px;
+    padding-top: 0px; /* Prevents content from hiding under navbar */
+}
+
+.dashboard-content {
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.9); /* Light background for readability */
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 20px;
+    width: 100%;
+    overflow: auto;
+}
+
+.progress-section {
+    margin-bottom: 20px;
+}
+
+.progress-bar {
+    height: 30px;
+    font-size: 16px;
+}
+
+.milestones-section table {
+    width: 100%;
+}
+
+.milestones-section .completed {
+    background-color: #d4edda;
+}
+
+.milestones-section .pending {
+    background-color: #f8d7da;
+}
+
+.feedback-section {
+    background: #fff3cd;
+    padding: 15px;
+    border-radius: 5px;
+}
+
+.submission-section {
+    padding: 15px;
+    background: #e2e3e5;
+    border-radius: 5px;
+}

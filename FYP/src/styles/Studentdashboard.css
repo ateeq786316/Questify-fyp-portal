@@ -1,0 +1,204 @@
+/* Student Dashboard Layout */
+.student-dashboard {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: url("../assets/lgubgimg.jpg") no-repeat center center/cover;
+  background-size: cover;
+}
+
+/* Navbar Styling */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  background: rgba(0, 71, 171, 0.9);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  color: white;
+  font-size: 1.2rem;
+  z-index: 1000;
+}
+
+/* Dashboard Container */
+.dashboard-container {
+  display: flex;
+  height: calc(100vh - 60px);
+  margin-top: 60px;
+}
+
+/* Sidebar Styling */
+.sidebar {
+  width: 250px;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  height: 100%;
+  position: fixed;
+  top: 60px;
+  left: 0;
+  padding: 20px;
+  z-index: 1;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar li {
+  padding: 12px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+
+.sidebar li:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Dashboard Content */
+.dashboard-content {
+  flex: 1;
+  margin-left: 250px;
+  padding: 30px;
+  overflow-y: auto;
+}
+
+/* Top Cards */
+.card {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  transition: transform 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+}
+
+.card h3 {
+  font-size: 1.3rem;
+  color: #0047ab;
+  margin-top: 10px;
+}
+
+.card p {
+  font-size: 1rem;
+  color: #333;
+}
+
+.icon {
+  font-size: 3rem;
+  color: #0047ab;
+}
+
+/* Progress Tracking Bar */
+.progress-container {
+  width: 100%;
+  background: #e0e0e0;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.progress-bar {
+  height: 25px;
+  background: #0047ab;
+  width: 50%; /* Dynamic width based on progress */
+  transition: width 0.5s;
+}
+
+/* Calendar */
+.calendar {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100px;
+  }
+
+  .dashboard-content {
+    margin-left: 100px;
+  }
+
+  .dashboard-cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Custom Bootstrap Overrides */
+.card {
+  background-color: #e6f7ff; /* Lighter blue card background */
+  box-shadow: none; /* Remove shadow */
+  border-radius: 8px; /* Rounded corners */
+  padding: 15px; /* Adjust padding */
+}
+
+.sidebar li:hover {
+  background-color: #c2d9e9; /* Slightly darker hover */
+}
+
+.navbar {
+  background-color: #a8d5ff; /* Lighter blue navbar */
+}
+
+.progress-bar {
+  background-color: #8ac6ff; /* Lighter blue progress bar */
+}
+
+
+/* Banner Component */
+.banner-container {
+  background-color: #4a494d; /* Purple background */
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.banner-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.banner-text {
+  color: white;
+}
+
+.banner-date {
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+}
+
+.banner-welcome {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.banner-message {
+  font-size: 1rem;
+}
+
+.banner-image {
+  width: 20%; /* Adjust width as needed */
+  /* height: 100%; */
+}
+
+.banner-image img,
+.banner-image svg {
+  width: 100%;
+  height: auto;
+}

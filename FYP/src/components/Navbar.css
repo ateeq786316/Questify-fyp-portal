@@ -1,0 +1,60 @@
+/* Root Variables for Consistent Colors */
+:root {
+  --primary-color: #2084e8;
+  --gold-accent: #ffd700;
+  --light-bg: #f8f9fa;
+  --dark-bg: #121212;
+  --text-color: white;
+}
+/* Navbar Styling */
+.custom-navbar {
+  background: rgba(0, 0, 0, 0.8);
+  padding: 12px 0;
+  transition: all 0.3s ease-in-out;
+  border-bottom: 2px solid var(--primary-color);
+  height: 60px;
+}
+
+/* Navbar Logo */
+.navbar-logo {
+  height: 40px;
+  margin-right: 10px;
+  transition: transform 0.3s ease-in-out;
+}
+
+.navbar-brand:hover .navbar-logo {
+  transform: scale(1.1);
+}
+
+/* Logo Text */
+.logo-text {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--primary-color);
+}
+
+/* Navbar Links */
+.nav-link {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-color);
+  transition: color 0.3s ease-in-out;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: var(--gold-accent);
+  font-weight: bold;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .navbar-buttons {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 10px;
+    align-items: center;
+    gap: 10px;
+  }
+}

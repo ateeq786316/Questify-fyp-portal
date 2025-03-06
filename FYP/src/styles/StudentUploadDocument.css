@@ -1,0 +1,43 @@
+.student-upload-document {
+    background: #f8f9fa;
+    min-height: 100vh;
+}
+
+.dashboard-container {
+    display: flex;
+    padding-top: 0px; /* Prevents content from hiding under navbar */
+}
+
+.dashboard-content {
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.32);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 50px;
+    width: 100%;
+}
+
+.upload-section {
+    background: #f1f1f1;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.documents-list table {
+    width: 100%;
+}
+
+.text-success {
+    color: green;
+}
+
+.text-warning {
+    color: orange;
+}
+
+button {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}

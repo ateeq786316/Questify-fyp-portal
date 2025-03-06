@@ -1,0 +1,90 @@
+/* Page Background */
+.contact-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    width: 100vw;
+    background: url("../assets/lgubgimg.jpg") no-repeat center center fixed;
+    background-size: cover;
+  }
+  
+  /* Contact Container with Glass Effect */
+  .contact-container {
+    width: 90%;
+    max-width: 600px;
+    padding: 30px;
+    background: rgba(255, 253, 253, 0.509); /* Transparent white */
+    /* backdrop-filter: blur(10px); Glass blur effect */
+    /* -webkit-backdrop-filter: blur(10px); */
+    border-radius: 15px;
+    /* box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2); */
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    text-align: center;
+    color: rgb(0, 0, 0);
+  }
+  
+  /* Header */
+  .contact-header {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  /* Description */
+  .contact-description {
+    font-size: 1rem;
+    margin-bottom: 20px;
+    opacity: 0.9;
+  }
+  
+  /* Form */
+  .contact-form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .contact-form input,
+  .contact-form textarea {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 8px;
+    background: rgba(51, 49, 59, 0.6);
+    color: rgb(255, 255, 255);
+    font-size: 1rem;
+    outline: none;
+    /* backdrop-filter: blur(5px); */
+  }
+  
+  /* Placeholder Color */
+  .contact-form input::placeholder,
+  .contact-form textarea::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+  }
+  
+  /* Submit Button */
+  .submit-button {
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  .submit-button:hover {
+    background-color: #1e40af;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .contact-container {
+      width: 95%;
+      padding: 20px;
+    }
+  }
+  
