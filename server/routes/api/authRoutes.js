@@ -11,7 +11,7 @@ router.post("/student/login", studentLogin);
 router.get("/student/details", getStudentDetails);
 
 // Chatbot Route
-router.post("/chatbot", chatbot);
+router.post("/student/chatbot", chatbot);
 
 
 module.exports = router;

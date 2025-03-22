@@ -1,12 +1,15 @@
 const mongoose = require("mongoose");
 
 const proposalSchema = new mongoose.Schema({
-  proposalId: { type: mongoose.Schema.Types.ObjectId, required: true, unique: true },
-  studentId: { type: mongoose.Schema.Types.ObjectId, ref: 'Student' }, // Reference to Student model
-  supervisorId: { type: mongoose.Schema.Types.ObjectId, ref: 'Supervisor' }, // Reference to Supervisor model
-  document: { type: String }, // Assuming document is a file path or URL
-  status: { type: String },
-  // Add any other proposal-specific fields here
+  student: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  title: { type: String, required: true },
+  description: { type: String },
+  category: { type: String, required: true },
+  teamMembers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  proposalFile: { type: String, required: true }, // Path to the uploaded PDF
+  plagiarismReport: { type: String, required: true }, // Path to AI report PDF
+  status: { type: String, enum: ["Submitted", "Approved", "Rejected", "Pending"], default: "Pending" },
+  submissionDate: { type: Date, default: Date.now },
 });
 
 module.exports = mongoose.model("Proposal", proposalSchema);

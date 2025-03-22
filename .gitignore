@@ -1,1 +1,4 @@
 server/.env
+
+FYP/node_modules
+server/node_modules

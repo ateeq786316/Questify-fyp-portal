@@ -56,11 +56,19 @@ exports.getStudentDetails = async (req, res) => {
 exports.chatbot = async (req, res) => {
   try {
     const { message } = req.body;
-    const apiKey = process.env.HUGGINGFACE_API_KEY; // Add API key in .env
-    const model = "facebook/blenderbot-400M-distill"; // Example model
+    const apiKey = process.env.HUGGINGFACE_API_KEY;
+    const model = "microsoft/DialoGPT-large";  // Change the model
 
+    console.log("Chatbot request:", message);
+    console.log("API key:", apiKey);
+
+    if (!message) {
+      return res.status(400).json({ msg: "Message is required!" });
+    }
+
+    console.log("Using API Key:", apiKey ? "Exists ✅" : "MISSING ❌");
     const response = await axios.post(
-      `https://api-inference.huggingface.co/models/${model}`,
+      `https://api-inference.huggingface.co/models/microsoft/DialoGPT-large`,
       { inputs: message },
       {
         headers: {
@@ -70,14 +78,13 @@ exports.chatbot = async (req, res) => {
       }
     );
 
-    const botResponse = response.data.generated_text || "Sorry, I couldn't process that.";
-    res.status(200).json({ response: botResponse });
-  } catch (err) {
-    console.error("Error in chatbot controller:", err);
-    res.status(500).json({
-      msg: "Server error in chatbotRoute",
-      error: err.message,
-    });
+    console.log("Hugging Face Response:", response.data);
+    res.status(200).json({ response: response.data });
+} catch (err) {
+    console.error("Error in chatbot controller:", err.message);
+    res.status(500).json({ response: "Sorry, something went wrong on our end." });
   }
 };
+
+
 
