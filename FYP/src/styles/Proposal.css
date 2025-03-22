@@ -18,7 +18,7 @@
 .proposal-container {
     flex: 1;
     padding: 30px;
-    background: #ffffffE6; /* 90% opacity white */
+    background: #000000; /* 90% opacity white */
     border-radius: 15px;
     margin: auto;
     margin-top: 40px;
@@ -32,12 +32,23 @@
     font-size: 24px;
     font-weight: bold;
     margin-bottom: 20px;
-    color: #003366;
+    color: #3894f1;
 }
 
 /* Input Fields */
 .input-group {
     margin-bottom: 20px;
+}
+/* Input Fields */
+.input-group {
+    margin-bottom: 25px;
+}
+
+.input-group label {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 8px;
+    color: #000; /* Set label color to black */
 }
 
 .input-group label {

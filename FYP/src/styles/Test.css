@@ -1,50 +1,46 @@
-/* Student Dashboard Layout */
-.student-dashboard {
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    background: url("../assets/lgubgimg.jpg") no-repeat center center/cover;
-    background-size: cover;
-}
-.navbar{
-    position: fixed; /* Keep position fixed */
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 60px;
-    background: rgba(0, 71, 171, 0.9);
-    display: flex;
-    align-items: center;
-    padding: 0 20px;
-    color: white;
-    font-size: 1.2rem;
-    z-index: 1000; /* Set a high z-index */
+/* .dashboard-container {
+  padding-top: 50px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  padding: 20px;
+  max-width: 1200px;
+  margin: auto;
 }
 
-/* Dashboard Container */
-.dashboard-container {
-    display: flex;
-    height: calc(100vh - 60px);
-    margin-top: 60px;
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.h1 {
-    font-size: 2.5rem; /* Adjust the font size as needed */
-    font-weight: bold; /* Make the text bold */
-    text-align: center; /* Center the text horizontally */
-    margin-top: 50px; /* Add some top margin for spacing */
-    color: #fff7f7; /* Set the text color */
-    text-transform: uppercase; /* Convert text to uppercase */
-    letter-spacing: 2px; /* Add letter spacing for emphasis */
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2); /* Add a subtle text shadow */
-    align-items: center;
-    background-color: red;
+h2, h3 {
+  color: #333;
+}
+
+.quick-access {
+  grid-column: span 2;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.btn {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background-color: #0056b3;
+}
+
+@media (max-width: 768px) {
+  .dashboard-container {
+    grid-template-columns: 1fr;
   }
-  
-  /* Optional: Add some responsive styling */
-  @media (max-width: 768px) {
-    .h1 {
-      font-size: 2rem; /* Adjust font size for smaller screens */
-      margin-top: 30px; /* Adjust margin for smaller screens */
-    }
-  }
+} */

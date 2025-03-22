@@ -25,9 +25,10 @@ export const submitProjectProposal = async (proposalData) => {
 };
 
 // Chatbot API Call  ✅ ADD THIS FUNCTION
+
 export const chatbot = async (message) => {
   try {
-    const response = await API.post("/chatbot", { message });
+    const response = await API.post("/api/auth/chatbot", { message });
     return response.data.response;
   } catch (error) {
     throw error;

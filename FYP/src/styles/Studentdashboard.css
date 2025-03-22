@@ -163,8 +163,13 @@
 .banner-container {
   background-color: #4a494d; /* Purple background */
   border-radius: 15px;
-  padding: 20px;
+  /* /* padding-top: 1px; */
+  padding-left: 15px;
   margin-bottom: 20px;
+  /* padding: 20px; */
+  display: flex;
+  justify-content: space-between; /* Or align-items: center */
+  align-items: center;
 }
 
 .banner-content {
@@ -201,4 +206,56 @@
 .banner-image svg {
   width: 100%;
   height: auto;
+}
+
+icon-wrapper{
+  size-adjust: auto;
+  width: 5px;
+  height: 5px;
+  position: relative;
+} 
+icon-wrapper::after{
+  content: attr(data-number);
+  width: 20px;
+  height: 20px;
+  background-color: #d32b2b;
+  color: #fff;
+  display: grid;
+  place-content: center;
+  border-radius: 50%;
+  position: absolute;
+  top: 5px;
+  right: 0;
+  opacity: 0;
+}  
+icon-wrapper:hover::after{
+  
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 25s, transform 25s;
+}
+bell-icon{
+  transform: rotate(15deg);
+  max-width: 100%;
+  width: 24px; /* Example */
+  height: 24px; /* Example */
+}
+icon-wrapper:hover .bell-icon
+{
+  animation: shake 1s forwards;  
+}  
+
+@keyframes shake {
+10%{
+  transform: rotate(15deg);
+} 
+20%{
+  transform: rotate(-15deg);
+}
+30%{
+  transform: rotate(15deg);
+}
+40%{
+  transform: rotate(0deg);
+}
 }

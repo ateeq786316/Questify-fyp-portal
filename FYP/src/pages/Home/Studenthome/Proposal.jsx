@@ -7,9 +7,11 @@ const ProposalPage = () => {
   const [proposal, setProposal] = useState({
     title: "",
     description: "",
-    teamMembers: "",
+    teamMember1: "",
+    teamMember2: "",
     category: "",
-    file: null,
+    file1: null,
+    file2: null,
   });
 
   const handleChange = (e) => {
@@ -17,7 +19,7 @@ const ProposalPage = () => {
   };
 
   const handleFileChange = (e) => {
-    setProposal({ ...proposal, file: e.target.files[0] });
+    setProposal({ ...proposal, file1: e.target.files[0], file2: e.target.files[0] });
   };
 
   const handleSubmit = (e) => {
@@ -57,31 +59,61 @@ const ProposalPage = () => {
             </div>
 
             <div className="input-group">
-              <label>Team Members (comma separated):</label>
+              <label>Team Members:</label>
               <input
                 type="text"
-                name="teamMembers"
-                placeholder="e.g., Ali, Ahmed, Sara"
-                value={proposal.teamMembers}
+                name="teamMember1"
+                placeholder="Fa-21-BSCS-197"
+                value={proposal.teamMember1}
                 onChange={handleChange}
                 required
+              />
+              <input
+                type="text"
+                name="teamMember2"
+                placeholder="Fa-21-BSCS-167"
+                value={proposal.teamMember2}
+                onChange={handleChange}                
               />
             </div>
 
             <div className="input-group">
               <label>Project Category:</label>
               <select name="category" value={proposal.category} onChange={handleChange} required>
-                <option value="">Select Category</option>
-                <option value="AI">Artificial Intelligence</option>
-                <option value="Web Dev">Web Development</option>
-                <option value="IoT">Internet of Things</option>
-                <option value="Cybersecurity">Cybersecurity</option>
+              <option value="">Select Category</option>
+              <option value="AI">Artificial Intelligence</option>
+              <option value="Machine Learning">Machine Learning</option>
+              <option value="Deep Learning">Deep Learning</option>
+              <option value="Natural Language Processing">Natural Language Processing</option>
+              <option value="Computer Vision">Computer Vision</option>
+              <option value="Web Development">Web Development</option>            
+              <option value="Full Stack Development">Full Stack Development</option>
+              <option value="Mobile App Development">Mobile App Development</option>
+              <option value="Game Development">Game Development</option>
+              <option value="IoT">Internet of Things</option>
+              <option value="Embedded Systems">Embedded Systems</option>
+              <option value="Cybersecurity">Cybersecurity</option>
+              <option value="Network Security">Network Security</option>
+              <option value="Data Security">Data Security</option>
+              <option value="Cloud Computing">Cloud Computing</option>
+              <option value="DevOps">DevOps</option>
+              <option value="Data Science">Data Science</option>
+              <option value="Data Analysis">Data Analysis</option>
+              <option value="Data Visualization">Data Visualization</option>
+              <option value="Blockchain">Blockchain</option>
+              <option value="Cryptocurrency">Cryptocurrency</option>
+              <option value="Virtual Reality">Virtual Reality (VR)</option>
+              <option value="Augmented Reality">Augmented Reality (AR)</option>                            
               </select>
             </div>
 
             <div className="input-group">
               <label>Upload Proposal Document (PDF):</label>
-              <input type="file" accept=".pdf" onChange={handleFileChange} required />
+              <input type="file1" accept=".pdf" onChange={handleFileChange} required />
+            </div>
+            <div className="input-group">
+              <label>Proposal AI and plagrisum report (PDF):</label>
+              <input type="file2" accept=".pdf" onChange={handleFileChange} required />
             </div>
 
             <button type="submit" className="submit-btn">Submit Proposal</button>

@@ -11,7 +11,7 @@ import AboutUs from './AboutUs.jsx'
 
 // student
 import StudentLogin from './pages/Home/Studenthome/Studentlogin.jsx'
-import ChatbotPage from './pages/Home/Studenthome/Chatbot.jsx'
+import ChatbotPage from './pages/Home/Studenthome/StudentChatbot.jsx'
 import ProposalPage from './pages/Home/Studenthome/Proposal.jsx'
 import StudentDashboard from './pages/Home/Studenthome/Studentdashboard.jsx'
 import StudentTrackProgress from './pages/Home/Studenthome/StudentTrackProgress.jsx'
@@ -19,6 +19,10 @@ import StudentRequestSupervisor from './pages/Home/Studenthome/StudentRequestSup
 import StudentUploadDocument from './pages/Home/Studenthome/StudentUploadDocument.jsx'
 import StudentFeedbackComments from './pages/Home/Studenthome/StudentFeedbackComments.jsx'
 import StudentCommunication from './pages/Home/Studenthome/StudentCommunication.jsx'
+
+// supervisor
+import SupervisorLogin from './pages/Home/Superviserhome/Supervisorlogin.jsx'
+import SupervisorDashboard from './pages/Home/Superviserhome/SupervisorDashboard.jsx'
 
 import Test from './pages/Home/Studenthome/Test.jsx'
 
@@ -41,6 +45,10 @@ function App() {
         <Route path='/studentuploaddocument' element={<StudentUploadDocument />} />
         <Route path='/studentfeedbackcomments' element={<StudentFeedbackComments />} />
         <Route path='/studentcommunication' element={<StudentCommunication />} />
+
+
+        <Route path="/supervisorlogin" element={<SupervisorLogin />} />
+        <Route path='/supervisordashboard' element={<SupervisorDashboard />} />
 
         <Route path='/test' element={<Test />} />
       </Routes>

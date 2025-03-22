@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from "../../../components/Navbar";
 import Sidebar from "../../../components/Sidebar.jsx";
+import bell from "../../../assets/bell_icon.svg";
 import "../../../styles/StudentDashboard.css";
+import Calendar from "react-calendar";
+import "react-calendar/dist/Calendar.css";
+import "chart.js/auto";
+import { Line } from "react-chartjs-2";
 // import { fetchStudentDetails } from "../../../services/student"; // Import API
 import { FaUserGraduate, FaProjectDiagram, FaChalkboardTeacher, FaCalendarAlt } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -12,6 +17,18 @@ const StudentDashboard = () => {
   const [studentDetails, setStudentDetails] = useState();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const progressData = {
+    labels: ["Proposal", "Proposal defense","SRS", "system diagrams", "Mid development", "Final Report"],
+    datasets: [
+      {
+        label: "FYP Progress",
+        data: [0, 20, 10, 40,0 ,0 ],
+        backgroundColor: "rgba(75,192,192,0.2)",
+        borderColor: "rgba(75,192,192,1)",
+        borderWidth: 2,
+      },
+    ],
+  };
 
   useEffect(() => {
     const fetchStudentDetails = async () => {
@@ -70,6 +87,9 @@ const StudentDashboard = () => {
                             </div>
                             <div className="banner-image">
                                 {/* <BannerImage /> Render your SVG or image */}
+                                <div class="icon-wrapper "data-number="1">
+                                <img src={bell} alt="" class="bell-icon"/>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -115,9 +135,15 @@ const StudentDashboard = () => {
                         <div className="col-md-6">
                             <div className="card p-3">
                                 <h2>📊 FYP Progress Tracking</h2>
-                                <div className="progress" style={{ height: "25px" }}>
-                                    <div className="progress-bar bg-success" style={{ width: "50%" }}>50% Completed</div>
-                                </div>
+                                {/* // <div className="progress" style={{ height: "25px" }}> */}
+                                {/* <div className="progress-bar bg-success" style={{ width: "50%" }}>50% Completed</div> */}
+                                {/*     <Line data={progressData} /> */}
+                                {/* </div>  */}
+                                
+                                <div className="progress-section card">
+                                        <h3>Progress Overview</h3>
+                                        <Line data={progressData} />
+                                      </div>
                             </div>
                         </div>
 
@@ -125,7 +151,8 @@ const StudentDashboard = () => {
                         <div className="col-md-6">
                             <div className="card p-3">
                                 <h2>📅 Calendar Integration</h2>
-                                <input type="date" className="form-control" />
+                                {/* <input type="date" className="form-control" /> */}
+                                <Calendar />
                             </div>
                         </div>
 
