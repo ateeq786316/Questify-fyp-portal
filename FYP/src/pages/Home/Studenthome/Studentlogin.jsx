@@ -3,6 +3,8 @@ import Navbar from "../../../components/Navbar.jsx";
 import "../../../styles/StudentLogin.css";
 import axios from "axios";
 
+
+
 function StudentLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -13,6 +15,7 @@ function StudentLogin() {
     e.preventDefault();
     setError("");
     try {
+
       const response = await axios.post("http://localhost:5000/api/auth/student/login", {email,password});
       const { data } = response;
       localStorage.setItem("studentToken", data.token);

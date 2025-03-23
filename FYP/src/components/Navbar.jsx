@@ -3,8 +3,15 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import logo from "../assets/logo.png";
 import "./Navbar.css";
 import { NavLink, Link } from "react-router-dom";
+import { logout } from "../utils/auth";
+import { LogOut } from "lucide-react";
 
 const Navbar = () => {
+  const handleLogout = (e) => {
+    e.preventDefault();
+    logout();
+  };
+
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark custom-navbar">
       <div className="container">
@@ -46,14 +53,17 @@ const Navbar = () => {
               </NavLink>
             </li>
             <li className="nav-item">
-              <NavLink className={({ isActive }) => isActive ? "nav-link active" : "nav-link"} to="/login">
-                LOGOUT
-              </NavLink>
+              <a 
+                href="#" 
+                className="nav-link d-flex align-items-center gap-2" 
+                onClick={handleLogout}
+              >
+                <LogOut size={18} />
+                Logout
+              </a>
             </li>
           </ul>
-          
         </div>
-        
       </div>
     </nav>
   );
