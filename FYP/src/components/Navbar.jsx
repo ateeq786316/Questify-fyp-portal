@@ -18,7 +18,7 @@ const Navbar = () => {
         {/* Logo */}
         <Link className="navbar-brand d-flex align-items-center" to="/" aria-label="FYP Portal Home">
           <img src={logo} alt="LGU Logo" className="navbar-logo" />
-          <span className="logo-text">FYP Portal</span>
+          <span className="logo-text">FYP-Portal</span>
         </Link>
 
         {/* Mobile Toggle Button */}
@@ -44,12 +44,12 @@ const Navbar = () => {
             </li>
             <li className="nav-item">
               <NavLink className={({ isActive }) => isActive ? "nav-link active" : "nav-link"} to="/aboutus">
-                About Us
+                About-Us
               </NavLink>
             </li>
             <li className="nav-item">
               <NavLink className={({ isActive }) => isActive ? "nav-link active" : "nav-link"} to="/contactus">
-                Contact Us
+                Contact_Us
               </NavLink>
             </li>
             <li className="nav-item">

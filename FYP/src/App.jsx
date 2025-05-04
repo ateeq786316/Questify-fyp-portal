@@ -25,7 +25,16 @@ import StudentCommunication from './pages/Home/Studenthome/StudentCommunication.
 // supervisor
 import SupervisorLogin from './pages/Home/Superviserhome/Supervisorlogin.jsx'
 import SupervisorDashboard from './pages/Home/Superviserhome/SupervisorDashboard.jsx'
+import ReviewDocument from './pages/Home/Superviserhome/ReviewDocument.jsx'
 
+// internal
+// import InternalLogin from './pages/Home/Internalhome/InternalLogin.jsx'
+import InternalDashboard from './pages/Home/Internalhome/InternalDashboard.jsx'
+
+// admin
+import AdminLogin from './pages/Home/Adminhome/AdminLogin.jsx'
+import AdminDashboard from './pages/Home/Adminhome/AdminDashboard.jsx'
+import UserManagement from './pages/Home/Adminhome/UserManagement.jsx'
 
 // protected route
 import ProtectedRoute from './components/ProtectedRoute'
@@ -35,6 +44,7 @@ function App() {
     <Router>
       <Routes>
         {/* Public Routes */}
+        <Route path="/" element={<LandingPage />} />
         <Route path="/intro" element={<LandingPage />} />
         <Route path="/login" element={<PortalPage />} />
         <Route path="/contactus" element={<ContactUs />} />
@@ -87,7 +97,16 @@ function App() {
         {/*========================================== Supervisor Routes ==========================================*/}
         <Route path="/supervisorlogin" element={<SupervisorLogin />} />
         <Route path='/supervisordashboard' element={<SupervisorDashboard />} />
+        <Route path='/reviewdocument' element={<ReviewDocument />} />
 
+        {/*========================================== Internal Routes ==========================================*/}
+        {/* <Route path="/internallogin" element={<InternalLogin />} /> */}
+        <Route path='/internaldashboard' element={<InternalDashboard />} />
+
+        {/*========================================== Admin Routes ==========================================*/}
+        <Route path='/adminlogin' element={<AdminLogin />} /> 
+        <Route path='/admindashboard' element={<AdminDashboard />} />
+        <Route path='/usermanagement' element={<UserManagement />} />
         {/* Test Route */}
         <Route path='/test' element={<Test />} />
       </Routes>

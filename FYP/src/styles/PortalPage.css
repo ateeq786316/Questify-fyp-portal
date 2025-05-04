@@ -1,14 +1,17 @@
+/* the two sections are not showing left and right side of the page in content div two left-section and right-section  */
 .portal-page {
-    font-family: sans-serif;
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    background-color: #f0f0f0; /* Example background color */
-  }
+  font-family: sans-serif;
+  display: flex;
+  height: 100vh;
+  width: 100vw; /* Add this to make it full width */
+  background-color: #f0f0f0;
+  flex-direction: row;
+}
   
   .content {
     display: flex;
     flex-grow: 1;
+    flex-direction: row;
   }
   
   .left-section {
@@ -18,8 +21,9 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 100vh;
-    width: 100vw;
+    /* min-height: 100vh; */
+    /* height: 100vh; */
+    width: 100vw; 
     background: url("../assets/lgubgimgblr.jpg") no-repeat center center fixed ;
     background-size: cover;
     position: relative; /* Needed for absolute positioning of pseudo-element */
@@ -50,8 +54,9 @@
   }
   
   .right-section {
-    flex: 1; /* Adjust flex to control the width */
+    flex: 1; 
     display: flex;
+    width: 100vw;
     flex-direction: column;
     align-items: center;
     justify-content: center;

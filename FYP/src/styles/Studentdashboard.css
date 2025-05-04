@@ -19,7 +19,8 @@
   align-items: center;
   padding: 0 20px;
   color: white;
-  font-size: 1.2rem;
+  font-size: 1rem;
+  word-spacing: 10px;
   z-index: 1000;
 }
 
@@ -258,4 +259,25 @@ icon-wrapper:hover .bell-icon
 40%{
   transform: rotate(0deg);
 }
+}
+
+.team-members {
+  margin-top: 10px;
+  text-align: left;
+}
+
+.member-details {
+  background-color: #f8f9fa;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.member-details p {
+  margin: 5px 0;
+  font-size: 0.9rem;
+}
+
+.member-details strong {
+  color: #495057;
 }

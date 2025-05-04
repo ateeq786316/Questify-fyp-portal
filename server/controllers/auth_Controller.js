@@ -43,10 +43,34 @@ exports.getStudentDetails = async (req, res) => {
     const decoded = verifyToken(token);
     if (!decoded) return res.status(401).json({ msg: "Invalid token" });
 
-    const student = await User.findById(decoded.id).select('-password');
+    const student = await User.findById(decoded.id)
+      .select('-password')
+      .populate({
+        path: 'teamMembers',
+        select: 'name studentId email program cgpa'
+      })
+      .populate('supervisor.id', 'name department email');
+
     if (!student) return res.status(404).json({ msg: 'Student not found' });
 
-    res.status(200).json(student);
+    // Format the response
+    const formattedStudent = {
+      ...student.toObject(),
+      teamMembers: student.teamMembers.map(member => ({
+        name: member.name,
+        studentId: member.studentId,
+        email: member.email,
+        program: member.program,
+        cgpa: member.cgpa
+      })),
+      supervisor: {
+        name: student.supervisor?.name || student.supervisor?.id?.name,
+        department: student.supervisor?.department || student.supervisor?.id?.department,
+        email: student.supervisor?.email || student.supervisor?.id?.email
+      }
+    };
+
+    res.status(200).json(formattedStudent);
   } 
   catch (err) {
     console.error("Error fetching student details:", err);
@@ -192,6 +216,58 @@ exports.chatbot = async (req, res) => {
         msg: "An unexpected error occurred. Please try again later." 
       });
     }
+  }
+};
+
+exports.adminLogin = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    // Find admin by email and role
+    const admin = await User.findOne({ 
+      email: email.toLowerCase(),
+      role: 'admin' 
+    });
+
+    if (!admin) {
+      return res.status(404).json({ 
+        success: false,
+        msg: 'Admin not found. Please check your credentials.' 
+      });
+    }
+
+    // Verify password
+    const isMatch = admin.password
+    if (!isMatch) {
+      return res.status(400).json({ 
+        success: false,
+        msg: 'Invalid credentials. Please try again.' 
+      });
+    }
+
+    // Generate token
+    const token = jwt.sign(
+      { id: admin._id, role: admin.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+
+    // Remove password from response
+    const adminData = admin.toObject();
+    delete adminData.password;
+
+    res.status(200).json({
+      success: true,
+      token,
+      admin: adminData
+    });
+  } catch (err) {
+    console.error("Admin login error:", err);
+    res.status(500).json({ 
+      success: false,
+      msg: 'Server error. Please try again later.',
+      error: err.message 
+    });
   }
 };
 

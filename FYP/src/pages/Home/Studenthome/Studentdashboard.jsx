@@ -14,7 +14,7 @@ import axios from "axios";
 
 const StudentDashboard = () => {
   const [date, setDate] = useState(new Date());
-  const [studentDetails, setStudentDetails] = useState();
+  const [studentDetails, setStudentDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const progressData = {
@@ -34,155 +34,161 @@ const StudentDashboard = () => {
     const fetchStudentDetails = async () => {
       try {
         const token = localStorage.getItem("studentToken");
-        // console.log("Token stored in localStorage:", token);
         if (!token) {
-          setError("No token found in localStorage");
+          setError("No token found");
+          setLoading(false);
           return;
         }
-        //http://localhost:5000//student/details
+
         const response = await axios.get("http://localhost:5000/api/auth/student/details", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        // console.log("API Response:", response.data)
-        setStudentDetails(response.data)
-        setLoading(false)
-      } 
-      catch (err) {
+
+        setStudentDetails(response.data);
+        setLoading(false);
+      } catch (err) {
         console.error("Error fetching student details:", err);
         setError(err.response?.data?.msg || "Failed to fetch student details");
         setLoading(false);
       }
     };
+
     fetchStudentDetails();
   }, []);
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
-  if (!studentDetails) {
-    return <div>No student details found</div>;
-  }
-//   {console.log("Student Succefully LOGIN:", studentDetails)}
 
+  if (loading) return <div className="text-center p-5">Loading...</div>;
+  if (error) return <div className="text-center p-5 text-danger">Error: {error}</div>;
+  if (!studentDetails) return <div className="text-center p-5">No student details found</div>;
 
-
- return (
-        <div className="student-dashboard">
-            <Navbar />
-            <div className="dashboard-container d-flex">
-                <Sidebar />
-                <div className="dashboard-content p-4 w-100">
-                    <h1 className="dashboard-title text-center">🎓 Student Dashboard</h1>
-                        {/* Banner Component */}
-                        <div className="banner-container">
-                        <div className="banner-content">
-                            <div className="banner-text">
-                                <div className="banner-date"><p>Date: {date. toDateString()}</p></div>
-                                <div className="banner-welcome">Welcome back, {studentDetails.name}!</div>
-                                <div className="banner-message">Always stay updated in your student portal</div>
-                            </div>
-                            <div className="banner-image">
-                                {/* <BannerImage /> Render your SVG or image */}
-                                <div class="icon-wrapper "data-number="1">
-                                <img src={bell} alt="" class="bell-icon"/>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="top-date-welcome d-flex justify-content-between">                
-                    
-                    </div>
-                    {/* Top 4 Cards */}
-                    <div className="row g-3 mb-4">
-                        <div className="col-md-3">
-                            <div className="card text-center p-3">
-                                <FaUserGraduate className="icon" />
-                                <h3>Group ID: {studentDetails.groupID}</h3>
-                                <p>Members: {studentDetails.name}</p>
-                            </div>
-                        </div>
-                        <div className="col-md-3">
-                            <div className="card text-center p-3">
-                                <FaProjectDiagram className="icon" />
-                                <h3>Project: {studentDetails.projectTitle}</h3>
-                                <p>Category: Web Development</p>
-                            </div>
-                        </div>
-                        <div className="col-md-3">
-                            <div className="card text-center p-3">
-                                <FaChalkboardTeacher className="icon" />
-                                <h3>Supervisor: {studentDetails.supervisor}</h3>
-                                <p>Department: CS</p>
-                            </div>
-                        </div>
-                        <div className="col-md-3">
-                            <div className="card text-center p-3">
-                                <FaCalendarAlt className="icon" />
-                                <h3>Deadline: June 15, 2025</h3>
-                                <p>Final Presentation Date</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Progress Tracking */}
-                    {/* FYP Sections in Cards */}
-                    <div className="row g-3">
-                        {/* Progress Tracking Card */}
-                        <div className="col-md-6">
-                            <div className="card p-3">
-                                <h2>📊 FYP Progress Tracking</h2>
-                                {/* // <div className="progress" style={{ height: "25px" }}> */}
-                                {/* <div className="progress-bar bg-success" style={{ width: "50%" }}>50% Completed</div> */}
-                                {/*     <Line data={progressData} /> */}
-                                {/* </div>  */}
-                                
-                                <div className="progress-section card">
-                                        <h3>Progress Overview</h3>
-                                        <Line data={progressData} />
-                                      </div>
-                            </div>
-                        </div>
-
-                        {/* Calendar Integration Card */}
-                        <div className="col-md-6">
-                            <div className="card p-3">
-                                <h2>📅 Calendar Integration</h2>
-                                {/* <input type="date" className="form-control" /> */}
-                                <Calendar />
-                            </div>
-                        </div>
-
-                        {/* FYP Labs Mapping Card */}
-                        <div className="col-md-6">
-                            <div className="card p-3">
-                                <h2>📍 FYP Labs Map</h2>
-                                <p>Lab 1: 79 LAB</p>
-                                <p>Lab 2: AI LAB</p>
-                                <p>Lab 3: GAMING LAB</p>
-                            </div>
-                        </div>
-
-                        {/* FYP Roadmap Card */}
-                        <div className="col-md-6">
-                            <div className="card p-3">
-                                <h2>🚀 FYP Roadmap</h2>
-                                <ul className="list-group">
-                                    <li className="list-group-item">✔ Proposal Submission</li>
-                                    <li className="list-group-item">📌 Supervisor Assignment</li>
-                                    <li className="list-group-item">📝 Mid-Term Evaluation</li>
-                                    <li className="list-group-item">📢 Final Presentation</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
+  return (
+    <div className="student-dashboard">
+      <Navbar />
+      <div className="dashboard-container d-flex">
+        <Sidebar />
+        <div className="dashboard-content p-4 w-100">
+          <h1 className="dashboard-title text-center">🎓 Student Dashboard</h1>
+          
+          {/* Banner Component */}
+          <div className="banner-container">
+            <div className="banner-content">
+              <div className="banner-text">
+                <div className="banner-date">
+                  <p>Date: {new Date().toLocaleDateString()}</p>
                 </div>
+                <div className="banner-welcome">
+                  Welcome back, {studentDetails.name}!
+                </div>
+                <div className="banner-message">
+                  Always stay updated in your student portal
+                </div>
+              </div>
+              <div className="banner-image">
+                <div className="icon-wrapper" data-number="1">
+                  <img src={bell} alt="" className="bell-icon" />
+                </div>
+              </div>
             </div>
+          </div>
+
+          {/* Top 4 Cards */}
+          <div className="row g-3 mb-4">
+            <div className="col-md-3">
+              <div className="card text-center p-3">
+                <FaUserGraduate className="icon" />
+                <h3>Group ID: {studentDetails.groupID}</h3>
+                <div className="team-members">
+                  <h4>Team Members:</h4>
+                  {studentDetails.teamMembers?.map((member, index) => (
+                    <div key={index} className="member-details">
+                      <p><strong>Name:</strong> {member.name}</p>
+                      <p><strong>ID:</strong> {member.studentId}</p>
+                      <p><strong>Program:</strong> {member.program}</p>
+                      <p><strong>CGPA:</strong> {member.cgpa}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className="col-md-3">
+              <div className="card text-center p-3">
+                <FaProjectDiagram className="icon" />
+                <h3>Project: {studentDetails.projectTitle}</h3>
+                <p>Category: {studentDetails.projectCategory}</p>
+              </div>
+            </div>
+            <div className="col-md-3">
+              <div className="card text-center p-3">
+                <FaChalkboardTeacher className="icon" />
+                <h3>Supervisor: {studentDetails.supervisor?.name}</h3>
+                <p>Department: {studentDetails.supervisor?.department}</p>
+              </div>
+            </div>
+            <div className="col-md-3">
+              <div className="card text-center p-3">
+                <FaCalendarAlt className="icon" />
+                <h3>Deadline: {studentDetails.endDate ? new Date(studentDetails.endDate).toLocaleDateString() : "Not set"}</h3>
+                <p>Final Presentation Date</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Progress Tracking */}
+          {/* FYP Sections in Cards */}
+          <div className="row g-3">
+            {/* Progress Tracking Card */}
+            <div className="col-md-6">
+              <div className="card p-3">
+                <h2>📊 FYP Progress Tracking</h2>
+                {/* // <div className="progress" style={{ height: "25px" }}> */}
+                {/* <div className="progress-bar bg-success" style={{ width: "50%" }}>50% Completed</div> */}
+                {/*     <Line data={progressData} /> */}
+                {/* </div>  */}
+                
+                <div className="progress-section card">
+                  <h3>Progress Overview</h3>
+                  <Line data={progressData} />
+                </div>
+              </div>
+            </div>
+
+            {/* Calendar Integration Card */}
+            <div className="col-md-6">
+              <div className="card p-3">
+                <h2>📅 Calendar Integration</h2>
+                {/* <input type="date" className="form-control" /> */}
+                <Calendar />
+              </div>
+            </div>
+
+            {/* FYP Labs Mapping Card */}
+            <div className="col-md-6">
+              <div className="card p-3">
+                <h2>📍 FYP Labs Map</h2>
+                <p>Lab 1: 79 LAB</p>
+                <p>Lab 2: AI LAB</p>
+                <p>Lab 3: GAMING LAB</p>
+              </div>
+            </div>
+
+            {/* FYP Roadmap Card */}
+            <div className="col-md-6">
+              <div className="card p-3">
+                <h2>🚀 FYP Roadmap</h2>
+                <ul className="list-group">
+                  <li className="list-group-item">✔ Proposal Submission</li>
+                  <li className="list-group-item">📌 Supervisor Assignment</li>
+                  <li className="list-group-item">📝 Mid-Term Evaluation</li>
+                  <li className="list-group-item">📢 Final Presentation</li>
+                </ul>
+              </div>
+            </div>
+          </div>
         </div>
-    );
+      </div>
+    </div>
+  );
 };
 
 export default StudentDashboard;

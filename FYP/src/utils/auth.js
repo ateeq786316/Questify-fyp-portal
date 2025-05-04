@@ -4,5 +4,5 @@ export const logout = () => {
   localStorage.removeItem("student");
   
   // Redirect to login page
-  window.location.href = "/studentlogin";
+  window.location.href = "/login";
 }; 

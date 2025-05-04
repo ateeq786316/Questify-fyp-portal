@@ -18,12 +18,22 @@ const userSchema = new mongoose.Schema({
   studentId: { type: String },
   program: { type: String },
   cgpa: { type: Number },
-  teamMembers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  teamMembers: [{ 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: "User" 
+  }],
   groupID: { type: String, required: true },
   projectTitle: { type: String, required: true },
   projectDescription: { type: String },
+  projectCategory: { type: String, enum: ["Web Development", "Mobile Development", "AI/ML", "Data Science", "Networking", "Cybersecurity", "Other"] },
   projectStatus: { type: String, enum: ["Proposed", "In Progress", "Completed", "Rejected", "Pending"], default: "Pending" },
   proposalStatus: { type: String, enum: ["Submitted", "Approved", "Rejected", "Pending"], default: "Pending" },
+  supervisor: {
+    id: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    name: { type: String },
+    department: { type: String },
+    email: { type: String }
+  },
   
 
   //Supervisor Fields:name, email, password, contact, role, supervisorId, supervisorExpertise, currentStudents.

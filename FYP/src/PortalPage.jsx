@@ -78,7 +78,7 @@ function PortalPage() {
               </button>
             </div>
             <div className='rights'>
-              2025 Questify FYP portal redesign (<a href="https://github.com/ateeq786316" target="_blank" rel="noopener noreferrer">ateeq786316</a>) All right reserved
+              2025 Questify FYP portal design (<a href="https://github.com/ateeq786316" target="_blank" rel="noopener noreferrer">ateeq786316</a>) All right reserved
             </div>
           </div>
         </div>     
