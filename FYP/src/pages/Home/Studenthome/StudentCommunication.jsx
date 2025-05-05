@@ -77,12 +77,19 @@ const StudentCommunication = () => {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      const newMessage = {
-        sender: "Student",
-        text: message,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        date: "Aujourd'hui"
-      };
+      const now = new Date();
+const today = new Date();
+const isToday = now.toDateString() === today.toDateString();
+const formattedDate = isToday
+  ? "Today"
+  : now.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+
+const newMessage = {
+  sender: "Student",
+  text: message,
+  timestamp: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+  date: formattedDate
+};
 
       setMessages(prev => [...prev, newMessage]);
       setMessage("");

@@ -87,7 +87,7 @@
 }
 
 .chat-message {
-    max-width: 70%;
+    max-width: 90%;
     margin: 0;
     animation: fadeIn 0.3s ease-in-out;
     display: flex;
@@ -183,29 +183,30 @@
 }
 
 .chat-input {
-    padding: 0.2rem 0.3rem; /* Reduced padding (adjust as needed) */
-    background-color: #8c8888;
+    flex: 0;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    background-color: #f8f9fa;
     position: sticky;
     bottom: 0;
-    z-index: 10;
+    border-top: 1px solid #eee;
 }
 
 .input-group {
     display: flex;
     align-items: center;
     gap: 0.2rem;
+    background-color: #46494b;
 }
 
 .message-input {
     border-radius: 25px;
-    padding: 0.6rem 1rem;
-    border: none;
-    transition: all 0.3s ease;
-    flex: 1;
-    font-size: 0.95rem;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
     background-color: #d9d7d7;
-    color: #fff;
-    margin: 0;
+    color: #2c3e50;
 }
 
 .message-input::placeholder {
@@ -219,18 +220,15 @@
 }
 
 .send-button {
-    border-radius: 50%;
-    width: 35px;
-    height: 35px;
+    width: 38px;
+    height: 38px;
     padding: 0;
     display: flex;
     align-items: center;
     justify-content: center;
     background-color: #6c5ce7;
     border: none;
-    transition: all 0.3s ease;
-    flex-shrink: 0;
-}   
+}
 
 .send-button svg {
     width: 14px;

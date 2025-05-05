@@ -104,7 +104,7 @@ const StudentDashboard = () => {
                     <div key={index} className="member-details">
                       <p><strong>Name:</strong> {member.name}</p>
                       <p><strong>ID:</strong> {member.studentId}</p>
-                      <p><strong>Program:</strong> {member.program}</p>
+                      <p><strong>Department:</strong> {member.department}</p>
                       <p><strong>CGPA:</strong> {member.cgpa}</p>
                     </div>
                   ))}

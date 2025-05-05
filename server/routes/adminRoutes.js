@@ -1,18 +1,12 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const adminController = require('../controllers/admin_controller');
-const { isAdmin } = require('../middleware/authMiddleware');
+const adminController = require("../controllers/admin_controller");
+const { isAdmin } = require("../middleware/authMiddleware");
 
-// Get dashboard statistics
-router.get('/stats', isAdmin, adminController.getDashboardStats);
+router.get("/stats", isAdmin, adminController.getDashboardStats);
+router.get("/student-groups", isAdmin, adminController.getStudentGroups);
+router.get("/milestones", isAdmin, adminController.getMilestones);
+router.post("/milestones", isAdmin, adminController.saveMilestones);
+router.post("/upload-students", isAdmin, adminController.uploadStudents);
 
-// Get student groups
-router.get('/student-groups', isAdmin, adminController.getStudentGroups);
-
-// Get milestones
-router.get('/milestones', isAdmin, adminController.getMilestones);
-
-// Save milestones
-router.post('/milestones', isAdmin, adminController.saveMilestones);
-
-module.exports = router; 
+module.exports = router;

@@ -35,6 +35,7 @@ import InternalDashboard from './pages/Home/Internalhome/InternalDashboard.jsx'
 import AdminLogin from './pages/Home/Adminhome/AdminLogin.jsx'
 import AdminDashboard from './pages/Home/Adminhome/AdminDashboard.jsx'
 import UserManagement from './pages/Home/Adminhome/UserManagement.jsx'
+import StudentUpload from './pages/Home/Adminhome/StudentUpload.jsx'
 
 // protected route
 import ProtectedRoute from './components/ProtectedRoute'
@@ -107,6 +108,7 @@ function App() {
         <Route path='/adminlogin' element={<AdminLogin />} /> 
         <Route path='/admindashboard' element={<AdminDashboard />} />
         <Route path='/usermanagement' element={<UserManagement />} />
+        <Route path='/admin/upload-students' element={<StudentUpload />} />
         {/* Test Route */}
         <Route path='/test' element={<Test />} />
       </Routes>

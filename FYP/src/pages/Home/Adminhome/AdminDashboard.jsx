@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { PieChart, Pie, Cell, Legend, Tooltip } from 'recharts';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -6,6 +6,8 @@ import { FaTrash, FaPlus, FaTimes, FaSave, FaBars, FaHome, FaUsers, FaCalendarAl
 import axios from 'axios';
 import './AdminDashboard.css';
 import Navbar from "../../../components/Navbar";
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Spinner } from 'react-bootstrap';
 
 const AdminDashboard = () => {
   // Sidebar state
@@ -21,100 +23,441 @@ const AdminDashboard = () => {
   });
 
   const [studentGroups, setStudentGroups] = useState([]);
+  const [displayedGroups, setDisplayedGroups] = useState([]);
   const [milestones, setMilestones] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [milestoneError, setMilestoneError] = useState(null);
+  const [milestoneSuccess, setMilestoneSuccess] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Form states
   const [newMilestoneName, setNewMilestoneName] = useState('');
   const [showAddField, setShowAddField] = useState(false);
 
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const ITEMS_PER_PAGE = 5;
+  const observer = useRef();
+
   const COLORS = ['#0088FE', '#FF8042'];
+
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Last element callback for infinite scroll
+  const lastGroupElementRef = useCallback(node => {
+    if (loading) return;
+    if (observer.current) observer.current.disconnect();
+    observer.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && hasMore) {
+        setPage(prevPage => prevPage + 1);
+      }
+    });
+    if (node) observer.current.observe(node);
+  }, [loading, hasMore]);
 
   // Fetch dashboard data
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
+        setError(null);
+        
+        const token = localStorage.getItem('adminToken');
+        if (!token) {
+          setError('No authentication token found. Please login again.');
+          setLoading(false);
+          return;
+        }
+
+        const headers = {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        };
+
+        console.log('Fetching dashboard data...');
+        
         const [statsResponse, groupsResponse, milestonesResponse] = await Promise.all([
-          axios.get('/api/admin/stats'),
-          axios.get('/api/admin/student-groups'),
-          axios.get('/api/admin/milestones')
+          axios.get('http://localhost:5000/api/admin/stats', { headers }),
+          axios.get('http://localhost:5000/api/admin/student-groups', { headers }),
+          axios.get('http://localhost:5000/api/admin/milestones', { headers })
         ]);
 
+        console.log('Stats response:', statsResponse.data);
+        console.log('Groups response:', groupsResponse.data);
+        console.log('Milestones response:', milestonesResponse.data);
+
         // Ensure we have valid data before setting state
-        if (statsResponse.data && statsResponse.data.stats) {
+        if (statsResponse.data?.success && statsResponse.data?.stats) {
           setStats(statsResponse.data.stats);
+        } else {
+          console.error('Invalid stats response:', statsResponse.data);
+          setError('Failed to fetch statistics');
         }
-        if (groupsResponse.data && groupsResponse.data.groups) {
+
+        if (groupsResponse.data?.success && groupsResponse.data?.groups) {
           setStudentGroups(groupsResponse.data.groups);
+        } else {
+          console.error('Invalid groups response:', groupsResponse.data);
+          setError('Failed to fetch student groups');
         }
-        if (milestonesResponse.data && milestonesResponse.data.milestones) {
+
+        if (milestonesResponse.data?.success && milestonesResponse.data?.milestones) {
           setMilestones(milestonesResponse.data.milestones);
+        } else {
+          console.error('Invalid milestones response:', milestonesResponse.data);
+          setError('Failed to fetch milestones');
         }
+
         setLoading(false);
       } catch (err) {
-        setError('Failed to fetch dashboard data');
-        setLoading(false);
         console.error('Error fetching dashboard data:', err);
+        setError(err.response?.data?.msg || 'Failed to fetch dashboard data');
+        setLoading(false);
       }
     };
 
     fetchDashboardData();
   }, []);
 
-  const handleDateChange = async (date, id) => {
+  // Fetch student groups with pagination
+  const fetchStudentGroups = async (pageNum) => {
     try {
-      const updatedMilestones = milestones.map(milestone => 
-        milestone._id === id ? { ...milestone, deadline: date } : milestone
-      );
-      setMilestones(updatedMilestones);
+      setLoading(true);
+      const token = localStorage.getItem('adminToken');
+      const response = await axios.get(`http://localhost:5000/api/admin/student-groups?page=${pageNum}&limit=${ITEMS_PER_PAGE}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      const newGroups = response.data.groups;
+      if (pageNum === 1) {
+        setDisplayedGroups(newGroups);
+      } else {
+        setDisplayedGroups(prev => [...prev, ...newGroups]);
+      }
       
-      await axios.post('/api/admin/milestones', { milestones: updatedMilestones });
+      // Update hasMore based on pagination info from backend
+      setHasMore(response.data.pagination.hasMore);
+      setLoading(false);
     } catch (err) {
-      console.error('Error updating milestone:', err);
-      setError('Failed to update milestone');
+      console.error('Error fetching student groups:', err);
+      setError('Failed to fetch student groups');
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchStudentGroups(page);
+  }, [page]);
+
+  // Fetch milestones
+  const fetchMilestones = async () => {
+    try {
+      setIsLoading(true);
+      setMilestoneError(null);
+      
+      console.log('Fetching milestones...');
+      const token = localStorage.getItem('adminToken');
+      const response = await axios.get('http://localhost:5000/api/milestones', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      console.log('Milestones response:', response.data);
+
+      if (response.data.success) {
+        setMilestones(response.data.milestones);
+      } else {
+        throw new Error(response.data.msg || 'Failed to fetch milestones');
+      }
+    } catch (err) {
+      console.error('Error fetching milestones:', err.message);
+      setMilestoneError(err.response?.data?.msg || 'Failed to fetch milestones');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchMilestones();
+  }, []);
+
+  const handleDateChange = async (date, milestoneName) => {
+    try {
+      setIsLoading(true);
+      setMilestoneError(null);
+      setMilestoneSuccess(null);
+
+      console.log('\n=== Milestone Update Request ===');
+      console.log('Milestone:', milestoneName);
+      console.log('Date:', date);
+      console.log('Formatted Date:', date ? new Date(date).toISOString() : null);
+
+      const token = localStorage.getItem('adminToken');
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      const url = `http://localhost:5000/api/milestones/${milestoneName}`;
+      console.log('Request URL:', url);
+
+      const response = await axios.put(
+        url,
+        { deadline: date ? new Date(date).toISOString() : null },
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      console.log('Response:', {
+        status: response.status,
+        data: response.data
+      });
+
+      if (response.data.success) {
+        setMilestoneSuccess('Milestone updated successfully');
+        // Update local state
+        setMilestones(prev => 
+          prev.map(m => 
+            m.name === milestoneName 
+              ? { ...m, deadline: date }
+              : m
+          )
+        );
+      } else {
+        throw new Error(response.data.msg || 'Failed to update milestone');
+      }
+    } catch (err) {
+      console.error('Error updating milestone:', {
+        status: err.response?.status,
+        statusText: err.response?.statusText,
+        data: err.response?.data,
+        message: err.message,
+        url: err.config?.url
+      });
+      
+      let errorMessage = 'Failed to update milestone';
+      if (err.response?.status === 404) {
+        errorMessage = `Milestone "${milestoneName}" not found`;
+      } else if (err.response?.status === 401) {
+        errorMessage = 'Authentication required';
+      } else if (err.response?.data?.msg) {
+        errorMessage = err.response.data.msg;
+      }
+      
+      setMilestoneError(errorMessage);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const saveMilestones = async () => {
     try {
-      await axios.post('/api/admin/milestones', { milestones });
-      alert('Milestones saved successfully!');
+      setIsLoading(true);
+      setMilestoneError(null);
+      setMilestoneSuccess(null);
+
+      console.log('\n=== Saving All Milestones ===');
+      console.log('Milestones to save:', milestones);
+
+      const token = localStorage.getItem('adminToken');
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      // Prepare milestones data
+      const milestonesToSave = milestones.map(m => ({
+        name: m.name,
+        deadline: m.deadline ? new Date(m.deadline).toISOString() : null,
+        order: m.order
+      }));
+
+      console.log('Request payload:', milestonesToSave);
+
+      const response = await axios.put(
+        'http://localhost:5000/api/milestones/bulk',
+        { milestones: milestonesToSave },
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      console.log('Response:', {
+        status: response.status,
+        data: response.data
+      });
+
+      if (response.data.success) {
+        setMilestoneSuccess('All milestones saved successfully');
+        setMilestones(response.data.milestones);
+      } else {
+        throw new Error(response.data.msg || 'Failed to save milestones');
+      }
     } catch (err) {
-      console.error('Error saving milestones:', err);
-      setError('Failed to save milestones');
+      console.error('Error saving milestones:', {
+        status: err.response?.status,
+        statusText: err.response?.statusText,
+        data: err.response?.data,
+        message: err.message
+      });
+      
+      let errorMessage = 'Failed to save milestones';
+      if (err.response?.status === 400) {
+        errorMessage = err.response.data.msg || 'Invalid milestone data';
+      } else if (err.response?.status === 401) {
+        errorMessage = 'Authentication required';
+      } else if (err.response?.data?.msg) {
+        errorMessage = err.response.data.msg;
+      }
+      
+      setMilestoneError(errorMessage);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const addNewMilestone = async () => {
-    if (newMilestoneName.trim() === '') return;
-    
-    const newMilestone = {
-      name: newMilestoneName.trim(),
-      deadline: null,
-      order: milestones.length + 1
-    };
+    if (newMilestoneName.trim() === '') {
+      setMilestoneError('Milestone name is required');
+      return;
+    }
     
     try {
-      const response = await axios.post('/api/admin/milestones', { milestones: [...milestones, newMilestone] });
-      setMilestones(response.data.milestones);
-      setNewMilestoneName('');
-      setShowAddField(false);
+      setIsLoading(true);
+      setMilestoneError(null);
+      setMilestoneSuccess(null);
+
+      console.log('\n=== Adding New Milestone ===');
+      console.log('Milestone Name:', newMilestoneName);
+      
+      const token = localStorage.getItem('adminToken');
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      const newMilestone = {
+        name: newMilestoneName.trim(),
+        deadline: null,
+        order: milestones.length + 1
+      };
+
+      console.log('Request Payload:', newMilestone);
+
+      const response = await axios.post(
+        'http://localhost:5000/api/milestones',
+        newMilestone,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      console.log('Response:', {
+        status: response.status,
+        data: response.data
+      });
+
+      if (response.data.success) {
+        setMilestoneSuccess('Milestone added successfully');
+        setMilestones(prev => [...prev, response.data.milestone]);
+        setNewMilestoneName('');
+        setShowAddField(false);
+      } else {
+        throw new Error(response.data.msg || 'Failed to add milestone');
+      }
     } catch (err) {
-      console.error('Error adding milestone:', err);
-      setError('Failed to add milestone');
+      console.error('Error adding milestone:', {
+        status: err.response?.status,
+        statusText: err.response?.statusText,
+        data: err.response?.data,
+        message: err.message
+      });
+      
+      let errorMessage = 'Failed to add milestone';
+      if (err.response?.status === 400) {
+        errorMessage = err.response.data.msg || 'Invalid milestone data';
+      } else if (err.response?.status === 401) {
+        errorMessage = 'Authentication required';
+      } else if (err.response?.data?.msg) {
+        errorMessage = err.response.data.msg;
+      }
+      
+      setMilestoneError(errorMessage);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const deleteMilestone = async (id) => {
+  const deleteMilestone = async (name) => {
     try {
-      const updatedMilestones = milestones.filter(milestone => milestone._id !== id);
-      await axios.post('/api/admin/milestones', { milestones: updatedMilestones });
-      setMilestones(updatedMilestones);
+      setIsLoading(true);
+      setMilestoneError(null);
+      setMilestoneSuccess(null);
+
+      console.log('\n=== Deleting Milestone ===');
+      console.log('Milestone Name:', name);
+
+      const token = localStorage.getItem('adminToken');
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      const response = await axios.delete(
+        `http://localhost:5000/api/milestones/${name}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      console.log('Response:', {
+        status: response.status,
+        data: response.data
+      });
+
+      if (response.data.success) {
+        setMilestoneSuccess('Milestone deleted successfully');
+        // Update local state by removing the deleted milestone
+        setMilestones(prev => prev.filter(m => m.name !== name));
+      } else {
+        throw new Error(response.data.msg || 'Failed to delete milestone');
+      }
     } catch (err) {
-      console.error('Error deleting milestone:', err);
-      setError('Failed to delete milestone');
+      console.error('Error deleting milestone:', {
+        status: err.response?.status,
+        statusText: err.response?.statusText,
+        data: err.response?.data,
+        message: err.message
+      });
+      
+      let errorMessage = 'Failed to delete milestone';
+      if (err.response?.status === 404) {
+        errorMessage = `Milestone "${name}" not found`;
+      } else if (err.response?.status === 401) {
+        errorMessage = 'Authentication required';
+      } else if (err.response?.data?.msg) {
+        errorMessage = err.response.data.msg;
+      }
+      
+      setMilestoneError(errorMessage);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -179,11 +522,11 @@ const AdminDashboard = () => {
         </div>
         
         <ul className="sidebar-menu">
-          <li className="active">
+          <li className={location.pathname === '/admindashboard' ? 'active' : ''} onClick={() => navigate('/admindashboard')} style={{cursor: 'pointer'}}>
             <FaHome className="sidebar-icon" />
             {sidebarOpen && <span>Dashboard</span>}
           </li>
-          <li>
+          <li className={location.pathname === '/admin/upload-students' ? 'active' : ''} onClick={() => navigate('/admin/upload-students')} style={{cursor: 'pointer'}}>
             <FaGraduationCap className="sidebar-icon" />
             {sidebarOpen && <span>Students</span>}
           </li>
@@ -211,6 +554,13 @@ const AdminDashboard = () => {
         <div className="dashboard-content">
           <h1>Admin Dashboard</h1>
           
+          {error && (
+            <div className="error-message">
+              <p>{error}</p>
+              <button onClick={() => window.location.reload()}>Retry</button>
+            </div>
+          )}
+          
           {/* Stats Cards */}
           <div className="stats-grid">
             <div className="stat-card">
@@ -234,25 +584,49 @@ const AdminDashboard = () => {
           <div className="data-section">
             <div className="student-list">
               <h2>Student Groups</h2>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Group ID</th>
-                    <th>Student Name(s)</th>
-                    <th>Domain</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {studentGroups?.map((group, index) => (
-                    <tr key={index}>
-                      <td>{group.groupId}</td>
-                      <td>{group.names?.join(', ') || ''}</td>
-                      <td>{group.domain}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              <button className="see-more-btn">See More</button>
+              <div className="student-groups-container">
+                {displayedGroups.length > 0 ? (
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Group ID</th>
+                        <th>Student Name(s)</th>
+                        <th>Department</th>
+                        <th>Project Title</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {displayedGroups.map((group, index) => (
+                        <tr 
+                          key={group.groupId}
+                          ref={index === displayedGroups.length - 1 ? lastGroupElementRef : null}
+                        >
+                          <td>{group.groupId}</td>
+                          <td>{group.names?.join(', ') || ''}</td>
+                          <td>{group.department}</td>
+                          <td>{group.projectTitle}</td>
+                          <td>{group.status}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                ) : (
+                  <p className="no-data">No student groups found</p>
+                )}
+                
+                {loading && (
+                  <div className="loading-spinner-container">
+                    <Spinner animation="border" role="status" variant="primary">
+                      <span className="visually-hidden">Loading...</span>
+                    </Spinner>
+                  </div>
+                )}
+                
+                {!hasMore && displayedGroups.length > 0 && (
+                  <p className="end-of-list">No more groups to load</p>
+                )}
+              </div>
             </div>
 
             <div className="chart-container">
@@ -281,27 +655,52 @@ const AdminDashboard = () => {
           {/* Milestones Section */}
           <div className="milestones-section">
             <h2>FYP Milestone Deadlines</h2>
+            
+            {isLoading && (
+              <div className="loading-spinner-container">
+                <Spinner animation="border" role="status" variant="primary">
+                  <span className="visually-hidden">Loading...</span>
+                </Spinner>
+              </div>
+            )}
+            
+            {milestoneError && (
+              <div className="error-message">
+                <p>{milestoneError}</p>
+                <button onClick={() => setMilestoneError(null)}>Dismiss</button>
+              </div>
+            )}
+            
+            {milestoneSuccess && (
+              <div className="success-message">
+                <p>{milestoneSuccess}</p>
+                <button onClick={() => setMilestoneSuccess(null)}>Dismiss</button>
+              </div>
+            )}
+
             <div className="milestones-grid">
-              {milestones?.map((milestone) => (
+              {milestones.map((milestone) => (
                 <div key={milestone._id} className="milestone-card">
                   <div className="milestone-header">
                     <h3>{milestone.name}</h3>
                     <button 
-                      onClick={() => deleteMilestone(milestone._id)} 
+                      onClick={() => deleteMilestone(milestone.name)} 
                       className="delete-button"
                       title="Delete milestone"
+                      disabled={isLoading}
                     >
                       <FaTrash />
                     </button>
                   </div>
                   <DatePicker
                     selected={milestone.deadline ? new Date(milestone.deadline) : null}
-                    onChange={(date) => handleDateChange(date, milestone._id)}
+                    onChange={(date) => handleDateChange(date, milestone.name)}
                     minDate={new Date()}
                     placeholderText="Select deadline"
                     className="date-picker-input"
                     dateFormat="MMMM d, yyyy"
                     isClearable
+                    disabled={isLoading}
                   />
                 </div>
               ))}

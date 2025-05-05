@@ -4,7 +4,6 @@ import Navbar from "../../../components/Navbar"; // Import Navbar
 import Sidebar from "../../../components/Sidebar"; // Import Sidebar
 import "../../../styles/StudentChatbotPage.css"; // Import styles
 import axios from "axios";
-import { chatbot } from "../../../services/student";
 import { useNavigate } from "react-router-dom";
 
 // Chatbot Component
@@ -54,7 +53,67 @@ const Chatbot = () => {
   
     try {
       setIsTyping(true);
-      const botResponse = await chatbot(input);
+      
+      // Get the last 5 messages for context
+      const recentMessages = messages.slice(-5);
+      const contextPrompt = recentMessages
+        .map(msg => `${msg.sender === "user" ? "User" : "Assistant"}: ${msg.text}`)
+        .join("\n");
+
+      // Make request to Gemini API using the free endpoint
+      const response = await axios.post(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyAiLOVFF-L8FblJ9NFglOqvHQM6emwEJV8`,
+        {
+          contents: [{
+            parts: [{
+              text: `Context:\n${contextPrompt}\n\nUser: ${input}\n\nAssistant:`
+            }]
+          }]
+        },
+        {
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }
+      );
+
+      if (!response.data || !response.data.candidates?.[0]?.content?.parts?.[0]?.text) {
+        throw new Error("Invalid response from Gemini API");
+      }
+
+      // Format the response
+      let botResponse = response.data.candidates[0].content.parts[0].text
+        .split("\n")
+        .slice(0, 10)
+        .join("\n")
+        .trim();
+
+      // Clean and structure the response
+      botResponse = botResponse
+        // Remove markdown formatting
+        .replace(/\*\*/g, '')
+        .replace(/\*/g, '')
+        .replace(/_/g, '')
+        // Convert to simple bullet points
+        .replace(/^[-•*]\s/gm, '• ')
+        // Add proper spacing
+        .replace(/\n/g, '\n\n')
+        // Capitalize first letter of each line
+        .replace(/(^\w|\.\s+\w)/gm, letter => letter.toUpperCase())
+        // Remove extra spaces
+        .replace(/\s+/g, ' ')
+        // Format sections
+        .replace(/(\d+\.\s)/g, '\n$1')
+        .replace(/(Project Idea:)/g, '\n$1')
+        .replace(/(Complexity:)/g, '\n$1')
+        .replace(/(Focus:)/g, '\n$1')
+        .replace(/(Technologies:)/g, '\n$1')
+        .trim();
+
+      // Add a friendly prefix if it's a greeting
+      if (input.toLowerCase().includes('hello') || input.toLowerCase().includes('hi')) {
+        botResponse = '👋 ' + botResponse;
+      }
       
       // Update user message status
       setMessages(prev => prev.map(msg => 
