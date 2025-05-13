@@ -1,254 +1,267 @@
-/* Global styles for Chatbot Page */
-.chatbot-page {
+/* ==========================================================================
+   Student Chatbot - Main Layout & Global Styles
+   ========================================================================== */
+.student-chatbot-page {
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  width: 100vw;
+  min-height: 100vh;
   background: url("../assets/lgubgimg.jpg") no-repeat center center fixed;
   background-size: cover;
-  overflow: hidden;
 }
 
-/* Content layout */
-.content {
+.student-chatbot__layout {
   display: flex;
   flex: 1;
+  min-height: 0;
 }
 
-/* Sidebar styles */
-.sidebar {
-  width: 250px;
-  background-color: #303134;
-  color: white;
-  padding: 20px;
-  min-height: 100vh;
-  transition: width 0.3s ease-in-out;
-}
-
-.sidebar.collapsed {
-  width: 80px;
-}
-
-/* Chatbot container */
-.chat-container {
+.student-chatbot__content {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 10px;
-  background-color: rgba(0, 0, 0, 0);
-  border-radius: 10px;
-  margin: 100px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 64px); /* Adjust for navbar height if needed */
+  padding: 32px 16px 0px 76px;
 }
 
-/* Chat header */
-.chat-header {
-  font-size: 1.8rem;
-  font-weight: bold;
-  margin-bottom: 10px;
-  color: #2563eb;
-}
-
-/* Chat messages */
-.chat-box {
-  flex: 1;
-  overflow-y: auto;
-  padding: 15px;
-  background: rgba(255, 255, 255, 0.615);
-  border-radius: 8px;
-  box-shadow: inset 0px 0px 5px rgba(0, 0, 0, 0.1);
-  scroll-behavior: smooth;
-}
-
-/* Different styles for user and bot messages */
-.chat-message-container {
+/* ==========================================================================
+   Student Chatbot - Chat Container
+   ========================================================================== */
+.student-chatbot {
+  /* padding: 20px; */
+  width: 100%;
+  max-width: 3000px;
+  min-height: 650px;
   display: flex;
-  margin-bottom: 10px;
+  /* padding-left: 40px; */
+  flex-direction: column;
+  background-color: rgba(255, 255, 255, 0.97);
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+  overflow: hidden;
+  margin: 0 auto;
 }
 
-.chat-message {
-  padding: 10px 15px;
-  border-radius: 18px;
-  max-width: 70%;
-  word-wrap: break-word;
-  position: relative;
+.student-chatbot__header {
+  padding: 50px;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+  text-align: center;
+  font-size: 1.3rem;
+  font-weight: 600;
 }
 
-.chat-message-container.user {
-  justify-content: flex-end;
+.student-chatbot__chat-box {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 200px;
 }
 
-.chat-message-container.bot {
-  justify-content: flex-start;
+/* ==========================================================================
+   Student Chatbot - Messages
+   ========================================================================== */
+.student-chatbot__message-container {
+  display: flex;
+  flex-direction: column;
+  max-width: 80%;
 }
 
-.chat-message.user {
-  background-color: #2563eb;
-  color: white;
-  border-bottom-right-radius: 4px;
+.student-chatbot__message-container--user {
+  align-self: flex-end;
 }
 
-.chat-message.bot {
-  background-color: #4b5563;
-  color: white;
-  border-bottom-left-radius: 4px;
+.student-chatbot__message-container--bot {
+  align-self: flex-start;
 }
 
-/* Message content and metadata */
-.message-content {
+.student-chatbot__message {
+  display: flex;
+  flex-direction: column;
+}
+
+.student-chatbot__message-content {
+  padding: 12px 16px;
+  border-radius: 12px;
   margin-bottom: 4px;
 }
 
-.message-meta {
+.student-chatbot__message--user .student-chatbot__message-content {
+  background-color: #007bff;
+  color: white;
+  border-top-right-radius: 4px;
+}
+
+.student-chatbot__message--bot .student-chatbot__message-content {
+  background-color: #f1f3f4;
+  color: #202124;
+  border-top-left-radius: 4px;
+}
+
+.student-chatbot__message-meta {
   display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  font-size: 0.75rem;
-  opacity: 0.8;
-}
-
-.timestamp {
-  margin-right: 4px;
-}
-
-.status {
-  display: inline-flex;
-  align-items: center;
-  margin-left: 4px;
-}
-
-.status.sending {
-  color: #ffd700;
-}
-
-.status.error {
-  color: #ff4444;
-}
-
-/* Typing indicator */
-.typing {
-  display: flex;
-  align-items: center;
-  padding: 8px 12px;
-}
-
-.typing-indicator {
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-/* Error message */
-.error-message {
-  color: #ff4444;
-  text-align: center;
-  margin: 8px 0;
-  font-size: 0.9rem;
-}
-
-/* Chat input */
-.chat-input-container {
-  display: flex;
-  margin-top: 10px;
   align-items: center;
   gap: 8px;
+  font-size: 0.75rem;
+  color: #6c757d;
 }
 
-.attachment-button {
+.student-chatbot__timestamp {
+  font-size: 0.75rem;
+  color: #6c757d;
+}
+
+.student-chatbot__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.student-chatbot__status--sending {
+  color: #6c757d;
+}
+
+.student-chatbot__status--error {
+  color: #dc3545;
+}
+
+/* ==========================================================================
+   Student Chatbot - Typing Indicator
+   ========================================================================== */
+.student-chatbot__message--typing {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background-color: #f1f3f4;
+  border-radius: 12px;
+  width: fit-content;
+}
+
+.student-chatbot__typing-indicator {
+  display: flex;
+  gap: 4px;
+  animation: student-chatbot__typing-animation 1.4s infinite ease-in-out;
+}
+
+@keyframes student-chatbot__typing-animation {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-4px); }
+}
+
+/* ==========================================================================
+   Student Chatbot - Error Message
+   ========================================================================== */
+.student-chatbot__error {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin: 16px;
+  text-align: center;
+  border: 1px solid #f5c6cb;
+}
+
+/* ==========================================================================
+   Student Chatbot - Input Section
+   ========================================================================== */
+.student-chatbot__input-container {
+  padding: 16px;
+  background-color: #f8f9fa;
+  border-top: 1px solid #dee2e6;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.student-chatbot__attachment-button {
   background: none;
   border: none;
-  color: #4b5563;
+  color: #6c757d;
   cursor: pointer;
   padding: 8px;
   border-radius: 50%;
   transition: background-color 0.2s;
 }
 
-.attachment-button:hover {
-  background-color: rgba(75, 85, 99, 0.1);
+.student-chatbot__attachment-button:hover {
+  background-color: #e9ecef;
 }
 
-.chat-input {
+.student-chatbot__input {
   flex: 1;
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  font-size: 1rem;
+  padding: 12px 16px;
+  border: 1px solid #dee2e6;
+  border-radius: 24px;
+  outline: none;
+  transition: border-color 0.2s;
 }
 
-.chat-input:disabled {
-  background-color: #f3f4f6;
+.student-chatbot__input:focus {
+  border-color: #007bff;
+}
+
+.student-chatbot__input:disabled {
+  background-color: #e9ecef;
   cursor: not-allowed;
 }
 
-.chat-send-button {
-  background-color: #2563eb;
+.student-chatbot__send-button {
+  background-color: #007bff;
   color: white;
   border: none;
-  padding: 10px 15px;
-  border-radius: 8px;
+  padding: 12px 24px;
+  border-radius: 24px;
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: background-color 0.2s;
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 8px;
 }
 
-.chat-send-button:hover:not(:disabled) {
-  background-color: #1e40af;
+.student-chatbot__send-button:hover:not(:disabled) {
+  background-color: #0056b3;
 }
 
-.chat-send-button:disabled {
-  background-color: #93c5fd;
+.student-chatbot__send-button:disabled {
+  background-color: #6c757d;
   cursor: not-allowed;
 }
 
-/* ✅ Responsive Design */
+/* ==========================================================================
+   Student Chatbot - Responsive Breakpoints
+   ========================================================================== */
 @media screen and (max-width: 1024px) {
-  .sidebar {
-    width: 200px;
-  }
-
-  .chat-container {
-    margin: 50px;
+  .student-chatbot {
+    margin: 15px;
   }
 }
 
 @media screen and (max-width: 768px) {
-  .content {
-    flex-direction: column;
+  .student-chatbot__content {
+    padding: 12px 2px;
   }
-
-  .sidebar {
-    width: 100%;
-    min-height: auto;
-    text-align: center;
-  }
-
-  .chat-container {
-    margin: 10px;
-    padding: 15px;
+  .student-chatbot {
+    max-width: 100%;
+    min-height: 350px;
   }
 }
 
 @media screen and (max-width: 480px) {
-  .sidebar {
-    display: none;
+  .student-chatbot {
+    min-height: 250px;
+    border-radius: 8px;
   }
-
-  .chat-container {
-    padding: 10px;
-    /* padding-left: 50px; */
+  .student-chatbot__header {
+    padding-top: 200px;
+    /* padding: 12px; */
+    font-size: 1rem;
   }
-
-  .chat-input {
+  .student-chatbot__chat-box {
     padding: 8px;
-  }
-
-  .chat-send-button {
-    padding: 8px 12px;
   }
 }

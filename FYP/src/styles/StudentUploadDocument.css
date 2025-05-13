@@ -41,3 +41,24 @@ button {
     align-items: center;
     gap: 5px;
 }
+
+.upload-cards-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    width: 100%;
+    margin-bottom: 32px;
+    
+}
+
+@media (max-width: 900px) {
+    .upload-cards-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+.student-upload__content {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 70px 0px 0px 70px ;
+}

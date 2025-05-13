@@ -17,14 +17,14 @@ exports.getDashboardStats = async (req, res) => {
     console.log("Total supervisors:", totalSupervisors);
 
     // Count active students (students with projectStatus 'In Progress')
-    const activeStudents = await User.countDocuments({
+    const activeStudents = await User.countDocuments({ 
       role: "student",
       projectStatus: "In Progress",
     });
     console.log("Active students:", activeStudents);
 
     // Count pending students (students with projectStatus 'Pending')
-    const pendingStudents = await User.countDocuments({
+    const pendingStudents = await User.countDocuments({ 
       role: "student",
       projectStatus: "Pending",
     });
@@ -93,7 +93,7 @@ exports.getStudentGroups = async (req, res) => {
 
       // Add student name to the group
       if (!acc[groupId].names.includes(student.name)) {
-        acc[groupId].names.push(student.name);
+      acc[groupId].names.push(student.name);
       }
 
       // Add team members if they exist
@@ -319,6 +319,123 @@ exports.uploadStudents = async (req, res) => {
     res.status(500).json({
       success: false,
       msg: "Server error uploading students.",
+      error: err.message,
+    });
+  }
+};
+
+// Upload supervisors from Excel
+exports.uploadSupervisors = async (req, res) => {
+  try {
+    const { supervisors } = req.body;
+    console.log("Received supervisors for upload:", supervisors);
+
+    if (!Array.isArray(supervisors) || supervisors.length === 0) {
+      return res
+        .status(400)
+        .json({ success: false, msg: "No supervisors data provided." });
+    }
+
+    // Add role: 'supervisor' to each entry
+    const supervisorsToInsert = supervisors.map((s) => ({
+      name: s.name,
+      email: s.email,
+      password: s.password || s.email.split("@")[0], // Default password is email username
+      department: s.department,
+      contact: s.phone,
+      role: "supervisor",
+      supervisorId: s.employeeId,
+      supervisorExpertise: s.designation,
+      type: s.type || "Internal",
+    }));
+
+    // Validate required fields
+    for (const sup of supervisorsToInsert) {
+      if (!sup.name || !sup.email || !sup.department) {
+        return res.status(400).json({
+          success: false,
+          msg: "Missing required fields in one or more supervisors.",
+        });
+      }
+    }
+
+    // First, find existing emails
+    const existingEmails = await User.find({
+      email: { $in: supervisorsToInsert.map((s) => s.email) },
+    }).select("email");
+
+    const existingEmailSet = new Set(existingEmails.map((e) => e.email));
+
+    // Separate new and existing supervisors
+    const newSupervisors = supervisorsToInsert.filter(
+      (s) => !existingEmailSet.has(s.email)
+    );
+    const duplicateSupervisors = supervisorsToInsert.filter((s) =>
+      existingEmailSet.has(s.email)
+    );
+
+    let result = { insertedCount: 0, insertedSupervisors: [] };
+    let errors = [];
+
+    // Insert new supervisors
+    if (newSupervisors.length > 0) {
+      try {
+        const insertResult = await User.insertMany(newSupervisors, {
+          ordered: false,
+        });
+        result.insertedCount = insertResult.length;
+        result.insertedSupervisors = insertResult.map((s) => ({
+          name: s.name,
+          email: s.email,
+          supervisorId: s.supervisorId,
+        }));
+      } catch (err) {
+        if (err.writeErrors) {
+          // Handle any other bulk write errors
+          errors.push(
+            ...err.writeErrors.map((e) => ({
+              email: newSupervisors[e.index].email,
+              error: e.errmsg,
+            }))
+          );
+        } else {
+          throw err; // Re-throw if it's not a bulk write error
+        }
+      }
+    }
+
+    // Prepare response
+    const response = {
+      success: true,
+      msg: "Supervisor upload completed",
+      stats: {
+        total: supervisorsToInsert.length,
+        inserted: result.insertedCount,
+        duplicates: duplicateSupervisors.length,
+        errors: errors.length,
+      },
+      details: {
+        inserted: result.insertedSupervisors,
+        duplicates: duplicateSupervisors.map((s) => ({
+          name: s.name,
+          email: s.email,
+        })),
+        errors: errors,
+      },
+    };
+
+    // If there were any duplicates or errors, add a warning
+    if (duplicateSupervisors.length > 0 || errors.length > 0) {
+      response.warning =
+        "Some supervisors were not inserted due to duplicates or errors";
+    }
+
+    res.status(200).json(response);
+  } catch (err) {
+    console.error("Error uploading supervisors:", err);
+    res.status(500).json({
+      success: false,
+      msg: "Server error uploading supervisors.",
       error: err.message,
     });
   }

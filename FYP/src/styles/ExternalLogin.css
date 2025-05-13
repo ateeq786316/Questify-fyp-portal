@@ -1,0 +1,160 @@
+/* Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Background & Overlay */
+.external-login-container {
+    background: url("../assets/lgubgimg.jpg") no-repeat center center fixed;
+    background-size: cover;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.external-login-overlay {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Glassmorphism Card */
+.external-login-card {
+    color: white;
+    background: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.436);
+    backdrop-filter: blur(2px);
+    border-radius: 15px;
+    padding: 30px;
+    width: 550px;
+    box-shadow: 0px 8px 16px rgba(255, 255, 255, 0.1);
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.external-login-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0px 6px 20px rgba(255, 255, 255, 0.2);
+}
+
+/* Title */
+.external-login-title {
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #000000;
+    margin-bottom: 20px;
+}
+
+/* Input Fields */
+.external-login-input-group {
+    margin-bottom: 15px;
+}
+
+.external-login-input-group label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+    color: #fff;
+}
+
+.external-login-input-group input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+    transition: 0.3s;
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+}
+
+.external-login-input-group input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.external-login-input-group input:focus {
+    background: rgba(255, 255, 255, 0.3);
+    box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.3);
+}
+
+/* Options */
+.external-login-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #fff;
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+}
+
+.external-login-form-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.external-login-form-check-input {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.external-login-form-check-label {
+    cursor: pointer;
+}
+
+/* Error Message */
+.external-login-error {
+    color: #ff4444;
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+/* Login Button */
+.external-login-button {
+    width: 100%;
+    padding: 12px;
+    background-color: #ffd700;
+    color: black;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s ease-in-out;
+    text-align: center;
+}
+
+.external-login-button:hover {
+    background-color: #ffbb00;
+    box-shadow: 0px 0px 10px rgba(255, 217, 0, 0.6);
+    transform: scale(1.05);
+}
+
+.external-login-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Responsive */
+@media (max-width: 400px) {
+    .external-login-input-group input {
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+    .external-login-card {
+        width: 90%;
+        padding: 20px;
+    }
+} 

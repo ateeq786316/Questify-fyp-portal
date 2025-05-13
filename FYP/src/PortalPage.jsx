@@ -18,36 +18,36 @@ function PortalPage() {
     return (
 
       <div> <Navbar /> {/* ✅ Navbar at the top */}
-      <div className="portal-page">
+      <div className="portal-selection-page">
         
-        <div className="content">
-          <div className="left-section">
+        <div className="portal-selection-content">
+          <div className="portal-selection-left">
             <img
               src={logo} // Replace with your logo path
               alt="University Logo"
-              className="university-logo"
+              className="portal-selection-logo"
             />
-            <div className="university-info">
+            <div className="portal-selection-university-info">
               <strong>LAHORE GARRISON UNIVERSITY,</strong>
               <br />
               LAHORE, PAKISTAN
             </div>
           </div>
   
-          <div className="right-section">
-            <h2>Select Portal</h2>
-            <p className="portal-description">
+          <div className="portal-selection-right">
+            <h2 className="portal-selection-title">Select Portal</h2>
+            <p className="portal-selection-description">
               Select the portal you would like to visit.
             </p>
-            <div className="portal-buttons">
-              <button className="portal-button"
+            <div className="portal-selection-buttons">
+              <button className="portal-selection-button"
               onClick={() => navigate('/adminlogin')} // Inline anonymous function
               >
                 <img src={admin} alt="admin" />
                 <br />
                 ADMIN
               </button>
-              <button className="portal-button"
+              <button className="portal-selection-button"
               onClick={() => navigate('/studentlogin')} // Inline anonymous function
               >
                 
@@ -55,21 +55,21 @@ function PortalPage() {
                 <br />
                 STUDENT
               </button>
-              <button className="portal-button"
+              <button className="portal-selection-button"
               onClick={() => navigate('/supervisorlogin')} // Inline anonymous function
               >
                 <img src={supervisor} alt="supervisor" />
                 <br />
                 SUPERVISOR
               </button>
-              <button className="portal-button"
+              <button className="portal-selection-button"
               onClick={() => navigate('/internallogin')} // Inline anonymous function
               >
                 <img src={internal} alt="internal" />
                 <br />
                 INTERNAL
               </button>
-              <button className="portal-button"
+              <button className="portal-selection-button"
               onClick={() => navigate('/externallogin')} // Inline anonymous function
               >
                 <img src={external} alt="external" /> 
@@ -77,7 +77,7 @@ function PortalPage() {
                 EXTERNAL
               </button>
             </div>
-            <div className='rights'>
+            <div className="portal-selection-footer">
               2025 Questify FYP portal design (<a href="https://github.com/ateeq786316" target="_blank" rel="noopener noreferrer">ateeq786316</a>) All right reserved
             </div>
           </div>

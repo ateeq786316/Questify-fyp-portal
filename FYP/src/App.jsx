@@ -1,5 +1,9 @@
+import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom"
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { AuthProvider } from './context/AuthContext';
 
 // testing page
 import Test from './pages/Home/Studenthome/Test.jsx'
@@ -9,7 +13,6 @@ import PortalPage from './PortalPage.jsx'
 import LandingPage from './LandingPage'
 import ContactUs from './ContactUs.jsx'
 import AboutUs from './AboutUs.jsx'
-
 
 // student
 import StudentLogin from './pages/Home/Studenthome/Studentlogin.jsx'
@@ -28,14 +31,18 @@ import SupervisorDashboard from './pages/Home/Superviserhome/SupervisorDashboard
 import ReviewDocument from './pages/Home/Superviserhome/ReviewDocument.jsx'
 
 // internal
-// import InternalLogin from './pages/Home/Internalhome/InternalLogin.jsx'
+import InternalLogin from './pages/Home/Internalhome/InternalLogin.jsx';
 import InternalDashboard from './pages/Home/Internalhome/InternalDashboard.jsx'
+
+// external
+import ExternalLogin from './pages/Home/Externalhome/ExternalLogin.jsx';
 
 // admin
 import AdminLogin from './pages/Home/Adminhome/AdminLogin.jsx'
 import AdminDashboard from './pages/Home/Adminhome/AdminDashboard.jsx'
 import UserManagement from './pages/Home/Adminhome/UserManagement.jsx'
 import StudentUpload from './pages/Home/Adminhome/StudentUpload.jsx'
+import UploadSupervisors from './pages/Home/Adminhome/UploadSupervisors'
 
 // protected route
 import ProtectedRoute from './components/ProtectedRoute'
@@ -43,77 +50,111 @@ import ProtectedRoute from './components/ProtectedRoute'
 function App() {
   return (
     <Router>
-      <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/intro" element={<LandingPage />} />
-        <Route path="/login" element={<PortalPage />} />
-        <Route path="/contactus" element={<ContactUs />} />
-        <Route path="/aboutus" element={<AboutUs />} />
-        
-        <Route path="/studentlogin" element={<StudentLogin />} />
+      <AuthProvider>
+        <ToastContainer position="top-bottom" autoClose={3000} />
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/intro" element={<LandingPage />} />
+          <Route path="/login" element={<PortalPage />} />
+          <Route path="/contactus" element={<ContactUs />} />
+          <Route path="/aboutus" element={<AboutUs />} />
+          
+          <Route path="/studentlogin" element={<StudentLogin />} />
+          <Route path='/adminlogin' element={<AdminLogin />} /> 
+          <Route path="/supervisorlogin" element={<SupervisorLogin />} />
+          <Route path="/internallogin" element={<InternalLogin />} />
+          <Route path="/externallogin" element={<ExternalLogin />} />
 
-        {/*========================================== Protected Student Routes ==========================================*/}
-        <Route path='/studentdashboard' element={
-          <ProtectedRoute>
-            <StudentDashboard />
-          </ProtectedRoute>
-        } />
-        <Route path='/studentproposal' element={
-          <ProtectedRoute>
-            <ProposalPage />
-          </ProtectedRoute>
-        } />
-        <Route path='/studentrequestsuperviser' element={
-          <ProtectedRoute>
-            <StudentRequestSupervisor />
-          </ProtectedRoute>
-        } />
-        <Route path='/studentchatbot' element={
-          <ProtectedRoute>
-            <ChatbotPage />
-          </ProtectedRoute>
-        } />
-        <Route path='/studenttrackprogress' element={
-          <ProtectedRoute>
-            <StudentTrackProgress />
-          </ProtectedRoute>
-        } />
-        <Route path='/studentuploaddocument' element={
-          <ProtectedRoute>
-            <StudentUploadDocument />
-          </ProtectedRoute>
-        } />
-        <Route path='/studentfeedbackcomments' element={
-          <ProtectedRoute>
-            <StudentFeedbackComments />
-          </ProtectedRoute>
-        } />
-        <Route path='/studentcommunication' element={
-          <ProtectedRoute>
-            <StudentCommunication />
-          </ProtectedRoute>
-        } />
+          {/* Protected Student Routes */}
+          <Route path='/studentdashboard' element={
+            <ProtectedRoute>
+              <StudentDashboard />
+            </ProtectedRoute>
+          } />
+          <Route path='/studentproposal' element={
+            <ProtectedRoute>
+              <ProposalPage />
+            </ProtectedRoute>
+          } />
+          <Route path='/studentrequestsuperviser' element={
+            <ProtectedRoute>
+              <StudentRequestSupervisor />
+            </ProtectedRoute>
+          } />
+          <Route path='/studentchatbot' element={
+            <ProtectedRoute>
+              <ChatbotPage />
+            </ProtectedRoute>
+          } />
+          <Route path='/studenttrackprogress' element={
+            <ProtectedRoute>
+              <StudentTrackProgress />
+            </ProtectedRoute>
+          } />
+          <Route path='/studentuploaddocument' element={
+            <ProtectedRoute>
+              <StudentUploadDocument />
+            </ProtectedRoute>
+          } />
+          <Route path='/studentfeedbackcomments' element={
+            <ProtectedRoute>
+              <StudentFeedbackComments />
+            </ProtectedRoute>
+          } />
+          <Route path='/studentcommunication' element={
+            <ProtectedRoute>
+              <StudentCommunication />
+            </ProtectedRoute>
+          } />
 
-        {/*========================================== Supervisor Routes ==========================================*/}
-        <Route path="/supervisorlogin" element={<SupervisorLogin />} />
-        <Route path='/supervisordashboard' element={<SupervisorDashboard />} />
-        <Route path='/reviewdocument' element={<ReviewDocument />} />
+          {/* Supervisor Routes */}
+          <Route path='/supervisordashboard' element={
+            <ProtectedRoute>
+              <SupervisorDashboard />
+            </ProtectedRoute>
+          } />
+          <Route path='/reviewdocument' element={
+            <ProtectedRoute>
+              <ReviewDocument />
+            </ProtectedRoute>
+          } />
 
-        {/*========================================== Internal Routes ==========================================*/}
-        {/* <Route path="/internallogin" element={<InternalLogin />} /> */}
-        <Route path='/internaldashboard' element={<InternalDashboard />} />
+          {/* Internal Routes */}
+          <Route path='/internaldashboard' element={
+            <ProtectedRoute>
+              <InternalDashboard />
+            </ProtectedRoute>
+          } />
 
-        {/*========================================== Admin Routes ==========================================*/}
-        <Route path='/adminlogin' element={<AdminLogin />} /> 
-        <Route path='/admindashboard' element={<AdminDashboard />} />
-        <Route path='/usermanagement' element={<UserManagement />} />
-        <Route path='/admin/upload-students' element={<StudentUpload />} />
-        {/* Test Route */}
-        <Route path='/test' element={<Test />} />
-      </Routes>
+          {/* Admin Routes */}
+          <Route path='/admindashboard' element={
+            <ProtectedRoute>
+              <AdminDashboard />
+            </ProtectedRoute>
+          } />
+          <Route path='/usermanagement' element={
+            <ProtectedRoute>
+              <UserManagement />
+            </ProtectedRoute>
+          } />
+          <Route path='/admin/upload-students' element={
+            <ProtectedRoute>
+              <StudentUpload />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/upload-supervisors" element={
+            <ProtectedRoute>
+              <UploadSupervisors />
+            </ProtectedRoute>
+          } />
+
+          {/* Test Route */}
+          <Route path='/test' element={<Test />} />
+        </Routes>
+      </AuthProvider>
     </Router>
-  )
+  );
 }
 
 export default App;

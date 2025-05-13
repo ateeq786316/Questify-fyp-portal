@@ -4,7 +4,7 @@ const Milestone = require("../models/Milestone");
 const milestoneController = require("../controllers/milestone_controller");
 
 // Get all milestones
-router.get("/milestones", async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     console.log("\n=== Fetching All Milestones ===");
     const milestones = await Milestone.find().sort({ order: 1 });
@@ -28,12 +28,11 @@ router.get("/milestones", async (req, res) => {
 });
 
 // Bulk update milestones - MUST BE BEFORE /:name ROUTE
-router.put("/milestones/bulk", async (req, res) => {
+router.put("/bulk", async (req, res) => {
   console.log("\n=== Bulk Update Milestones ===");
   console.log("Method:", req.method);
   console.log("URL:", req.originalUrl);
   console.log("Body:", req.body);
-  console.log("Headers:", req.headers);
 
   try {
     const { milestones } = req.body;
@@ -69,29 +68,67 @@ router.put("/milestones/bulk", async (req, res) => {
       }
     }
 
-    // Update each milestone
-    const updatePromises = milestones.map((milestone) =>
-      Milestone.findOneAndUpdate(
-        { name: milestone.name },
-        {
-          deadline: milestone.deadline ? new Date(milestone.deadline) : null,
-          order: milestone.order,
-          updatedAt: new Date(),
-        },
-        { new: true, runValidators: true }
-      )
-    );
+    // Process each milestone
+    const results = {
+      updated: [],
+      created: [],
+      errors: [],
+    };
 
-    const updatedMilestones = await Promise.all(updatePromises);
-    console.log(
-      "Success: Updated milestones:",
-      updatedMilestones.map((m) => m.name)
-    );
+    for (const milestone of milestones) {
+      try {
+        // Try to find existing milestone
+        const existingMilestone = await Milestone.findOne({
+          name: milestone.name,
+        });
+
+        if (existingMilestone) {
+          // Update existing milestone
+          const updated = await Milestone.findOneAndUpdate(
+            { name: milestone.name },
+            {
+              deadline: milestone.deadline
+                ? new Date(milestone.deadline)
+                : null,
+              order: milestone.order,
+              updatedAt: new Date(),
+            },
+            { new: true, runValidators: true }
+          );
+          results.updated.push(updated);
+        } else {
+          // Create new milestone
+          const newMilestone = new Milestone({
+            name: milestone.name.trim(),
+            deadline: milestone.deadline ? new Date(milestone.deadline) : null,
+            order: milestone.order || (await Milestone.countDocuments()) + 1,
+          });
+          const saved = await newMilestone.save();
+          results.created.push(saved);
+        }
+      } catch (err) {
+        console.error(`Error processing milestone ${milestone.name}:`, err);
+        results.errors.push({
+          name: milestone.name,
+          error: err.message,
+        });
+      }
+    }
+
+    console.log("Bulk update results:", {
+      updated: results.updated.length,
+      created: results.created.length,
+      errors: results.errors.length,
+    });
 
     res.status(200).json({
       success: true,
-      msg: "Milestones updated successfully",
-      milestones: updatedMilestones,
+      msg: "Milestones processed successfully",
+      results: {
+        updated: results.updated,
+        created: results.created,
+        errors: results.errors,
+      },
     });
   } catch (err) {
     console.error("Error in bulk milestone update:", {
@@ -115,94 +152,12 @@ router.put("/milestones/bulk", async (req, res) => {
   }
 });
 
-// Update milestone by name
-router.put("/milestones/:name", async (req, res) => {
-  console.log("\n=== Milestone Update Request ===");
-  console.log("Method:", req.method);
-  console.log("URL:", req.originalUrl);
-  console.log("Params:", req.params);
-  console.log("Body:", req.body);
-  console.log("Headers:", req.headers);
-
-  try {
-    // Validate milestone name
-    if (!req.params.name) {
-      console.log("Error: Milestone name is missing");
-      return res.status(400).json({
-        success: false,
-        msg: "Milestone name is required",
-      });
-    }
-
-    // Check if milestone exists
-    const existingMilestone = await Milestone.findOne({
-      name: req.params.name,
-    });
-    if (!existingMilestone) {
-      console.log("Error: Milestone not found:", req.params.name);
-      // List available milestones
-      const availableMilestones = await Milestone.find().select("name");
-      console.log(
-        "Available milestones:",
-        availableMilestones.map((m) => m.name)
-      );
-
-      return res.status(404).json({
-        success: false,
-        msg: `Milestone "${req.params.name}" not found`,
-        availableMilestones: availableMilestones.map((m) => m.name),
-      });
-    }
-
-    // Validate deadline format if provided
-    if (req.body.deadline && isNaN(Date.parse(req.body.deadline))) {
-      console.log("Error: Invalid deadline format");
-      return res.status(400).json({
-        success: false,
-        msg: "Invalid deadline format",
-      });
-    }
-
-    // Find and update the milestone
-    const updated = await Milestone.findOneAndUpdate(
-      { name: req.params.name },
-      {
-        deadline: req.body.deadline ? new Date(req.body.deadline) : null,
-        updatedAt: new Date(),
-      },
-      {
-        new: true,
-        runValidators: true,
-      }
-    );
-
-    console.log("Success: Milestone updated:", updated);
-    res.status(200).json({
-      success: true,
-      msg: "Milestone updated successfully",
-      milestone: updated,
-    });
-  } catch (err) {
-    console.error("Error updating milestone:", {
-      message: err.message,
-      stack: err.stack,
-    });
-
-    res.status(500).json({
-      success: false,
-      msg: "Error updating milestone",
-      error: err.message,
-    });
-  }
-});
-
 // Create new milestone
-router.post("/milestones", async (req, res) => {
+router.post("/", async (req, res) => {
   console.log("\n=== Creating New Milestone ===");
   console.log("Method:", req.method);
   console.log("URL:", req.originalUrl);
   console.log("Body:", req.body);
-  console.log("Headers:", req.headers);
 
   try {
     const { name, deadline, order } = req.body;
@@ -252,20 +207,7 @@ router.post("/milestones", async (req, res) => {
       milestone: savedMilestone,
     });
   } catch (err) {
-    console.error("Error creating milestone:", {
-      message: err.message,
-      stack: err.stack,
-    });
-
-    // Handle validation errors
-    if (err.name === "ValidationError") {
-      return res.status(400).json({
-        success: false,
-        msg: "Invalid milestone data",
-        errors: Object.values(err.errors).map((e) => e.message),
-      });
-    }
-
+    console.error("Error creating milestone:", err);
     res.status(500).json({
       success: false,
       msg: "Error creating milestone",
@@ -274,61 +216,94 @@ router.post("/milestones", async (req, res) => {
   }
 });
 
-// Delete milestone
-router.delete("/milestones/:name", async (req, res) => {
-  console.log("\n=== Deleting Milestone ===");
+// Update milestone by name
+router.put("/:name", async (req, res) => {
+  console.log("\n=== Milestone Update Request ===");
   console.log("Method:", req.method);
   console.log("URL:", req.originalUrl);
   console.log("Params:", req.params);
-  console.log("Headers:", req.headers);
+  console.log("Body:", req.body);
+
+  try {
+    const { name } = req.params;
+    const { deadline, order } = req.body;
+
+    // Check if milestone exists
+    const existingMilestone = await Milestone.findOne({ name });
+    if (!existingMilestone) {
+      console.log("Error: Milestone not found:", name);
+      return res.status(404).json({
+        success: false,
+        msg: `Milestone "${name}" not found`,
+      });
+    }
+
+    // Validate deadline if provided
+    if (deadline && isNaN(Date.parse(deadline))) {
+      console.log("Error: Invalid deadline format");
+      return res.status(400).json({
+        success: false,
+        msg: "Invalid deadline format",
+      });
+    }
+
+    // Update the milestone
+    const updated = await Milestone.findOneAndUpdate(
+      { name },
+      {
+        deadline: deadline ? new Date(deadline) : existingMilestone.deadline,
+        order: order || existingMilestone.order,
+        updatedAt: new Date(),
+      },
+      { new: true, runValidators: true }
+    );
+
+    console.log("Success: Milestone updated:", updated);
+    res.status(200).json({
+      success: true,
+      msg: "Milestone updated successfully",
+      milestone: updated,
+    });
+  } catch (err) {
+    console.error("Error updating milestone:", err);
+    res.status(500).json({
+      success: false,
+      msg: "Error updating milestone",
+      error: err.message,
+    });
+  }
+});
+
+// Delete milestone by name
+router.delete("/:name", async (req, res) => {
+  console.log("\n=== Delete Milestone Request ===");
+  console.log("Method:", req.method);
+  console.log("URL:", req.originalUrl);
+  console.log("Params:", req.params);
 
   try {
     const { name } = req.params;
 
-    // Validate milestone name
-    if (!name || typeof name !== "string" || name.trim() === "") {
-      console.log("Error: Invalid milestone name");
-      return res.status(400).json({
-        success: false,
-        msg: "Milestone name is required",
-      });
-    }
-
     // Check if milestone exists
-    const existingMilestone = await Milestone.findOne({ name: name.trim() });
-    if (!existingMilestone) {
+    const milestone = await Milestone.findOne({ name });
+    if (!milestone) {
       console.log("Error: Milestone not found:", name);
-      // List available milestones
-      const availableMilestones = await Milestone.find().select("name");
-      console.log(
-        "Available milestones:",
-        availableMilestones.map((m) => m.name)
-      );
-
       return res.status(404).json({
         success: false,
         msg: `Milestone "${name}" not found`,
-        availableMilestones: availableMilestones.map((m) => m.name),
       });
     }
 
     // Delete the milestone
-    const deletedMilestone = await Milestone.findOneAndDelete({
-      name: name.trim(),
-    });
-    console.log("Success: Milestone deleted:", deletedMilestone);
+    await Milestone.deleteOne({ name });
+    console.log("Success: Milestone deleted:", name);
 
     res.status(200).json({
       success: true,
-      msg: "Milestone deleted successfully",
-      milestone: deletedMilestone,
+      msg: `Milestone "${name}" deleted successfully`,
     });
   } catch (err) {
-    console.error("Error deleting milestone:", {
-      message: err.message,
-      stack: err.stack,
-    });
-
+    console.error("Error deleting milestone:", err);
     res.status(500).json({
       success: false,
       msg: "Error deleting milestone",

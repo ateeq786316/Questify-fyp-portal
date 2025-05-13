@@ -1,57 +1,125 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "../../../components/Navbar";
 import Sidebar from "../../../components/Sidebar";
 import "../../../styles/StudentRequestSupervisor.css";
-import { Table, Form, Button, Alert } from "react-bootstrap";
+import { Table, Form, Button, Alert, Spinner } from "react-bootstrap";
 import bgImage from "../../../assets/lgubgimg.jpg"; // Background Image Import
+import API from "../../../services/api";
 
 const StudentRequestSupervisor = () => {
+  const [supervisors, setSupervisors] = useState([]);
   const [selectedSupervisor, setSelectedSupervisor] = useState("");
   const [requestStatus, setRequestStatus] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [previousRequests, setPreviousRequests] = useState([]);
+  const [submitting, setSubmitting] = useState(false);
 
-  // Dummy data (Replace with API call later)
-  const supervisors = [
-    { id: 1, name: "Dr. Ayesha Khan", department: "AI & Data Science" },
-    { id: 2, name: "Mr. Bilal Ahmed", department: "Software Engineering" },
-    { id: 3, name: "Ms. Rabia Hassan", department: "Cybersecurity" },
-  ];
+  // Fetch supervisors and previous requests
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
 
-  const handleSubmit = (e) => {
+        // Fetch supervisors
+        const supervisorsResponse = await API.get("/auth/supervisors");
+        if (supervisorsResponse.data.success) {
+          setSupervisors(supervisorsResponse.data.supervisors);
+        }
+
+        // Fetch previous requests
+        const requestsResponse = await API.get("/auth/supervisor-request");
+        if (requestsResponse.data.success) {
+          setPreviousRequests(requestsResponse.data.requests);
+        }
+      } catch (err) {
+        console.error("Error fetching data:", err);
+        setError(err.response?.data?.msg || "Failed to fetch data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (selectedSupervisor) {
-      setRequestStatus("pending");
-      setTimeout(() => {
-        setRequestStatus("approved"); // Simulating an approval process
-      }, 3000);
+    if (!selectedSupervisor) return;
+
+    try {
+      setSubmitting(true);
+      setError(null);
+
+      const response = await API.post("/auth/supervisor-request", {
+        supervisorId: selectedSupervisor
+      });
+
+      if (response.data.success) {
+        setRequestStatus("pending");
+        // Refresh previous requests
+        const requestsResponse = await API.get("/auth/supervisor-request");
+        if (requestsResponse.data.success) {
+          setPreviousRequests(requestsResponse.data.requests);
+        }
+      }
+    } catch (err) {
+      console.error("Error submitting request:", err);
+      setError(err.response?.data?.msg || "Failed to submit request");
+    } finally {
+      setSubmitting(false);
     }
   };
 
+  if (loading) {
+    return (
+      <div className="supervisor-request-page" style={{ backgroundImage: `url(${bgImage})`, backgroundSize: "cover", backgroundPosition: "center" }}>
+        <Navbar />
+        <div className="supervisor-request-container d-flex">
+          <Sidebar />
+          <div className="supervisor-request-content p-4 w-100 text-center">
+            <Spinner animation="border" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </Spinner>
+            <p className="mt-3">Loading supervisors...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div
-      className="student-request-supervisor"
-      style={{ backgroundImage: `url(${bgImage})`, backgroundSize: "cover", backgroundPosition: "center" }}
-    >
+    <div className="supervisor-request-page">
       <Navbar />
-      <div className="dashboard-container d-flex">
+      <div className="student-request__layout">
         <Sidebar />
-        <div className="dashboard-content p-4 w-100">
-          <h1 className="dashboard-title text-center">📩 Request Supervisor</h1>
+        <div className="student-request__content">
+          <h1 className="supervisor-request-title text-center">📩 Request Supervisor</h1>
+
+          {error && (
+            <Alert variant="danger" className="supervisor-request-alert mb-4">
+              {error}
+            </Alert>
+          )}
 
           {/* Available Supervisors Table */}
-          <div className="supervisor-list mb-4">
+          <div className="supervisor-list-section mb-4">
             <h2>👨‍🏫 Available Supervisors</h2>
-            <Table striped bordered hover>
+            <Table striped bordered hover className="supervisor-table">
               <thead>
                 <tr>
                   <th>Name</th>
                   <th>Department</th>
+                  <th>Expertise</th>
                 </tr>
               </thead>
               <tbody>
                 {supervisors.map((supervisor) => (
-                  <tr key={supervisor.id}>
+                  <tr key={supervisor._id}>
                     <td>{supervisor.name}</td>
                     <td>{supervisor.department}</td>
+                    <td>{supervisor.supervisorExpertise}</td>
                   </tr>
                 ))}
               </tbody>
@@ -59,41 +127,77 @@ const StudentRequestSupervisor = () => {
           </div>
 
           {/* Request Form */}
-          <div className="request-form mb-4">
+          <div className="supervisor-request-form-section mb-4">
             <h2>📝 Submit Request</h2>
-            <Form onSubmit={handleSubmit}>
+            <Form onSubmit={handleSubmit} className="supervisor-request-form">
               <Form.Group controlId="supervisorSelect" className="mb-3">
                 <Form.Label>Select Supervisor</Form.Label>
                 <Form.Select
                   value={selectedSupervisor}
                   onChange={(e) => setSelectedSupervisor(e.target.value)}
                   required
+                  disabled={submitting}
+                  className="supervisor-select"
                 >
                   <option value="">-- Choose a Supervisor --</option>
                   {supervisors.map((supervisor) => (
-                    <option key={supervisor.id} value={supervisor.id}>
+                    <option key={supervisor._id} value={supervisor._id}>
                       {supervisor.name} ({supervisor.department})
                     </option>
                   ))}
                 </Form.Select>
               </Form.Group>
-              <Button variant="primary" type="submit" disabled={!selectedSupervisor}>
-                Submit Request
+              <Button 
+                variant="primary" 
+                type="submit" 
+                disabled={!selectedSupervisor || submitting}
+                className="supervisor-submit-btn"
+              >
+                {submitting ? (
+                  <>
+                    <Spinner as="span" animation="border" size="sm" className="me-2" />
+                    Submitting...
+                  </>
+                ) : (
+                  "Submit Request"
+                )}
               </Button>
             </Form>
           </div>
 
-          {/* Request Status */}
-          {requestStatus && (
-            <Alert
-              variant={requestStatus === "approved" ? "success" : "warning"}
-              className="text-center"
-            >
-              {requestStatus === "pending"
-                ? "⏳ Your request is being processed..."
-                : "✅ Your supervisor request has been approved!"}
-            </Alert>
-          )}
+          {/* Previous Requests */}
+          <div className="supervisor-request-history mb-4">
+            <h2>📋 Previous Requests</h2>
+            <Table striped bordered hover className="request-history-table">
+              <thead>
+                <tr>
+                  <th>Supervisor</th>
+                  <th>Department</th>
+                  <th>Status</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {previousRequests.map((request) => (
+                  <tr key={request._id}>
+                    <td>{request.supervisorId.name}</td>
+                    <td>{request.supervisorId.department}</td>
+                    <td>
+                      <span className={`supervisor-status-badge status-${request.status}`}>
+                        {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
+                      </span>
+                    </td>
+                    <td>{new Date(request.createdAt).toLocaleDateString()}</td>
+                  </tr>
+                ))}
+                {previousRequests.length === 0 && (
+                  <tr>
+                    <td colSpan="4" className="text-center">No previous requests</td>
+                  </tr>
+                )}
+              </tbody>
+            </Table>
+          </div>
         </div>
       </div>
     </div>

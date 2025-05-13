@@ -38,13 +38,13 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="login-container">
+    <div className="admin-login-container">
       <Navbar/>
-      <div className="overlay">
-        <div className="login-card">
-          <h1 className="card-title">Admin Login</h1>
+      <div className="admin-login-overlay">
+        <div className="admin-login-card">
+          <h1 className="admin-login-title">Admin Login</h1>
           <form onSubmit={handleSubmit}>
-            <div className="input-group">
+            <div className="admin-login-input-group">
               <label htmlFor="email">Email</label>
               <input
                 type="email"
@@ -55,7 +55,7 @@ const AdminLogin = () => {
                 required
               />
             </div>
-            <div className="input-group">
+            <div className="admin-login-input-group">
               <label htmlFor="password">Password</label>
               <input
                 type="password"
@@ -66,20 +66,20 @@ const AdminLogin = () => {
                 required
               />
             </div>
-            <div className="options">
-              <div className="form-check">
-                <input type="checkbox" id="remember" className="form-check-input" />
-                <label htmlFor="remember" className="form-check-label">Remember me</label>
+            <div className="admin-login-options">
+              <div className="admin-login-form-check">
+                <input type="checkbox" id="remember" className="admin-login-form-check-input" />
+                <label htmlFor="remember" className="admin-login-form-check-label">Remember me</label>
               </div>
             </div>
             <button
               type="submit"
-              className="btn-primary"
+              className="admin-login-button"
               disabled={loading}
             >
               {loading ? 'Logging in...' : 'Login'}
             </button>
-            {error && <div className="error-message">{error}</div>}
+            {error && <div className="admin-login-error">{error}</div>}
           </form>
         </div>
       </div>

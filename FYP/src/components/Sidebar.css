@@ -1,63 +1,62 @@
-/* Sidebar Container */
-.sidebar {
-  width: 250px;
+/* Student Sidebar Container */
+.student-sidebar {
+  width: var(--sidebar-width, 80px);
   background-color: #303134;
   color: white;
   padding: 20px;
-  min-height: 100vh;
-  transition: width 0.5s ease-in-out;
+  padding-top: 50px;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  border-right: 1px solid #222;
+  transition: width 0.3s cubic-bezier(.4,0,.2,1);
   overflow: hidden;
-  position: relative;
 }
 
-/* Collapsed Sidebar */
-.sidebar.collapsed {
+/* Collapsed State */
+.student-sidebar--collapsed {
   width: 80px;
 }
 
-/* Sidebar Toggle Button */
-.sidebar-toggle {
-  position: absolute;
-  top: 10px;
-  left: 15px;
-  font-size: 22px;
-  cursor: pointer;
-  color: white;
-  /* transition: transform 0.5s ease-in-out; */
-
-}
-
 /* Sidebar Title */
-.sidebar-title {
+.student-sidebar__title {
+  padding-top: 10px;
   font-size: 1.5rem;
   margin-bottom: 20px;
   text-align: center;
   font-weight: bold;
   transition: opacity 0.3s ease-in-out;
+  color: white !important; /* Force white color */
+}
+.student-sidebar__title h2{
+  color: white;
 }
 
-.sidebar-title.hidden {
+.student-sidebar__title--hidden {
   opacity: 0;
   height: 0;
 }
 
 /* Sidebar Menu */
-.sidebar-menu {
+.student-sidebar__menu {
   list-style: none;
-  padding: 0;
-  margin-top: 40px;
+  padding: 5px;
+  margin-top: 10px;
 }
 
 /* Sidebar Items */
-.sidebar-menu li {
+.student-sidebar__item {
   padding: 12px;
   cursor: pointer;
   border-radius: 5px;
-  transition: background 0.3s ease-in-out;
+  transition: background 0.1s ease-in-out;
+  padding-top: 20px;
 }
 
 /* Sidebar Links */
-.sidebar-menu li a {
+.student-sidebar__link {
   text-decoration: none;
   color: white;
   display: flex;
@@ -65,41 +64,49 @@
   gap: 10px;
 }
 
+/* Icons */
+.student-sidebar__icon {
+  font-size: 1.2rem;
+}
+
+/* Text */
+.student-sidebar__text {
+  white-space: nowrap;
+}
+
 /* Hover Effect */
-.sidebar-menu li:hover {
+.student-sidebar__item:hover {
   background-color: #25eb4d;
 }
 
-/* Active Item */
-.sidebar-menu .active {
+/* Active State */
+.student-sidebar__item--active {
   background-color: #2563eb;
   font-weight: bold;
 }
-.sidebar.collapsed .sidebar-menu li{
+
+/* Collapsed State Styles */
+.student-sidebar--collapsed .student-sidebar__item {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.sidebar.collapsed .sidebar-menu li:hover {
+.student-sidebar--collapsed .student-sidebar__item:hover {
   width: 100%;
 }
 
-/* Collapsed Sidebar - Hide Text */
-.sidebar.collapsed .sidebar-menu li a {
+.student-sidebar--collapsed .student-sidebar__link {
   justify-content: center;
 }
 
-.sidebar.collapsed .sidebar-menu li a span {
+.student-sidebar--collapsed .student-sidebar__text {
   display: none;
 }
 
-
-
 /* Responsive Design */
 @media (max-width: 320px) {
-  .sidebar {
+  .student-sidebar {
     display: none;
-  
   }
 }

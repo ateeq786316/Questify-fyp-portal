@@ -1,15 +1,27 @@
 import React, { useState } from 'react';
 import * as XLSX from 'xlsx';
 import axios from 'axios';
+import { FaBars, FaHome, FaUsers, FaCalendarAlt, FaCog, FaGraduationCap, FaChartPie, FaCloudUploadAlt } from 'react-icons/fa';
+import { Spinner } from 'react-bootstrap';
 import './AdminDashboard.css';
+import Navbar from '../../../components/Navbar';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const StudentUpload = () => {
+  // Sidebar state
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+
+  // Upload state
   const [csvFile, setCsvFile] = useState(null);
   const [parsedData, setParsedData] = useState([]);
   const [headers, setHeaders] = useState([]);
   const [feedback, setFeedback] = useState('');
   const [loading, setLoading] = useState(false);
   const [fileError, setFileError] = useState('');
+
+  const navigate = useNavigate();
+  const location = useLocation();
 
   // Handle file input change
   const handleFileChange = (e) => {
@@ -64,7 +76,7 @@ const StudentUpload = () => {
     setFeedback('');
     setFileError('');
     if (!csvFile) {
-      setFileError('Please select a CSV file to upload.');
+      setFileError('Please select an Excel file to upload.');
       return;
     }
     if (!parsedData.length) {
@@ -98,58 +110,137 @@ const StudentUpload = () => {
     setLoading(false);
   };
 
+  // Sidebar toggle functions
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
+
+  const toggleMobileSidebar = () => {
+    setMobileSidebarOpen(!mobileSidebarOpen);
+  };
+
   return (
-    <div className="dashboard-content" style={{ maxWidth: 700, margin: '0 auto' }}>
-      <h1 style={{ textAlign: 'center', marginBottom: 30 }}>Upload Students (CSV)</h1>
-      <form onSubmit={handleSubmit} style={{ background: 'white', padding: 30, borderRadius: 10, boxShadow: '0 4px 6px rgba(0,0,0,0.08)', marginBottom: 30 }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-          <label htmlFor="xlsx-upload" style={{ fontWeight: 500, fontSize: 16 }}>Select Excel File:</label>
-          <input
-            id="xlsx-upload"
-            type="file"
-            accept=".xlsx"
-            onChange={handleFileChange}
-            disabled={loading}
-            style={{ marginBottom: 0 }}
-            className="date-picker-input"
-          />
-          {fileError && <div className="error-message" style={{ marginBottom: 0 }}>{fileError}</div>}
-          <button
-            type="submit"
-            className="save-button"
-            style={{ marginTop: 10, width: 220, alignSelf: 'flex-start', fontSize: 16 }}
-            disabled={!csvFile || loading}
-          >
-            {loading ? 'Uploading...' : 'Submit to Database'}
-          </button>
-        </div>
-      </form>
-      {feedback && <div className="error-message" style={{ marginBottom: 20 }}>{feedback}</div>}
-      {parsedData.length > 0 && (
-        <>
-          <h2 style={{ marginBottom: 10 }}>Preview</h2>
-          <div style={{ overflowX: 'auto', marginBottom: 20, background: 'white', borderRadius: 8, boxShadow: '0 2px 4px rgba(0,0,0,0.04)', padding: 16 }}>
-            <table>
-              <thead>
-                <tr>
-                  {headers.map((header) => (
-                    <th key={header}>{header}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {parsedData.map((row, idx) => (
-                  <tr key={idx}>
-                    {headers.map((header) => (
-                      <td key={header}>{row[header]}</td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+    <div>
+      <Navbar />
+      <div className={`admin-dashboard ${sidebarOpen ? 'sidebar-open' : 'sidebar-collapsed'}`}>
+        {/* Mobile Sidebar Toggle */}
+        <button className="mobile-sidebar-toggle" onClick={toggleMobileSidebar}>
+          <FaBars />
+        </button>
+
+        {/* Sidebar */}
+        <div className={`sidebar ${mobileSidebarOpen ? 'mobile-open' : ''}`}>
+          <div className="sidebar-header">
+            <h3>FYP Dashboard</h3>
+            <button className="sidebar-toggle" onClick={toggleSidebar}>
+              {sidebarOpen ? '◀' : '▶'}
+            </button>
           </div>
-        </>
-      )}
+          
+          <ul className="sidebar-menu">
+            <li className={location.pathname === '/admindashboard' ? 'active' : ''} onClick={() => navigate('/admindashboard')} style={{cursor: 'pointer'}}>
+              <FaHome className="sidebar-icon" />
+              {sidebarOpen && <span>Dashboard</span>}
+            </li>
+            <li className={location.pathname === '/admin/upload-students' ? 'active' : ''} onClick={() => navigate('/admin/upload-students')} style={{cursor: 'pointer'}}>
+              <FaGraduationCap className="sidebar-icon" />
+              {sidebarOpen && <span>Students</span>}
+            </li>
+            <li>
+              <FaUsers className="sidebar-icon" />
+              {sidebarOpen && <span>Supervisors</span>}
+            </li>
+            <li>
+              <FaCalendarAlt className="sidebar-icon" />
+              {sidebarOpen && <span>Milestones</span>}
+            </li>
+            <li>
+              <FaChartPie className="sidebar-icon" />
+              {sidebarOpen && <span>Reports</span>}
+            </li>
+            <li>
+              <FaCog className="sidebar-icon" />
+              {sidebarOpen && <span>Settings</span>}
+            </li>
+          </ul>
+        </div>
+
+        {/* Main Content */}
+        <div className="main-content">
+          <div className="dashboard-content">
+            <h1>Upload Students</h1>
+            
+            <div className="upload-section">
+              <form onSubmit={handleSubmit}>
+                <div className="form-group">
+                  <label htmlFor="xlsx-upload">
+                    <FaCloudUploadAlt className="upload-icon" /> Select Excel File
+                  </label>
+                  <input
+                    id="xlsx-upload"
+                    type="file"
+                    accept=".xlsx"
+                    onChange={handleFileChange}
+                    disabled={loading}
+                    className="date-picker-input"
+                  />
+                  {fileError && (
+                    <div className="error-message">
+                      <p>{fileError}</p>
+                    </div>
+                  )}
+                </div>
+
+                <button
+                  type="submit"
+                  className="save-button"
+                  disabled={!csvFile || loading}
+                >
+                  {loading ? (
+                    <>
+                      <Spinner animation="border" size="sm" /> Uploading...
+                    </>
+                  ) : (
+                    'Submit to Database'
+                  )}
+                </button>
+              </form>
+
+              {feedback && (
+                <div className={`feedback-message ${feedback.includes('successfully') ? 'success' : 'error'}`}>
+                  <p>{feedback}</p>
+                </div>
+              )}
+            </div>
+
+            {parsedData.length > 0 && (
+              <div className="preview-section">
+                <h2>Preview</h2>
+                <div className="table-container">
+                  <table>
+                    <thead>
+                      <tr>
+                        {headers.map((header) => (
+                          <th key={header}>{header}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {parsedData.map((row, idx) => (
+                        <tr key={idx}>
+                          {headers.map((header) => (
+                            <td key={header}>{row[header]}</td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

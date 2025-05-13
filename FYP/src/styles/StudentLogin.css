@@ -1,5 +1,5 @@
 /* Background & Overlay */
-.login-container {
+.student-login-container {
   background: url("../assets/lgubgimg.jpg") no-repeat center center fixed;
   background-size: cover;
   height: 100vh;
@@ -11,8 +11,7 @@ body {
   font-family: "Poppins", sans-serif;
 }
 
-
-.overlay {
+.student-login-overlay {
   /* background: rgba(0, 0, 0, 0.6); */
   width: 100%;
   height: 100%;
@@ -25,7 +24,7 @@ body {
 }
 
 /* Glassmorphism Card */
-.login-card {
+.student-login-card {
   color: white;
   background: rgba(255, 255, 255, 0.5);
   background: rgba(255, 255, 255, 0.436);
@@ -37,13 +36,13 @@ body {
   transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
 
-.login-card:hover {
+.student-login-card:hover {
   transform: translateY(-5px);
   box-shadow: 0px 6px 20px rgba(255, 255, 255, 0.2);
 }
 
 /* Title */
-.card-title {
+.student-login-title {
   text-align: center;
   font-size: 1.8rem;
   font-weight: bold;
@@ -52,18 +51,18 @@ body {
 }
 
 /* Input Fields */
-.input-group {
+.student-login-input-group {
   margin-bottom: 15px;
 }
 
-.input-group label {
+.student-login-input-group label {
   font-weight: bold;
   display: block;
   margin-bottom: 5px;
   color: #fff;
 }
 
-.input-group input {
+.student-login-input-group input {
   width: 100%;
   padding: 12px;
   border-radius: 8px;
@@ -74,37 +73,25 @@ body {
   color: #fff;
 }
 
-.input-group input::placeholder {
+.student-login-input-group input::placeholder {
   color: rgba(255, 255, 255, 0.7);
 }
 
-.input-group input:focus {
+.student-login-input-group input:focus {
   background: rgba(255, 255, 255, 0.3);
   box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.3);
 }
 
-/* Options */
-.options {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  color: #fff;
+/* Error Message */
+.student-login-error {
+  color: #ff4444;
   font-size: 0.9rem;
   margin-bottom: 15px;
-}
-
-.forgot-link {
-  color: #ffd700;
-  text-decoration: none;
-  transition: 0.3s;
-}
-
-.forgot-link:hover {
-  text-decoration: underline;
+  text-align: center;
 }
 
 /* Login Button */
-.btn-primary {
+.student-login-button {
   width: 100%;
   padding: 12px;
   background-color: #ffd700;
@@ -117,8 +104,8 @@ body {
   transition: 0.3s ease-in-out;
 }
 
-.btn-primary:hover {
-  background-color: #ffbb00; /* Slightly brighter than #ffcc00 */
+.student-login-button:hover {
+  background-color: #ffbb00;
   box-shadow: 0px 0px 10px rgba(255, 217, 0, 0.6);
   transform: scale(1.05);
 }
@@ -161,13 +148,33 @@ body {
   background-color: #2e4476;
 }
 
+/* Options */
+.options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #fff;
+  font-size: 0.9rem;
+  margin-bottom: 15px;
+}
+
+.forgot-link {
+  color: #ffd700;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+.forgot-link:hover {
+  text-decoration: underline;
+}
+
 /* Responsive */
 @media (max-width: 400px) {
-  .input-group input {
+  .student-login-input-group input {
     padding: 10px;
     font-size: 0.9rem;
   }
-  .login-card {
+  .student-login-card {
     width: 90%;
     padding: 20px;
   }

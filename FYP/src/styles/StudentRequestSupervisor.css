@@ -1,38 +1,139 @@
-.student-request-supervisor {
-    background-size: cover;
-    background-position: center;
+.supervisor-request-page {
     min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+    background-color: #f8f9fa;
 }
 
-.dashboard-container {
+.supervisor-request-container {
     display: flex;
-    flex: 1;
-    padding-top: 0px; /* Prevents content from hiding under navbar */
+    padding-top: 0px;
 }
 
-.dashboard-content {
+.supervisor-request-content {
     padding: 20px;
-    background: rgba(255, 255, 255, 0.9); /* Light background for readability */
+    background: rgba(255, 255, 255, 0.9);
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     margin: 20px;
     width: 100%;
-    overflow: auto;
 }
 
-.supervisor-list table {
-    width: 100%;
+.supervisor-request-title {
+    color: #2563eb;
+    margin-bottom: 30px;
+    font-weight: 600;
 }
 
-.request-form {
-    padding: 15px;
-    background: #f8f9fa;
-    border-radius: 5px;
+.supervisor-request-alert {
+    margin-top: 20px;
 }
 
-.alert {
+.supervisor-list-section {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.supervisor-table {
     margin-top: 15px;
-    font-size: 18px;
+}
+
+.supervisor-request-form-section {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.supervisor-request-form {
+    max-width: 500px;
+}
+
+.supervisor-select {
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    padding: 8px;
+}
+
+.supervisor-submit-btn {
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+}
+
+.supervisor-submit-btn:hover {
+    background-color: #1e40af;
+}
+
+.supervisor-submit-btn:disabled {
+    background-color: #93c5fd;
+    cursor: not-allowed;
+}
+
+.supervisor-request-history {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.request-history-table {
+    margin-top: 15px;
+}
+
+.supervisor-status-badge {
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.supervisor-status-badge.status-pending {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.supervisor-status-badge.status-approved {
+    background-color: #dcfce7;
+    color: #166534;
+}
+
+.supervisor-status-badge.status-rejected {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .supervisor-request-container {
+        flex-direction: column;
+    }
+
+    .supervisor-request-content {
+        margin: 10px;
+    }
+
+    .supervisor-request-form {
+        max-width: 100%;
+    }
+}
+
+.student-request__layout {
+    display: flex;
+    flex-direction: row;
+    margin-top: 60px; /* Adjust to your navbar height */
+    min-height: calc(100vh - 64px);
+    margin-left: var(--sidebar-width, 80px);
+    transition: margin-left 0.3s cubic-bezier(.4,0,.2,1);
+}
+
+.student-request__content {
+    flex: 1;
+    padding: 32px 24px;
+    background: rgba(255,255,255,0.95);
+    min-height: calc(100vh - 64px);
+    z-index: 1;
 }

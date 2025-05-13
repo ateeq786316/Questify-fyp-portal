@@ -8,6 +8,7 @@ import './AdminDashboard.css';
 import Navbar from "../../../components/Navbar";
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Spinner } from 'react-bootstrap';
+import AdminSidebarLayout from '../../../components/AdminSidebarLayout';
 
 const AdminDashboard = () => {
   // Sidebar state
@@ -23,7 +24,6 @@ const AdminDashboard = () => {
   });
 
   const [studentGroups, setStudentGroups] = useState([]);
-  const [displayedGroups, setDisplayedGroups] = useState([]);
   const [milestones, setMilestones] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -35,27 +35,10 @@ const AdminDashboard = () => {
   const [newMilestoneName, setNewMilestoneName] = useState('');
   const [showAddField, setShowAddField] = useState(false);
 
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
-  const ITEMS_PER_PAGE = 5;
-  const observer = useRef();
-
   const COLORS = ['#0088FE', '#FF8042'];
 
   const navigate = useNavigate();
   const location = useLocation();
-
-  // Last element callback for infinite scroll
-  const lastGroupElementRef = useCallback(node => {
-    if (loading) return;
-    if (observer.current) observer.current.disconnect();
-    observer.current = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting && hasMore) {
-        setPage(prevPage => prevPage + 1);
-      }
-    });
-    if (node) observer.current.observe(node);
-  }, [loading, hasMore]);
 
   // Fetch dashboard data
   useEffect(() => {
@@ -120,39 +103,6 @@ const AdminDashboard = () => {
 
     fetchDashboardData();
   }, []);
-
-  // Fetch student groups with pagination
-  const fetchStudentGroups = async (pageNum) => {
-    try {
-      setLoading(true);
-      const token = localStorage.getItem('adminToken');
-      const response = await axios.get(`http://localhost:5000/api/admin/student-groups?page=${pageNum}&limit=${ITEMS_PER_PAGE}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      const newGroups = response.data.groups;
-      if (pageNum === 1) {
-        setDisplayedGroups(newGroups);
-      } else {
-        setDisplayedGroups(prev => [...prev, ...newGroups]);
-      }
-      
-      // Update hasMore based on pagination info from backend
-      setHasMore(response.data.pagination.hasMore);
-      setLoading(false);
-    } catch (err) {
-      console.error('Error fetching student groups:', err);
-      setError('Failed to fetch student groups');
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchStudentGroups(page);
-  }, [page]);
 
   // Fetch milestones
   const fetchMilestones = async () => {
@@ -346,9 +296,9 @@ const AdminDashboard = () => {
       if (!token) {
         throw new Error('No authentication token found');
       }
-
-      const newMilestone = {
-        name: newMilestoneName.trim(),
+    
+    const newMilestone = {
+      name: newMilestoneName.trim(),
         deadline: null,
         order: milestones.length + 1
       };
@@ -374,8 +324,8 @@ const AdminDashboard = () => {
       if (response.data.success) {
         setMilestoneSuccess('Milestone added successfully');
         setMilestones(prev => [...prev, response.data.milestone]);
-        setNewMilestoneName('');
-        setShowAddField(false);
+    setNewMilestoneName('');
+    setShowAddField(false);
       } else {
         throw new Error(response.data.msg || 'Failed to add milestone');
       }
@@ -479,20 +429,24 @@ const AdminDashboard = () => {
   };
 
   if (loading) {
-    return (
-      <div className="loading-container">
-        <div className="loading-spinner"></div>
-        <p>Loading dashboard data...</p>
-      </div>
+  return (
+      <AdminSidebarLayout>
+        <div className="loading-container">
+          <div className="loading-spinner"></div>
+          <p>Loading dashboard data...</p>
+        </div>
+      </AdminSidebarLayout>
     );
   }
 
   if (error) {
     return (
-      <div className="error-container">
-        <p className="error-message">{error}</p>
-        <button onClick={() => window.location.reload()}>Retry</button>
-      </div>
+      <AdminSidebarLayout>
+        <div className="error-container">
+          <p className="error-message">{error}</p>
+          <button onClick={() => window.location.reload()}>Retry</button>
+        </div>
+      </AdminSidebarLayout>
     );
   }
 
@@ -503,79 +457,31 @@ const AdminDashboard = () => {
   ];
 
   return (
-    <div>
-      <Navbar/>
-    
-    <div className={`admin-dashboard ${sidebarOpen ? 'sidebar-open' : 'sidebar-collapsed'}`}>
-      {/* Mobile Sidebar Toggle */}
-      <button className="mobile-sidebar-toggle" onClick={toggleMobileSidebar}>
-        <FaBars />
-      </button>
-
-      {/* Sidebar */}
-      <div className={`sidebar ${mobileSidebarOpen ? 'mobile-open' : ''}`}>
-        <div className="sidebar-header">
-          <h3>FYP Dashboard</h3>
-          <button className="sidebar-toggle" onClick={toggleSidebar}>
-            {sidebarOpen ? '◀' : '▶'}
-          </button>
-        </div>
-        
-        <ul className="sidebar-menu">
-          <li className={location.pathname === '/admindashboard' ? 'active' : ''} onClick={() => navigate('/admindashboard')} style={{cursor: 'pointer'}}>
-            <FaHome className="sidebar-icon" />
-            {sidebarOpen && <span>Dashboard</span>}
-          </li>
-          <li className={location.pathname === '/admin/upload-students' ? 'active' : ''} onClick={() => navigate('/admin/upload-students')} style={{cursor: 'pointer'}}>
-            <FaGraduationCap className="sidebar-icon" />
-            {sidebarOpen && <span>Students</span>}
-          </li>
-          <li>
-            <FaUsers className="sidebar-icon" />
-            {sidebarOpen && <span>Supervisors</span>}
-          </li>
-          <li>
-            <FaCalendarAlt className="sidebar-icon" />
-            {sidebarOpen && <span>Milestones</span>}
-          </li>
-          <li>
-            <FaChartPie className="sidebar-icon" />
-            {sidebarOpen && <span>Reports</span>}
-          </li>
-          <li>
-            <FaCog className="sidebar-icon" />
-            {sidebarOpen && <span>Settings</span>}
-          </li>
-        </ul>
-      </div>
-
-      {/* Main Content */}
-      <div className="main-content">
-        <div className="dashboard-content">
+    <AdminSidebarLayout>
           <h1>Admin Dashboard</h1>
-          
-          {error && (
-            <div className="error-message">
-              <p>{error}</p>
-              <button onClick={() => window.location.reload()}>Retry</button>
-            </div>
-          )}
+      
+      {error && (
+        <div className="error-message">
+          <p>{error}</p>
+          <button onClick={() => window.location.reload()}>Retry</button>
+        </div>
+      )}
           
           {/* Stats Cards */}
           <div className="stats-grid">
             <div className="stat-card">
               <h3>Enrolled Students</h3>
-              <p className="stat-number">{stats?.enrolledStudents || 0}</p>
+          <p className="stat-number">{stats?.enrolledStudents || 0}</p>
             </div>
             <div className="stat-card">
               <h3>Total Supervisors</h3>
-              <p className="stat-number">{stats?.totalSupervisors || 0}</p>
+          <p className="stat-number">{stats?.totalSupervisors || 0}</p>
             </div>
             <div className="stat-card">
               <h3>Student Status</h3>
               <div className="status-group">
-                <p>Active: <span>{stats?.activeStudents || 0}</span></p>
-                <p>Pending: <span>{stats?.pendingStudents || 0}</span></p>
+            <p>Active: <span>{stats?.activeStudents || 0}</span></p>
+            <p>Pending: <span>{stats?.pendingStudents || 0}</span></p>
               </div>
             </div>
           </div>
@@ -584,49 +490,42 @@ const AdminDashboard = () => {
           <div className="data-section">
             <div className="student-list">
               <h2>Student Groups</h2>
-              <div className="student-groups-container">
-                {displayedGroups.length > 0 ? (
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Group ID</th>
-                        <th>Student Name(s)</th>
-                        <th>Department</th>
-                        <th>Project Title</th>
-                        <th>Status</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {displayedGroups.map((group, index) => (
-                        <tr 
-                          key={group.groupId}
-                          ref={index === displayedGroups.length - 1 ? lastGroupElementRef : null}
-                        >
-                          <td>{group.groupId}</td>
-                          <td>{group.names?.join(', ') || ''}</td>
-                          <td>{group.department}</td>
-                          <td>{group.projectTitle}</td>
-                          <td>{group.status}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                ) : (
-                  <p className="no-data">No student groups found</p>
-                )}
-                
-                {loading && (
-                  <div className="loading-spinner-container">
-                    <Spinner animation="border" role="status" variant="primary">
-                      <span className="visually-hidden">Loading...</span>
-                    </Spinner>
-                  </div>
-                )}
-                
-                {!hasMore && displayedGroups.length > 0 && (
-                  <p className="end-of-list">No more groups to load</p>
-                )}
+          <div className="student-groups-container">
+            {studentGroups.length > 0 ? (
+              <table>
+                <thead>
+                  <tr>
+                    <th>Group ID</th>
+                    <th>Student Name(s)</th>
+                    <th>Department</th>
+                    <th>Project Title</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {studentGroups.map((group) => (
+                    <tr key={group.groupId}>
+                      <td>{group.groupId}</td>
+                      <td>{group.names?.join(', ') || ''}</td>
+                      <td>{group.department}</td>
+                      <td>{group.projectTitle}</td>
+                      <td>{group.status}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <p className="no-data">No student groups found</p>
+            )}
+            
+            {loading && (
+              <div className="loading-spinner-container">
+                <Spinner animation="border" role="status" variant="primary">
+                  <span className="visually-hidden">Loading...</span>
+                </Spinner>
               </div>
+            )}
+          </div>
             </div>
 
             <div className="chart-container">
@@ -655,52 +554,52 @@ const AdminDashboard = () => {
           {/* Milestones Section */}
           <div className="milestones-section">
             <h2>FYP Milestone Deadlines</h2>
-            
-            {isLoading && (
-              <div className="loading-spinner-container">
-                <Spinner animation="border" role="status" variant="primary">
-                  <span className="visually-hidden">Loading...</span>
-                </Spinner>
-              </div>
-            )}
-            
-            {milestoneError && (
-              <div className="error-message">
-                <p>{milestoneError}</p>
-                <button onClick={() => setMilestoneError(null)}>Dismiss</button>
-              </div>
-            )}
-            
-            {milestoneSuccess && (
-              <div className="success-message">
-                <p>{milestoneSuccess}</p>
-                <button onClick={() => setMilestoneSuccess(null)}>Dismiss</button>
-              </div>
-            )}
+        
+        {isLoading && (
+          <div className="loading-spinner-container">
+            <Spinner animation="border" role="status" variant="primary">
+              <span className="visually-hidden">Loading...</span>
+            </Spinner>
+          </div>
+        )}
+        
+        {milestoneError && (
+          <div className="error-message">
+            <p>{milestoneError}</p>
+            <button onClick={() => setMilestoneError(null)}>Dismiss</button>
+          </div>
+        )}
+        
+        {milestoneSuccess && (
+          <div className="success-message">
+            <p>{milestoneSuccess}</p>
+            <button onClick={() => setMilestoneSuccess(null)}>Dismiss</button>
+          </div>
+        )}
 
             <div className="milestones-grid">
               {milestones.map((milestone) => (
-                <div key={milestone._id} className="milestone-card">
+            <div key={milestone._id} className="milestone-card">
                   <div className="milestone-header">
                     <h3>{milestone.name}</h3>
                     <button 
-                      onClick={() => deleteMilestone(milestone.name)} 
+                  onClick={() => deleteMilestone(milestone.name)} 
                       className="delete-button"
                       title="Delete milestone"
-                      disabled={isLoading}
+                  disabled={isLoading}
                     >
                       <FaTrash />
                     </button>
                   </div>
                   <DatePicker
-                    selected={milestone.deadline ? new Date(milestone.deadline) : null}
-                    onChange={(date) => handleDateChange(date, milestone.name)}
+                selected={milestone.deadline ? new Date(milestone.deadline) : null}
+                onChange={(date) => handleDateChange(date, milestone.name)}
                     minDate={new Date()}
                     placeholderText="Select deadline"
                     className="date-picker-input"
                     dateFormat="MMMM d, yyyy"
                     isClearable
-                    disabled={isLoading}
+                disabled={isLoading}
                   />
                 </div>
               ))}
@@ -740,12 +639,9 @@ const AdminDashboard = () => {
                   <FaPlus /> Add Milestone
                 </button>
               )}
-            </div>
-          </div>
         </div>
       </div>
-    </div>
-    </div>
+    </AdminSidebarLayout>
   );
 };
 

@@ -1,43 +1,100 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "../../../components/Navbar";
 import Sidebar from "../../../components/Sidebar";
 import "../../../styles/StudentFeedbackComments.css"
 import { Card, Form, Button, Table, Badge } from "react-bootstrap";
 import { FaCommentDots, FaPaperPlane, FaCheckCircle, FaTimesCircle } from "react-icons/fa";
+import { getDocuments, addComment } from "../../../services/api";
+import { toast } from "react-toastify";
 
 const StudentFeedbackComments = () => {
+  const [documents, setDocuments] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [newComment, setNewComment] = useState("");
-  const [comments, setComments] = useState({
-    proposal: [{ from: "Supervisor", message: "Your proposal needs more details on methodology.", date: "Feb 8, 2025" }],
-    srs: [{ from: "Supervisor", message: "Well structured, but needs more references.", date: "Feb 10, 2025" }],
-    diagram: [],
-    finalReport: [],
-  });
+  const [userRole, setUserRole] = useState("student"); // This should come from your auth context
 
-  const documentSections = [
-    { title: "📜 Project Proposal", type: "proposal", status: "Reviewed" },
-    { title: "📑 SRS Document", type: "srs", status: "Pending" },
-    { title: "📊 System Diagram", type: "diagram", status: "Pending" },
-    { title: "📄 Final Report", type: "finalReport", status: "Not Submitted" },
-  ];
+  useEffect(() => {
+    fetchDocuments();
+  }, []);
 
-  const handleCommentSubmit = (e, type) => {
-    e.preventDefault();
-    if (newComment.trim()) {
-      setComments({
-        ...comments,
-        [type]: [...comments[type], { from: "Student", message: newComment, date: "Feb 10, 2025" }],
-      });
-      setNewComment("");
+  const fetchDocuments = async () => {
+    try {
+      setLoading(true);
+      const response = await getDocuments();
+      if (response.success) {
+        const flatDocuments = Object.values(response.documents).flat();
+        setDocuments(flatDocuments);
+      }
+    } catch (err) {
+      console.error("Error fetching documents:", err);
+      toast.error("Failed to fetch documents");
+    } finally {
+      setLoading(false);
     }
   };
+
+  const handleCommentSubmit = async (e, docId) => {
+    e.preventDefault();
+    if (!newComment.trim()) return;
+
+    try {
+      const response = await addComment(docId, newComment);
+      if (response.success) {
+        // Update the documents state with the new comment
+        setDocuments(prevDocs => 
+          prevDocs.map(doc => 
+            doc._id === docId ? response.document : doc
+          )
+        );
+        setNewComment("");
+        toast.success("Comment added successfully");
+      }
+    } catch (err) {
+      console.error("Error adding comment:", err);
+      toast.error("Failed to add comment");
+    }
+  };
+
+  const getStatusBadge = (status) => {
+    const statusConfig = {
+      pending: { bg: "warning", text: "Pending" },
+      reviewed: { bg: "info", text: "Reviewed" },
+      approved: { bg: "success", text: "Approved" },
+      rejected: { bg: "danger", text: "Rejected" }
+    };
+    const config = statusConfig[status] || statusConfig.pending;
+    return <Badge bg={config.bg}>{config.text}</Badge>;
+  };
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
+  if (loading) {
+    return (
+      <div className="student-feedback-comments">
+        <Navbar />
+        <div className="student-feedback__layout">
+          <Sidebar />
+          <div className="student-feedback__content">
+            <h1 className="dashboard-title text-center">💬 Feedback & Comments</h1>
+            <div className="text-center">Loading...</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="student-feedback-comments">
       <Navbar />
-      <div className="dashboard-container d-flex">
+      <div className="student-feedback__layout">
         <Sidebar />
-        <div className="dashboard-content p-4 w-100">
+        <div className="student-feedback__content">
           <h1 className="dashboard-title text-center">💬 Feedback & Comments</h1>
 
           {/* Feedback Table */}
@@ -53,21 +110,11 @@ const StudentFeedbackComments = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {documentSections.map((section) => (
-                    <tr key={section.type}>
-                      <td>{section.title}</td>
-                      <td>
-                        <Badge
-                          bg={section.status === "Reviewed" ? "success" : section.status === "Pending" ? "warning" : "danger"}
-                        >
-                          {section.status}
-                        </Badge>
-                      </td>
-                      <td>
-                        {comments[section.type].length > 0
-                          ? comments[section.type][0].message
-                          : "No remarks yet."}
-                      </td>
+                  {documents.map((doc) => (
+                    <tr key={doc._id}>
+                      <td>{doc.title}</td>
+                      <td>{getStatusBadge(doc.status)}</td>
+                      <td>{doc.feedback || "No remarks yet."}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -76,16 +123,16 @@ const StudentFeedbackComments = () => {
           </Card>
 
           {/* Comments Section */}
-          {documentSections.map((section) => (
-            <Card className="comment-card mb-4" key={section.type}>
+          {documents.map((doc) => (
+            <Card className="comment-card mb-4" key={doc._id}>
               <Card.Body>
-                <h2>{section.title} - Comments</h2>
+                <h2>{doc.title} - Comments</h2>
                 <div className="comments-list">
-                  {comments[section.type].length > 0 ? (
-                    comments[section.type].map((comment, index) => (
-                      <div key={index} className={`comment ${comment.from === "Student" ? "student" : "supervisor"}`}>
-                        <strong>{comment.from}:</strong> {comment.message}
-                        <span className="comment-date">{comment.date}</span>
+                  {doc.comments && doc.comments.length > 0 ? (
+                    doc.comments.map((comment, index) => (
+                      <div key={index} className={`comment ${comment.sender.role === "student" ? "student" : "supervisor"}`}>
+                        <strong>{comment.sender.name} ({comment.sender.role}):</strong> {comment.message}
+                        <span className="comment-date">{formatDate(comment.date)}</span>
                       </div>
                     ))
                   ) : (
@@ -94,7 +141,7 @@ const StudentFeedbackComments = () => {
                 </div>
 
                 {/* Comment Input */}
-                <Form onSubmit={(e) => handleCommentSubmit(e, section.type)}>
+                <Form onSubmit={(e) => handleCommentSubmit(e, doc._id)}>
                   <Form.Group className="mt-3 d-flex">
                     <Form.Control
                       type="text"

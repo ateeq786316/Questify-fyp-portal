@@ -1,34 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from "../../../components/Navbar";
 import Sidebar from "../../../components/Sidebar.jsx";
-import bell from "../../../assets/bell_icon.svg";
+import bell from "../../../assets/bell_icon_new1.png";
 import "../../../styles/StudentDashboard.css";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import "chart.js/auto";
 import { Line } from "react-chartjs-2";
-// import { fetchStudentDetails } from "../../../services/student"; // Import API
 import { FaUserGraduate, FaProjectDiagram, FaChalkboardTeacher, FaCalendarAlt } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
-import axios from "axios";
+import { toast } from 'react-toastify';
+import API from '../../../services/api';
 
 const StudentDashboard = () => {
   const [date, setDate] = useState(new Date());
   const [studentDetails, setStudentDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const progressData = {
-    labels: ["Proposal", "Proposal defense","SRS", "system diagrams", "Mid development", "Final Report"],
+  const [progressData, setProgressData] = useState({
+    labels: ["Proposal", "Proposal defense", "SRS", "System diagrams", "Mid development", "Final Report"],
     datasets: [
       {
         label: "FYP Progress",
-        data: [0, 20, 10, 40,0 ,0 ],
+        data: [0, 0, 0, 0, 0, 0],
         backgroundColor: "rgba(75,192,192,0.2)",
         borderColor: "rgba(75,192,192,1)",
         borderWidth: 2,
       },
     ],
-  };
+  });
 
   useEffect(() => {
     const fetchStudentDetails = async () => {
@@ -40,17 +40,38 @@ const StudentDashboard = () => {
           return;
         }
 
-        const response = await axios.get("http://localhost:5000/api/auth/student/details", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await API.get("/auth/student/details");
+
+        if (!response.data) {
+          throw new Error("No data received from server");
+        }
 
         setStudentDetails(response.data);
+        
+        // Update progress data based on student details
+        if (response.data.progress) {
+          setProgressData(prevData => ({
+            ...prevData,
+            datasets: [{
+              ...prevData.datasets[0],
+              data: [
+                response.data.progress.proposal || 0,
+                response.data.progress.proposalDefense || 0,
+                response.data.progress.srs || 0,
+                response.data.progress.systemDiagrams || 0,
+                response.data.progress.midDevelopment || 0,
+                response.data.progress.finalReport || 0
+              ]
+            }]
+          }));
+        }
+        
         setLoading(false);
       } catch (err) {
         console.error("Error fetching student details:", err);
-        setError(err.response?.data?.msg || "Failed to fetch student details");
+        const errorMessage = err.response?.data?.msg || "Failed to fetch student details";
+        setError(errorMessage);
+        toast.error(errorMessage);
         setLoading(false);
       }
     };
@@ -58,18 +79,69 @@ const StudentDashboard = () => {
     fetchStudentDetails();
   }, []);
 
-  if (loading) return <div className="text-center p-5">Loading...</div>;
-  if (error) return <div className="text-center p-5 text-danger">Error: {error}</div>;
-  if (!studentDetails) return <div className="text-center p-5">No student details found</div>;
+  if (loading) {
+    return (
+      <div className="student-dashboard">
+        <Navbar />
+        <div className="student-dashboard__layout">
+          <Sidebar />
+          <div className="student-dashboard__content">
+            <div className="text-center p-5">
+              <div className="spinner-border text-primary" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </div>
+              <p className="mt-3">Loading your dashboard...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="student-dashboard">
+        <Navbar />
+        <div className="student-dashboard__layout">
+          <Sidebar />
+          <div className="student-dashboard__content">
+            <div className="alert alert-danger text-center" role="alert">
+              <h4 className="alert-heading">Error!</h4>
+              <p>{error}</p>
+              <hr />
+              <p className="mb-0">Please try refreshing the page or contact support if the problem persists.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!studentDetails) {
+    return (
+      <div className="student-dashboard">
+        <Navbar />
+        <div className="student-dashboard__layout">
+          <Sidebar />
+          <div className="student-dashboard__content">
+            <div className="alert alert-warning text-center" role="alert">
+              <h4 className="alert-heading">No Data Available</h4>
+              <p>No student details found. Please contact your administrator.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="student-dashboard">
       <Navbar />
-      <div className="dashboard-container d-flex">
+      <div className="student-dashboard__layout">
         <Sidebar />
-        <div className="dashboard-content p-4 w-100">
+        <div className="student-dashboard__content">
           <h1 className="dashboard-title text-center">🎓 Student Dashboard</h1>
-          
+
           {/* Banner Component */}
           <div className="banner-container">
             <div className="banner-content">
@@ -78,7 +150,7 @@ const StudentDashboard = () => {
                   <p>Date: {new Date().toLocaleDateString()}</p>
                 </div>
                 <div className="banner-welcome">
-                  Welcome back, {studentDetails.name}!
+                  Welcome back, {studentDetails?.studentInfo?.name}!
                 </div>
                 <div className="banner-message">
                   Always stay updated in your student portal
@@ -91,64 +163,151 @@ const StudentDashboard = () => {
               </div>
             </div>
           </div>
-
+          
           {/* Top 4 Cards */}
           <div className="row g-3 mb-4">
+            {/* Student Info Card */}
             <div className="col-md-3">
               <div className="card text-center p-3">
                 <FaUserGraduate className="icon" />
-                <h3>Group ID: {studentDetails.groupID}</h3>
-                <div className="team-members">
-                  <h4>Team Members:</h4>
-                  {studentDetails.teamMembers?.map((member, index) => (
-                    <div key={index} className="member-details">
-                      <p><strong>Name:</strong> {member.name}</p>
-                      <p><strong>ID:</strong> {member.studentId}</p>
-                      <p><strong>Department:</strong> {member.department}</p>
-                      <p><strong>CGPA:</strong> {member.cgpa}</p>
-                    </div>
-                  ))}
+                <h3>Student Info</h3>
+                <div className="student-details">
+                  <p><strong>ID:</strong> {studentDetails?.studentInfo?.studentId}</p>
+                  <p><strong>Program:</strong> {studentDetails?.studentInfo?.program}</p>
+                  <p><strong>CGPA:</strong> {studentDetails?.studentInfo?.cgpa}</p>
+                  <p><strong>Department:</strong> {studentDetails?.studentInfo?.department}</p>
+                  <p><strong>Contact:</strong> {studentDetails?.studentInfo?.contact}</p>
                 </div>
               </div>
             </div>
+
+            {/* Project Info Card */}
             <div className="col-md-3">
               <div className="card text-center p-3">
                 <FaProjectDiagram className="icon" />
-                <h3>Project: {studentDetails.projectTitle}</h3>
-                <p>Category: {studentDetails.projectCategory}</p>
+                <h3>Project Details</h3>
+                <p><strong>Title:</strong> {studentDetails?.projectInfo?.title}</p>
+                <p><strong>Category:</strong> {studentDetails?.projectInfo?.category}</p>
+                <p><strong>Status:</strong> {studentDetails?.projectInfo?.status}</p>
+                <p><strong>Proposal:</strong> {studentDetails?.projectInfo?.proposalStatus}</p>
+                <p><strong>Submitted:</strong> {studentDetails?.projectInfo?.submissionDate ? new Date(studentDetails.projectInfo.submissionDate).toLocaleDateString() : "Not submitted"}</p>
+                {studentDetails?.projectInfo?.proposalFile && (
+                  <p><strong>Proposal File:</strong> <a href={studentDetails.projectInfo.proposalFile} target="_blank" rel="noopener noreferrer">View</a></p>
+                )}
+                {studentDetails?.projectInfo?.plagiarismReport && (
+                  <p><strong>Plagiarism Report:</strong> <a href={studentDetails.projectInfo.plagiarismReport} target="_blank" rel="noopener noreferrer">View</a></p>
+                )}
               </div>
             </div>
+
+            {/* Supervisor Info Card */}
             <div className="col-md-3">
               <div className="card text-center p-3">
                 <FaChalkboardTeacher className="icon" />
-                <h3>Supervisor: {studentDetails.supervisor?.name}</h3>
-                <p>Department: {studentDetails.supervisor?.department}</p>
+                <h3>Supervisor</h3>
+                <p><strong>Name:</strong> {studentDetails?.supervisor?.name}</p>
+                <p><strong>ID:</strong> {studentDetails?.supervisor?.supervisorId}</p>
+                <p><strong>Department:</strong> {studentDetails?.supervisor?.department}</p>
+                <p><strong>Email:</strong> {studentDetails?.supervisor?.email}</p>
+                <p><strong>Contact:</strong> {studentDetails?.supervisor?.contact}</p>
+                <p><strong>Expertise:</strong> {studentDetails?.supervisor?.expertise || "Not specified"}</p>
               </div>
             </div>
+
+            {/* Timeline Card */}
             <div className="col-md-3">
               <div className="card text-center p-3">
                 <FaCalendarAlt className="icon" />
-                <h3>Deadline: {studentDetails.endDate ? new Date(studentDetails.endDate).toLocaleDateString() : "Not set"}</h3>
-                <p>Final Presentation Date</p>
+                <h3>Timeline</h3>
+                {studentDetails?.upcomingMilestone ? (
+                  <>
+                    <p className="text-primary mb-2">
+                      <strong>Next Deadline:</strong>
+                    </p>
+                    <p className="mb-1">
+                      <strong>{studentDetails.upcomingMilestone.name}</strong>
+                    </p>
+                    <p className="text-danger">
+                      {new Date(studentDetails.upcomingMilestone.deadline).toLocaleDateString()}
+                    </p>
+                  </>
+                ) : (
+                  <p>No upcoming deadlines</p>
+                )}
+                <hr />
+                <p><strong>Start Date:</strong> {studentDetails?.dates?.startDate ? new Date(studentDetails.dates.startDate).toLocaleDateString() : "Not set"}</p>
+                <p><strong>End Date:</strong> {studentDetails?.dates?.endDate ? new Date(studentDetails.dates.endDate).toLocaleDateString() : "Not set"}</p>
+                <p><strong>Group ID:</strong> {studentDetails?.groupID}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Team Members Section */}
+          <div className="row mb-4">
+            <div className="col-12">
+              <div className="card p-3">
+                <h2>👥 Team Members</h2>
+                <div className="row">
+                  {studentDetails?.teamMembers?.length > 0 ? (
+                    studentDetails.teamMembers.map((member, index) => (
+                      <div key={index} className="col-md-4 mb-3">
+                        <div className="card h-100">
+                          <div className="card-body">
+                            <h5 className="card-title">{member.name}</h5>
+                            <p className="card-text">
+                              <strong>ID:</strong> {member.studentId}<br />
+                              <strong>Program:</strong> {member.program}<br />
+                              <strong>Department:</strong> {member.department}<br />
+                              <strong>CGPA:</strong> {member.cgpa}<br />
+                              <strong>Email:</strong> {member.email}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="col-12">
+                      <p className="text-center">No team members assigned</p>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
 
           {/* Progress Tracking */}
-          {/* FYP Sections in Cards */}
           <div className="row g-3">
             {/* Progress Tracking Card */}
             <div className="col-md-6">
               <div className="card p-3">
                 <h2>📊 FYP Progress Tracking</h2>
-                {/* // <div className="progress" style={{ height: "25px" }}> */}
-                {/* <div className="progress-bar bg-success" style={{ width: "50%" }}>50% Completed</div> */}
-                {/*     <Line data={progressData} /> */}
-                {/* </div>  */}
-                
                 <div className="progress-section card">
                   <h3>Progress Overview</h3>
-                  <Line data={progressData} />
+                  <Line 
+                    data={progressData}
+                    options={{
+                      scales: {
+                        y: {
+                          beginAtZero: true,
+                          max: 100,
+                          ticks: {
+                            callback: function(value) {
+                              return value + '%';
+                            }
+                          }
+                        }
+                      },
+                      plugins: {
+                        tooltip: {
+                          callbacks: {
+                            label: function(context) {
+                              return context.dataset.label + ': ' + context.parsed.y + '%';
+                            }
+                          }
+                        }
+                      }
+                    }}
+                  />
                 </div>
               </div>
             </div>
@@ -157,8 +316,11 @@ const StudentDashboard = () => {
             <div className="col-md-6">
               <div className="card p-3">
                 <h2>📅 Calendar Integration</h2>
-                {/* <input type="date" className="form-control" /> */}
-                <Calendar />
+                <Calendar 
+                  onChange={setDate}
+                  value={date}
+                  className="w-100"
+                />
               </div>
             </div>
 

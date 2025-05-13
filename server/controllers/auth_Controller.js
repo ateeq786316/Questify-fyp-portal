@@ -5,6 +5,9 @@ const jwt = require("jsonwebtoken");
 const { generateToken, verifyToken } = require("../utils/token");
 const axios = require("axios");
 const { sanitizeInput } = require("../utils/sanitizer");
+const Milestone = require("../models/Milestone");
+const Document = require("../models/Document");
+const SupervisorRequest = require("../models/SupervisorRequest");
 require("dotenv").config();
 
 exports.studentLogin = async (req, res) => {
@@ -39,32 +42,103 @@ exports.getStudentDetails = async (req, res) => {
     const decoded = verifyToken(token);
     if (!decoded) return res.status(401).json({ msg: "Invalid token" });
 
+    // Get student details
     const student = await User.findById(decoded.id)
       .select("-password")
       .populate({
         path: "teamMembers",
-        select: "name studentId email department cgpa",
+        select: "name studentId email department cgpa program",
       })
-      .populate("supervisor.id", "name department email");
+      .populate({
+        path: "supervisor.id",
+        select:
+          "name department email supervisorId supervisorExpertise contact",
+      })
+      .lean();
 
     if (!student) return res.status(404).json({ msg: "Student not found" });
 
-    // Format the response
+    // Get milestones
+    const milestones = await Milestone.find().sort({ deadline: 1 }).lean();
+
+    // Find the next upcoming milestone
+    const now = new Date();
+    const upcomingMilestone = milestones.find(
+      (milestone) => milestone.deadline && new Date(milestone.deadline) > now
+    );
+
+    // Format the response with proper data validation
     const formattedStudent = {
-      ...student.toObject(),
-      teamMembers: student.teamMembers.map((member) => ({
-        name: member.name,
-        studentId: member.studentId,
-        email: member.email,
-        department: member.department,
-        cgpa: member.cgpa,
-      })),
-      supervisor: {
-        name: student.supervisor?.name || student.supervisor?.id?.name,
-        department:
-          student.supervisor?.department || student.supervisor?.id?.department,
-        email: student.supervisor?.email || student.supervisor?.id?.email,
+      ...student,
+      studentInfo: {
+        name: student.name || "Not Available",
+        studentId: student.studentId || "Not Available",
+        program: student.program || "Not Available",
+        cgpa: student.cgpa || "Not Available",
+        department: student.department || "Not Available",
+        contact: student.contact || "Not Available",
       },
+      projectInfo: {
+        title: student.projectTitle || "Not Assigned",
+        description: student.projectDescription || "Not Available",
+        category: student.projectCategory || "Not Assigned",
+        status: student.projectStatus || "Pending",
+        proposalStatus: student.proposalStatus || "Pending",
+        proposalFile: student.proposalFile || null,
+        plagiarismReport: student.plagiarismReport || null,
+        submissionDate: student.submissionDate
+          ? new Date(student.submissionDate).toISOString()
+          : null,
+      },
+      teamMembers:
+        student.teamMembers?.map((member) => ({
+          name: member.name || "Not Available",
+          studentId: member.studentId || "Not Available",
+          email: member.email || "Not Available",
+          department: member.department || "Not Available",
+          program: member.program || "Not Available",
+          cgpa: member.cgpa || "Not Available",
+        })) || [],
+      supervisor: {
+        name:
+          student.supervisor?.name ||
+          student.supervisor?.id?.name ||
+          "Not Assigned",
+        department:
+          student.supervisor?.department ||
+          student.supervisor?.id?.department ||
+          "Not Available",
+        email:
+          student.supervisor?.email ||
+          student.supervisor?.id?.email ||
+          "Not Available",
+        supervisorId: student.supervisor?.id?.supervisorId || "Not Available",
+        expertise:
+          student.supervisor?.id?.supervisorExpertise || "Not Available",
+        contact: student.supervisor?.id?.contact || "Not Available",
+      },
+      dates: {
+        startDate: student.startDate
+          ? new Date(student.startDate).toISOString()
+          : null,
+        endDate: student.endDate
+          ? new Date(student.endDate).toISOString()
+          : null,
+        createdAt: student.createdAt
+          ? new Date(student.createdAt).toISOString()
+          : null,
+        updatedAt: student.updatedAt
+          ? new Date(student.updatedAt).toISOString()
+          : null,
+      },
+      groupID: student.groupID || "Not Assigned",
+      upcomingMilestone: upcomingMilestone
+        ? {
+            name: upcomingMilestone.name,
+            deadline: upcomingMilestone.deadline,
+            order: upcomingMilestone.order,
+          }
+        : null,
     };
 
     res.status(200).json(formattedStudent);
@@ -102,11 +176,9 @@ exports.chatbot = async (req, res) => {
 
     const sanitizedMessage = sanitizeInput(message);
     if (sanitizedMessage.length > 500) {
-      return res
-        .status(400)
-        .json({
-          msg: "Message is too long. Maximum length is 500 characters.",
-        });
+      return res.status(400).json({
+        msg: "Message is too long. Maximum length is 500 characters.",
+      });
     }
 
     const apiKey = process.env.GEMINI_API_KEY;
@@ -237,54 +309,313 @@ exports.chatbot = async (req, res) => {
   }
 };
 
+// Admin login
 exports.adminLogin = async (req, res) => {
   const { email, password } = req.body;
+  console.log("Admin login attempt with:", email);
 
   try {
-    // Find admin by email and role
-    const admin = await User.findOne({
-      email: email.toLowerCase(),
-      role: "admin",
-    });
-
+    const admin = await User.findOne({ email, role: "admin" });
     if (!admin) {
-      return res.status(404).json({
-        success: false,
-        msg: "Admin not found. Please check your credentials.",
-      });
+      return res.status(404).json({ msg: "Admin not found" });
     }
 
-    // Verify password
-    const isMatch = admin.password;
+    // Use the comparePassword method
+    const isMatch = admin.comparePassword(password);
     if (!isMatch) {
-      return res.status(400).json({
-        success: false,
-        msg: "Invalid credentials. Please try again.",
-      });
+      return res.status(400).json({ msg: "Invalid credentials" });
     }
 
-    // Generate token
-    const token = jwt.sign(
-      { id: admin._id, role: admin.role },
-      process.env.JWT_SECRET,
-      { expiresIn: "24h" }
-    );
+    // Generate JWT token
+    const token = generateToken(admin);
 
     // Remove password from response
     const adminData = admin.toObject();
     delete adminData.password;
 
+    // Send token and admin details in response
     res.status(200).json({
       success: true,
       token,
       admin: adminData,
     });
+    console.log("Generated admin token:", token);
   } catch (err) {
     console.error("Admin login error:", err);
+    res.status(500).json({ msg: "Server error", error: err.message });
+  }
+};
+
+// Submit Project Proposal
+exports.submitProjectProposal = async (req, res) => {
+  try {
+    const { title, description, category, teamMembers } = req.body;
+    const studentId = req.user.id;
+
+    // Check if student already has a proposal
+    const existingProposal = await Document.findOne({
+      uploadedBy: studentId,
+      fileType: "proposal",
+    });
+
+    if (existingProposal) {
+      // Get the status of the existing proposal
+      const student = await User.findById(studentId);
+      return res.status(200).json({
+        success: false,
+        msg: "You have already submitted a proposal",
+        data: {
+          status: student.proposalStatus,
+          message: `Your proposal is currently ${student.proposalStatus.toLowerCase()}. Please wait for feedback from your supervisor.`,
+          existingProposal: {
+            title: existingProposal.title,
+            category: existingProposal.category,
+            submittedAt: existingProposal.createdAt,
+            status: existingProposal.status,
+          },
+        },
+      });
+    }
+
+    // Create new document record
+    const document = new Document({
+      fileType: "proposal",
+      filePath: req.file.path,
+      uploadedBy: studentId,
+      title: title,
+      description: description,
+      category: category,
+      teamMembers: teamMembers ? JSON.parse(teamMembers) : [],
+    });
+
+    await document.save();
+
+    // Update student's proposal status
+    await User.findByIdAndUpdate(studentId, {
+      proposalStatus: "Submitted",
+      projectTitle: title,
+      projectDescription: description,
+      projectCategory: category,
+    });
+
+    res.status(200).json({
+      success: true,
+      msg: "Proposal submitted successfully",
+      data: document,
+    });
+  } catch (error) {
+    console.error("Error submitting proposal:", error);
     res.status(500).json({
       success: false,
-      msg: "Server error. Please try again later.",
-      error: err.message,
+      msg: "Error submitting proposal",
+      error: error.message,
     });
+  }
+};
+
+// Get all supervisors
+exports.getAllSupervisors = async (req, res) => {
+  try {
+    const supervisors = await User.find({ role: "supervisor" })
+      .select("name department supervisorExpertise email")
+      .sort({ name: 1 });
+
+    res.status(200).json({
+      success: true,
+      supervisors,
+    });
+  } catch (err) {
+    console.error("Error fetching supervisors:", err);
+    res.status(500).json({
+      success: false,
+      msg: "Error fetching supervisors",
+    });
+  }
+};
+
+// Create supervisor request
+exports.createSupervisorRequest = async (req, res) => {
+  try {
+    const { supervisorId } = req.body;
+    const studentId = req.user.id;
+
+    // Check if student already has a pending request
+    const existingRequest = await SupervisorRequest.findOne({
+      studentId,
+      status: "pending",
+    });
+
+    if (existingRequest) {
+      return res.status(400).json({
+        success: false,
+        msg: "You already have a pending supervisor request",
+      });
+    }
+
+    // Create new request
+    const request = new SupervisorRequest({
+      studentId,
+      supervisorId,
+    });
+
+    await request.save();
+
+    res.status(201).json({
+      success: true,
+      msg: "Supervisor request submitted successfully",
+      request,
+    });
+  } catch (err) {
+    console.error("Error creating supervisor request:", err);
+    res.status(500).json({
+      success: false,
+      msg: "Error creating supervisor request",
+    });
+  }
+};
+
+// Get student's supervisor requests
+exports.getStudentRequests = async (req, res) => {
+  try {
+    const studentId = req.user.id;
+
+    const requests = await SupervisorRequest.find({ studentId })
+      .populate("supervisorId", "name department supervisorExpertise")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      requests,
+    });
+  } catch (err) {
+    console.error("Error fetching student requests:", err);
+    res.status(500).json({
+      success: false,
+      msg: "Error fetching supervisor requests",
+    });
+  }
+};
+
+// Supervisor login
+exports.supervisorLogin = async (req, res) => {
+  const { email, password } = req.body;
+  console.log("\n=== Supervisor Login Attempt ===");
+  console.log("Email:", email);
+
+  try {
+    const supervisor = await User.findOne({ email, role: "supervisor" });
+    if (!supervisor) {
+      console.log("Supervisor not found");
+      return res.status(404).json({ msg: "Supervisor not found" });
+    }
+
+    if (supervisor.password !== password) {
+      console.log("Invalid credentials for supervisor:", supervisor.name);
+      return res.status(400).json({ msg: "Invalid credentials" });
+    }
+
+    const token = generateToken(supervisor);
+    console.log("Supervisor logged in successfully:");
+    console.log("Name:", supervisor.name);
+    console.log("Token:", token);
+
+    const supervisorData = supervisor.toObject();
+    delete supervisorData.password;
+
+    res.status(200).json({
+      success: true,
+      token,
+      supervisor: supervisorData,
+    });
+  } catch (err) {
+    console.error("Supervisor login error:", err);
+    res.status(500).json({ msg: "Server error", error: err.message });
+  }
+};
+
+// Internal login
+exports.internalLogin = async (req, res) => {
+  const { email, password } = req.body;
+  console.log("\n=== Internal Examiner Login Attempt ===");
+  console.log("Email:", email);
+
+  try {
+    // First try to find by role
+    let internal = await User.findOne({ email, role: "internal" });
+
+    // If not found by role, try to find by type
+    if (!internal) {
+      internal = await User.findOne({ email, type: "Internal" });
+      if (internal) {
+        // Update the user's role to "internal"
+        internal.role = "internal";
+        await internal.save();
+        console.log("Updated user role to internal");
+      }
+    }
+
+    if (!internal) {
+      console.log("Internal examiner not found");
+      return res.status(404).json({ msg: "Internal examiner not found" });
+    }
+
+    if (internal.password !== password) {
+      console.log("Invalid credentials for internal examiner:", internal.name);
+      return res.status(400).json({ msg: "Invalid credentials" });
+    }
+
+    const token = generateToken(internal);
+    console.log("Internal examiner logged in successfully:");
+    console.log("Name:", internal.name);
+    console.log("Token:", token);
+
+    const internalData = internal.toObject();
+    delete internalData.password;
+
+    res.status(200).json({
+      success: true,
+      token,
+      internal: internalData,
+    });
+  } catch (err) {
+    console.error("Internal examiner login error:", err);
+    res.status(500).json({ msg: "Server error", error: err.message });
+  }
+};
+
+// External login
+exports.externalLogin = async (req, res) => {
+  const { email, password } = req.body;
+  console.log("\n=== External Examiner Login Attempt ===");
+  console.log("Email:", email);
+
+  try {
+    const external = await User.findOne({ email, role: "external" });
+    if (!external) {
+      console.log("External examiner not found");
+      return res.status(404).json({ msg: "External examiner not found" });
+    }
+
+    if (external.password !== password) {
+      console.log("Invalid credentials for external examiner:", external.name);
+      return res.status(400).json({ msg: "Invalid credentials" });
+    }
+
+    const token = generateToken(external);
+    console.log("External examiner logged in successfully:");
+    console.log("Name:", external.name);
+    console.log("Token:", token);
+
+    const externalData = external.toObject();
+    delete externalData.password;
+
+    res.status(200).json({
+      success: true,
+      token,
+      external: externalData,
+    });
+  } catch (err) {
+    console.error("External examiner login error:", err);
+    res.status(500).json({ msg: "Server error", error: err.message });
   }
 };

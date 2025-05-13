@@ -4,6 +4,8 @@ import Sidebar from "../../../components/Sidebar";
 import "../../../styles/StudentCommunication.css";
 import { Card, Form, Button, Spinner } from "react-bootstrap";
 import { FaPaperPlane, FaVideo } from "react-icons/fa";
+import axios from "axios";
+import { useAuth } from "../../../context/AuthContext"; // Make sure this path is correct
 
 const StudentCommunication = () => {
   const [message, setMessage] = useState("");
@@ -13,37 +15,31 @@ const StudentCommunication = () => {
   const chatBoxRef = useRef(null);
   const bottomRef = useRef(null);
   const [shouldScrollToBottom, setShouldScrollToBottom] = useState(true);
+  const { user } = useAuth(); // Get current user from auth context
 
-  // Simulated messages for demo
+  // Fetch messages on component mount
   useEffect(() => {
-    const demoMessages = [
-      { 
-        sender: "Supervisor", 
-        text: "Hello! How can I help you with your project today?", 
-        timestamp: "16:41",
-        date: "24 march 2024"
-      },
-      { 
-        sender: "Student", 
-        text: "Hi! I have some questions about the proposal.", 
-        timestamp: "16:59",
-        date: "24 march 2024"
-      },
-      {
-        sender: "Supervisor",
-        text: "I confirm the meeting for Friday at 4 PM in our office.",
-        timestamp: "9:12",
-        date: "24 march 2024"
-      },
-      {
-        sender: "Student",
-        text: "Perfect! Have a great day!",
-        timestamp: "9:20",
-        date: "24 march 2024"
+    const fetchMessages = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/api/auth/chat/${user._id}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('studentToken')}`
+          }
+        });
+        
+        if (response.data.success) {
+          setMessages(response.data.messages);
+        }
+      } catch (err) {
+        console.error('Error fetching messages:', err);
+        setError('Failed to load messages. Please try again.');
       }
-    ];
-    setMessages(demoMessages);
-  }, []);
+    };
+
+    if (user?._id) {
+      fetchMessages();
+    }
+  }, [user]);
 
   // Handle scroll events
   const handleScroll = (e) => {
@@ -62,38 +58,97 @@ const StudentCommunication = () => {
   }, [messages, shouldScrollToBottom]);
 
   const createGoogleMeet = () => {
-    window.open('https://meet.google.com/new', '_blank');
+    console.log("\n=== Creating Google Meet Session ===");
+    console.log("Student Details:", {
+      name: user?.name,
+      email: user?.email,
+      studentId: user?.studentId
+    });
+    console.log("Supervisor Details:", {
+      name: user?.supervisor?.name,
+      email: user?.supervisor?.email,
+      department: user?.supervisor?.department
+    });
+
+    // Get student and supervisor emails
+    const studentEmail = user?.email;
+    const supervisorEmail = user?.supervisor?.email;
+
+    if (!studentEmail || !supervisorEmail) {
+      console.error("Meeting creation failed:", {
+        missingStudentEmail: !studentEmail,
+        missingSupervisorEmail: !supervisorEmail
+      });
+      setError("Unable to create meeting: Missing email information");
+      return;
+    }
+
+    // Create a pre-populated Google Meet link with both emails
+    const meetLink = `https://meet.google.com/new?authuser=${studentEmail}&participants=${supervisorEmail}`;
+    
+    console.log("Meeting Link Created:", {
+      timestamp: new Date().toISOString(),
+      link: meetLink,
+      participants: {
+        student: studentEmail,
+        supervisor: supervisorEmail
+      }
+    });
+
+    // Open the meeting link in a new tab
+    window.open(meetLink, '_blank');
   };
 
   const sendMessage = async (e) => {
     e.preventDefault();
-    if (!message.trim() || isLoading) return;
+    console.log("\n=== Attempting to send message ===");
+    console.log("Message:", message);
+    console.log("Is Loading:", isLoading);
+    console.log("User:", user);
+
+    if (!message.trim() || isLoading || !user?._id) {
+      console.log("Message sending blocked:", {
+        isEmpty: !message.trim(),
+        isLoading,
+        noUserId: !user?._id
+      });
+      return;
+    }
 
     setIsLoading(true);
     setError(null);
     setShouldScrollToBottom(true);
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const now = new Date();
-const today = new Date();
-const isToday = now.toDateString() === today.toDateString();
-const formattedDate = isToday
-  ? "Today"
-  : now.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+      console.log("Making API call to send message...");
+      const response = await axios.post(
+        `http://localhost:5000/api/auth/chat/${user._id}/send`,
+        { text: message },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('studentToken')}`
+          }
+        }
+      );
 
-const newMessage = {
-  sender: "Student",
-  text: message,
-  timestamp: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-  date: formattedDate
-};
+      console.log("API Response:", response.data);
 
-      setMessages(prev => [...prev, newMessage]);
-      setMessage("");
+      if (response.data.success) {
+        console.log("Message sent successfully");
+        setMessages(prev => [...prev, response.data.message]);
+        setMessage("");
+      } else {
+        console.log("Message sending failed:", response.data);
+        setError(response.data.msg || "Failed to send message");
+      }
     } catch (err) {
+      console.error("\n=== Error Sending Message ===");
+      console.error("Error details:", {
+        status: err.response?.status,
+        statusText: err.response?.statusText,
+        data: err.response?.data,
+        message: err.message
+      });
       setError("Failed to send message. Please try again.");
     } finally {
       setIsLoading(false);
@@ -113,9 +168,9 @@ const newMessage = {
   return (
     <div className="student-communication">
       <Navbar />
-      <div className="dashboard-container d-flex">
+      <div className="student-communication__layout">
         <Sidebar />
-        <div className="dashboard-content">
+        <div className="student-communication__content">
           <div className="d-flex justify-content-between align-items-center mb-4">
             <h1 className="dashboard-title">💬 Chat with Supervisor</h1>
             <Button 
@@ -173,7 +228,16 @@ const newMessage = {
                     type="text"
                     placeholder="Type your message..."
                     value={message}
-                    onChange={(e) => setMessage(e.target.value)}
+                    onChange={(e) => {
+                      console.log("Message input changed:", e.target.value);
+                      setMessage(e.target.value);
+                    }}
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        console.log("Enter key pressed");
+                        sendMessage(e);
+                      }
+                    }}
                     disabled={isLoading}
                     className="message-input"
                   />
@@ -182,6 +246,10 @@ const newMessage = {
                     variant="primary"
                     disabled={isLoading || !message.trim()}
                     className="send-button"
+                    onClick={(e) => {
+                      console.log("Send button clicked");
+                      sendMessage(e);
+                    }}
                   >
                     <FaPaperPlane />
                   </Button>

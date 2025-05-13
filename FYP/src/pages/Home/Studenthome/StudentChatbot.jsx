@@ -11,7 +11,7 @@ const Chatbot = () => {
   const [messages, setMessages] = useState([
     { 
       sender: "bot", 
-      text: "Hello! How can I assist you today?", 
+      text: "Hello! I'm your Questify FYP Portal assistant. How can I help you with your project today?", 
       timestamp: new Date(),
       status: "delivered"
     },
@@ -21,6 +21,40 @@ const Chatbot = () => {
   const [error, setError] = useState(null);
   const chatBoxRef = useRef(null);
   const navigate = useNavigate();
+
+  // System prompt for the chatbot
+  const systemPrompt = `You are an AI assistant for the "Questify FYP Portal", a web platform built for Lahore Garrison University.
+You ONLY assist users with tasks, questions, and issues related to this platform. Do NOT answer general queries.
+
+Available Features:
+1. Project Proposal Submission
+   - Submit project proposals
+   - Upload proposal documents
+   - Add team members
+   - Track proposal status
+
+2. Document Management
+   - Upload SRS documents
+   - Upload system diagrams
+   - Upload final reports
+   - Track document status and feedback
+
+3. Communication
+   - Chat with supervisors
+   - Schedule Google Meet sessions
+   - View and respond to feedback
+   - Track project progress
+
+4. Project Tracking
+   - View milestone deadlines
+   - Track project status
+   - Monitor evaluation progress
+   - View grading and feedback
+
+If the user asks about anything unrelated to these features (like entertainment, unrelated tech, personal advice), respond:
+"I can only assist with Questify FYP Portal-related queries. Please ask me about project proposals, document submissions, communication with supervisors, or project tracking."
+
+Always maintain a professional and helpful tone.`;
 
   // Check authentication on component mount
   useEffect(() => {
@@ -60,13 +94,13 @@ const Chatbot = () => {
         .map(msg => `${msg.sender === "user" ? "User" : "Assistant"}: ${msg.text}`)
         .join("\n");
 
-      // Make request to Gemini API using the free endpoint
+      // Make request to Gemini API with system prompt
       const response = await axios.post(
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyAiLOVFF-L8FblJ9NFglOqvHQM6emwEJV8`,
         {
           contents: [{
             parts: [{
-              text: `Context:\n${contextPrompt}\n\nUser: ${input}\n\nAssistant:`
+              text: `${systemPrompt}\n\nContext:\n${contextPrompt}\n\nUser: ${input}\n\nAssistant:`
             }]
           }]
         },
@@ -155,17 +189,17 @@ const Chatbot = () => {
   };
 
   return (
-    <div className="chat-container">
-      <h2 className="chat-header">AI Chatbot</h2>
-      <div className="chat-box" ref={chatBoxRef}>
+    <div className="student-chatbot">
+      <h2 className="student-chatbot__header">AI Chatbot</h2>
+      <div className="student-chatbot__chat-box" ref={chatBoxRef}>
         {messages.map((msg, index) => (
-          <div key={index} className={`chat-message-container ${msg.sender}`}>
-            <div className={`chat-message ${msg.sender}`}>
-              <div className="message-content">{msg.text}</div>
-              <div className="message-meta">
-                <span className="timestamp">{formatTimestamp(msg.timestamp)}</span>
+          <div key={index} className={`student-chatbot__message-container student-chatbot__message-container--${msg.sender}`}>
+            <div className={`student-chatbot__message student-chatbot__message--${msg.sender}`}>
+              <div className="student-chatbot__message-content">{msg.text}</div>
+              <div className="student-chatbot__message-meta">
+                <span className="student-chatbot__timestamp">{formatTimestamp(msg.timestamp)}</span>
                 {msg.sender === "user" && (
-                  <span className={`status ${msg.status}`}>
+                  <span className={`student-chatbot__status student-chatbot__status--${msg.status}`}>
                     {msg.status === "sending" && <Loader2 size={12} />}
                     {msg.status === "error" && "❌"}
                   </span>
@@ -175,21 +209,21 @@ const Chatbot = () => {
           </div>
         ))}
         {isTyping && (
-          <div className="chat-message-container bot">
-            <div className="chat-message bot typing">
-              <Loader2 size={16} className="typing-indicator" />
+          <div className="student-chatbot__message-container student-chatbot__message-container--bot">
+            <div className="student-chatbot__message student-chatbot__message--bot student-chatbot__message--typing">
+              <Loader2 size={16} className="student-chatbot__typing-indicator" />
             </div>
           </div>
         )}
       </div>
-      {error && <div className="error-message">{error}</div>}
-      <div className="chat-input-container">
-        <button className="attachment-button">
+      {error && <div className="student-chatbot__error">{error}</div>}
+      <div className="student-chatbot__input-container">
+        <button className="student-chatbot__attachment-button">
           <Paperclip size={20} />
         </button>
         <input
           type="text"
-          className="chat-input"
+          className="student-chatbot__input"
           placeholder="Ask me anything..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -198,7 +232,7 @@ const Chatbot = () => {
         />
         <button 
           onClick={handleSend} 
-          className="chat-send-button"
+          className="student-chatbot__send-button"
           disabled={isTyping || !input.trim()}
         >
           <Send size={20} />
@@ -210,11 +244,13 @@ const Chatbot = () => {
 
 const ChatbotPage = () => {
   return (
-    <div className="chatbot-page">
+    <div className="student-chatbot-page">
       <Navbar />
-      <div className="content">
+      <div className="student-chatbot__layout">
         <Sidebar />
-        <Chatbot />
+        <div className="student-chatbot__content">
+          <Chatbot />
+        </div>
       </div>
     </div>
   );

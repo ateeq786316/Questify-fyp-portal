@@ -1,47 +1,61 @@
 .student-track-progress {
+    min-height: 100vh;
     background-size: cover;
     background-position: center;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
 }
 
-.dashboard-container {
+.student-track-progress__layout {
     display: flex;
+    flex-direction: row;
+    margin-top: 60px; /* Adjust to your navbar height */
+    min-height: calc(100vh - 64px);
+    margin-left: var(--sidebar-width, 80px); /* Dynamic margin for sidebar */
+    transition: margin-left 0.3s cubic-bezier(.4,0,.2,1);
+}
+
+.student-track-progress__content {
     flex: 1;
-    padding-left: 50px;
-    padding-top: 0px; /* Prevents content from hiding under navbar */
+    padding: 32px 24px;
+    background: rgba(255,255,255,0.95);
+    min-height: calc(100vh - 64px);
+    z-index: 1;
 }
 
-.dashboard-content {
-    padding: 20px;
-    background: rgba(255, 255, 255, 0.9); /* Light background for readability */
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin: 20px;
-    width: 100%;
-    overflow: auto;
-}
-
-.progress-section {
+.student-track-progress__section {
     margin-bottom: 20px;
 }
 
-.progress-bar {
+.student-track-progress__bar {
     height: 30px;
     font-size: 16px;
 }
 
-.milestones-section table {
+.student-track-progress__table {
     width: 100%;
 }
 
-.milestones-section .completed {
-    background-color: #d4edda;
+.student-track-progress__milestone--completed {
+    background-color: rgba(40, 167, 69, 0.1) !important;
 }
 
-.milestones-section .pending {
-    background-color: #f8d7da;
+.student-track-progress__milestone--completed td {
+    color: #28a745;
+}
+
+.student-track-progress__milestone--pending {
+    background-color: rgba(255, 193, 7, 0.1) !important;
+}
+
+.student-track-progress__milestone--pending td {
+    color: #ffc107;
+}
+
+.student-track-progress__milestone--upcoming {
+    background-color: rgba(108, 117, 125, 0.1) !important;
+}
+
+.student-track-progress__milestone--upcoming td {
+    color: #6c757d;
 }
 
 .feedback-section {
@@ -54,4 +68,45 @@
     padding: 15px;
     background: #e2e3e5;
     border-radius: 5px;
+}
+
+/* Loading State */
+.student-track-progress__loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px;
+}
+
+/* Feedback Text */
+.student-track-progress__feedback {
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid #0056b3;
+    font-style: italic;
+    color: #333;
+}
+
+.student-track-progress__status--completed {
+    color: #28a745;
+    font-weight: bold;
+}
+.student-track-progress__status--pending {
+    color: #ffc107;
+    font-weight: bold;
+}
+.student-track-progress__status--upcoming {
+    color: #6c757d;
+    font-weight: bold;
+}
+.student-track-progress__step {
+    color: #222;
+    font-weight: 600;
+}
+
+@layer components {
+  .student-track-progress {
+    @apply min-h-screen flex flex-col;
+  }
 }

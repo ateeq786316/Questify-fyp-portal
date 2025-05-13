@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "papaparse": "^5.5.2"
+    "papaparse": "^5.5.2",
+    "react-toastify": "^11.0.5"
   }
 }

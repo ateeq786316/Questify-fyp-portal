@@ -25,7 +25,12 @@ const userSchema = new mongoose.Schema({
       ref: "User",
     },
   ],
-  groupID: { type: String, required: true },
+  groupID: {
+    type: String,
+    required: function () {
+      return this.role === "student";
+    },
+  },
   projectTitle: { type: String },
   projectDescription: { type: String },
   projectCategory: {
@@ -74,8 +79,14 @@ const userSchema = new mongoose.Schema({
 
   //Feedback Fields: feedbackSenderId, feedbackMessage, feedbackDate, Feedback fields applicable to all users.
   feedbackSenderId: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // Reference to sender
-  feedbackMessage: { type: String },
-  feedbackDate: { type: Date, default: Date.now },
+  feedbackMessage: {
+    type: String,
+    default: null,
+  },
+  feedbackDate: {
+    type: Date,
+    default: null,
+  },
 
   //EndedAt: endedAt, EndedAt for project completion.
   startDate: { type: Date },
@@ -87,5 +98,10 @@ const userSchema = new mongoose.Schema({
   //submission
   // endedAt: { type: Date, default: Date.now }
 });
+
+// Add method to compare passwords
+userSchema.methods.comparePassword = function (candidatePassword) {
+  return this.password === candidatePassword;
+};
 
 module.exports = mongoose.model("User", userSchema);
