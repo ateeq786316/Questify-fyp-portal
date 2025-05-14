@@ -439,6 +439,15 @@ exports.createSupervisorRequest = async (req, res) => {
     const { supervisorId } = req.body;
     const studentId = req.user.id;
 
+    // Get student details to get project information
+    const student = await User.findById(studentId);
+    if (!student) {
+      return res.status(404).json({
+        success: false,
+        msg: "Student not found",
+      });
+    }
+
     // Check if student already has a pending request
     const existingRequest = await SupervisorRequest.findOne({
       studentId,
@@ -452,10 +461,12 @@ exports.createSupervisorRequest = async (req, res) => {
       });
     }
 
-    // Create new request
+    // Create new request with project details
     const request = new SupervisorRequest({
       studentId,
       supervisorId,
+      projectTitle: student.projectTitle || "Not specified",
+      projectDescription: student.projectDescription || "Not specified",
     });
 
     await request.save();
@@ -499,37 +510,43 @@ exports.getStudentRequests = async (req, res) => {
 // Supervisor login
 exports.supervisorLogin = async (req, res) => {
   const { email, password } = req.body;
-  console.log("\n=== Supervisor Login Attempt ===");
-  console.log("Email:", email);
+  console.log("Supervisor login attempt with:", email);
 
   try {
     const supervisor = await User.findOne({ email, role: "supervisor" });
     if (!supervisor) {
-      console.log("Supervisor not found");
-      return res.status(404).json({ msg: "Supervisor not found" });
+      return res
+        .status(404)
+        .json({ success: false, msg: "Supervisor not found" });
     }
 
-    if (supervisor.password !== password) {
-      console.log("Invalid credentials for supervisor:", supervisor.name);
-      return res.status(400).json({ msg: "Invalid credentials" });
+    // Use the comparePassword method
+    const isMatch = supervisor.comparePassword(password);
+    if (!isMatch) {
+      return res
+        .status(400)
+        .json({ success: false, msg: "Invalid credentials" });
     }
 
+    // Generate JWT token
     const token = generateToken(supervisor);
-    console.log("Supervisor logged in successfully:");
-    console.log("Name:", supervisor.name);
-    console.log("Token:", token);
 
+    // Remove password from response
     const supervisorData = supervisor.toObject();
     delete supervisorData.password;
 
+    // Send token and supervisor details in response
     res.status(200).json({
       success: true,
       token,
       supervisor: supervisorData,
     });
+    console.log("Generated supervisor token:", token);
   } catch (err) {
     console.error("Supervisor login error:", err);
-    res.status(500).json({ msg: "Server error", error: err.message });
+    res
+      .status(500)
+      .json({ success: false, msg: "Server error", error: err.message });
   }
 };
 

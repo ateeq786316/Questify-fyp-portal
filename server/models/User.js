@@ -64,7 +64,7 @@ const userSchema = new mongoose.Schema({
 
   //Supervisor Fields:name, email, password, contact, role, supervisorId, supervisorExpertise, currentStudents.
   supervisorId: { type: String },
-  supervisorExpertise: { type: String },
+  supervisorExpertise: [{ type: String }],
   currentGroupId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 
   //Internal Fields:name, email, password, contact, role, internalId, internalExpertise

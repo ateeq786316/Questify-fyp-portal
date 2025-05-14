@@ -1,176 +1,326 @@
-import React, { useState } from 'react';
-import './ReviewDocument.css'; // Import the CSS file
+import React, { useState, useEffect } from 'react';
+import '../../../styles/ReviewDocument.css';
 import Navbar from '../../../components/Navbar';
-
+import { Link } from 'react-router-dom';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const ReviewDocument = () => {
-  // Hardcoded data for projects and documents
-  const projects = [
-    {
-      id: 1,
-      title: 'AI Model for Healthcare',
-      members: ['Ali', 'Sarah', 'John'],
-      documents: [
-        { name: 'Project_Report.doc', type: 'doc', path: '../components/os theory notes.docx' },
-        { name: 'Presentation.ppt', type: 'ppt', path: '/path/to/Presentation.ppt' },
-        { name: 'Research_Paper.pdf', type: 'pdf', path: '/path/to/Research_Paper.pdf' },
-      ],
-    },
-    {
-      id: 2,
-      title: 'E-commerce Website Development',
-      members: ['Ahmed', 'Fatima', 'Zain'],
-      documents: [
-        { name: 'Project_Plan.doc', type: 'doc', path: '/path/to/Project_Plan.doc' },
-        { name: 'Design_Slides.ppt', type: 'ppt', path: '/path/to/Design_Slides.ppt' },
-        { name: 'Final_Report.pdf', type: 'pdf', path: '/path/to/Final_Report.pdf' },
-      ],
-    },
-    {
-      id: 3,
-      title: 'Data Analysis Tool',
-      members: ['Hassan', 'Ayesha', 'Usman'],
-      documents: [
-        { name: 'Analysis_Report.doc', type: 'doc', path: '/path/to/Analysis_Report.doc' },
-        { name: 'Data_Slides.ppt', type: 'ppt', path: '/path/to/Data_Slides.ppt' },
-        { name: 'Findings.pdf', type: 'pdf', path: '/path/to/Findings.pdf' },
-      ],
-    },
-  ];
+  // State for groups and documents
+  const [groups, setGroups] = useState([]);
+  const [selectedGroup, setSelectedGroup] = useState(null);
+  const [documents, setDocuments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [feedback, setFeedback] = useState({});
+  const [submitting, setSubmitting] = useState(false);
+  const [updatingStatus, setUpdatingStatus] = useState(false);
 
-  // State to manage the selected project
-  const [selectedProject, setSelectedProject] = useState(null);
+  // Fetch supervisor's assigned groups
+  useEffect(() => {
+    const fetchGroups = async () => {
+      try {
+        setLoading(true);
+        const token = localStorage.getItem('supervisorToken');
+        console.log('Supervisor token:', token); // Debug log
 
-  // State to manage the selected document
-  const [selectedDocument, setSelectedDocument] = useState(null);
+        if (!token) {
+          throw new Error('No authentication token found');
+        }
 
-  // State to manage comments for each file
-  const [comments, setComments] = useState({});
+        const response = await axios.get('http://localhost:5000/api/supervisor/groups', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        console.log('API Response:', response.data); // Debug log
 
-  // State to manage confirmation messages
-  const [confirmation, setConfirmation] = useState({});
+        if (response.data.success) {
+          setGroups(response.data.groups);
+        } else {
+          throw new Error(response.data.msg || 'Failed to fetch groups');
+        }
+      } catch (err) {
+        console.error('Error fetching groups:', err);
+        console.error('Error details:', err.response?.data); // Debug log
+        setError(err.response?.data?.msg || 'Failed to fetch groups');
+        toast.error(err.response?.data?.msg || 'Failed to fetch groups');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  // Function to handle project selection
-  const handleProjectClick = (project) => {
-    setSelectedProject(project);
-    setSelectedDocument(null); // Clear selected document when a new project is selected
-    setConfirmation({}); // Clear previous confirmations
+    fetchGroups();
+  }, []);
+
+  // Fetch documents when a group is selected
+  useEffect(() => {
+    const fetchDocuments = async () => {
+      if (!selectedGroup) return;
+
+      try {
+        setLoading(true);
+        const token = localStorage.getItem('supervisorToken');
+        
+        // Get all student IDs from the group
+        const studentIds = selectedGroup.students?.map(student => student._id) || [];
+        console.log('Selected group:', selectedGroup);
+        console.log('Student IDs:', studentIds);
+        
+        // Fetch documents for all students in the group
+        const response = await axios.get(`http://localhost:5000/api/supervisor/documents`, {
+          headers: { Authorization: `Bearer ${token}` },
+          params: {
+            studentIds: studentIds.join(',')
+          }
+        });
+        console.log('Documents response:', response.data);
+
+        if (response.data.success) {
+          setDocuments(response.data.documents);
+          // Initialize feedback state for each document
+          const initialFeedback = {};
+          response.data.documents.forEach(doc => {
+            initialFeedback[doc._id] = doc.feedback || '';
+          });
+          setFeedback(initialFeedback);
+        } else {
+          throw new Error(response.data.msg || 'Failed to fetch documents');
+        }
+      } catch (err) {
+        console.error('Error fetching documents:', err);
+        console.error('Error details:', err.response?.data);
+        setError(err.response?.data?.msg || 'Failed to fetch documents');
+        toast.error(err.response?.data?.msg || 'Failed to fetch documents');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDocuments();
+  }, [selectedGroup]);
+
+  // Handle group selection
+  const handleGroupClick = (group) => {
+    setSelectedGroup(group);
+    setDocuments([]);
+    setFeedback({});
   };
 
-  // Function to handle document selection
-  const handleDocumentClick = (doc) => {
-    setSelectedDocument(doc);
-  };
-
-  // Function to handle comment input change
-  const handleCommentChange = (fileName, comment) => {
-    setComments((prevComments) => ({
-      ...prevComments,
-      [fileName]: comment,
+  // Handle feedback change
+  const handleFeedbackChange = (docId, value) => {
+    setFeedback(prev => ({
+      ...prev,
+      [docId]: value
     }));
   };
 
-  // Function to handle "Done" button click
-  const handleDoneClick = (fileName) => {
-    setConfirmation((prevConfirmation) => ({
-      ...prevConfirmation,
-      [fileName]: `Comment saved for ${fileName}`,
-    }));
+  // Handle feedback submission
+  const handleSubmitFeedback = async (docId) => {
+    try {
+      setSubmitting(true);
+      const token = localStorage.getItem('supervisorToken');
+      const response = await axios.post(
+        `http://localhost:5000/api/supervisor/documents/${docId}/feedback`,
+        { feedback: feedback[docId] },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (response.data.success) {
+        toast.success('Feedback submitted successfully');
+        // Update document status in the local state
+        setDocuments(prev => prev.map(doc => 
+          doc._id === docId 
+            ? { ...doc, status: 'reviewed', feedback: feedback[docId] }
+            : doc
+        ));
+      } else {
+        throw new Error(response.data.msg || 'Failed to submit feedback');
+      }
+    } catch (err) {
+      console.error('Error submitting feedback:', err);
+      toast.error(err.response?.data?.msg || 'Failed to submit feedback');
+    } finally {
+      setSubmitting(false);
+    }
   };
+
+  // Handle document preview
+  const handlePreviewDocument = (doc) => {
+    const token = localStorage.getItem('supervisorToken');
+    const url = `http://localhost:5000/api/supervisor/documents/${doc._id}/file`;
+    
+    // Create a hidden iframe to handle the file download
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+    
+    // Add the token to the URL as a query parameter
+    const urlWithToken = `${url}?token=${token}`;
+    
+    // Set the iframe src to trigger the download
+    iframe.src = urlWithToken;
+    
+    // Remove the iframe after a short delay
+    setTimeout(() => {
+      document.body.removeChild(iframe);
+    }, 1000);
+  };
+
+  // Handle status update
+  const handleStatusUpdate = async (docId, newStatus) => {
+    try {
+      setUpdatingStatus(true);
+      const token = localStorage.getItem('supervisorToken');
+      const response = await axios.put(
+        `http://localhost:5000/api/supervisor/documents/${docId}/status`,
+        { status: newStatus },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (response.data.success) {
+        // Update document status in the local state
+        setDocuments(prev => prev.map(doc => 
+          doc._id === docId 
+            ? { ...doc, status: newStatus }
+            : doc
+        ));
+        toast.success(`Document status updated to ${newStatus}`);
+      } else {
+        throw new Error(response.data.msg || 'Failed to update status');
+      }
+    } catch (err) {
+      console.error('Error updating document status:', err);
+      toast.error(err.response?.data?.msg || 'Failed to update status');
+    } finally {
+      setUpdatingStatus(false);
+    }
+  };
+
+  if (loading && !selectedGroup) {
+  return (
+      <div className="review-document">
+        <Navbar />
+    <div className="dashboard-container">
+      <div className="sidebar">
+            <Link to="/supervisordashboard">Home</Link>
+            <Link to="/reviewdocument" className="active">Review Document</Link>
+            <Link to="#evaluate">Evaluate</Link>
+            <Link to="#about">About</Link>
+          </div>
+          <div className="main-content">
+            <div className="loading">Loading groups...</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="dashboard-container">
-      <Navbar/>
-      {/* Sidebar */}
-      <div className="sidebar">
-        <a className="active" href="#home">Dashboard</a>
-        <a href="#review">Review Document</a>
-        <a href="#evaluate">Evaluate</a>
-        <a href="#about">About</a>
-      </div>
-
-      {/* Main Content */}
+    <div className="review-document">
+      <Navbar />
+      <div className="dashboard-container">
+        <div className="sidebar">
+          <Link to="/supervisordashboard">Home</Link>
+          <Link to="/reviewdocument" className="active">Review Document</Link>
+          <Link to="#evaluate">Evaluate</Link>
+          <Link to="#about">About</Link>
+        </div>
       <div className="main-content">
-        <div className="review-document">
-          <h1>Review Document Page</h1>
-          <p>This is where you review documents.</p>
+          <div className="review-document-section">
+            <h2>Review Documents</h2>
+            
+            {loading && <div className="loading">Loading...</div>}
+            {error && <div className="error">{error}</div>}
 
-          {/* Projects List */}
-          <div className="projects-list">
-            <h2>Projects</h2>
-            <table>
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Project Title</th>
-                  <th>Group Members</th>
-                </tr>
-              </thead>
-              <tbody>
-                {projects.map((project) => (
-                  <tr key={project.id} onClick={() => handleProjectClick(project)}>
-                    <td>{project.id}</td>
-                    <td>{project.title}</td>
-                    <td>{project.members.join(', ')}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div className="groups-list">
+              {groups.map((group) => (
+                <div
+                  key={group._id}
+                  className={`group-item ${selectedGroup?._id === group._id ? 'selected' : ''}`}
+                  onClick={() => handleGroupClick(group)}
+                >
+                  <h4>Group {group.groupId}</h4>
+                  <p>Project: {group.projectTitle}</p>
+                  <p>Status: {group.status}</p>
+                  <p>Students: {group.students?.map(student => student.name).join(', ') || 'No students assigned'}</p>
+                </div>
+              ))}
           </div>
 
-          {/* Display Uploaded Documents for Selected Project */}
-          {selectedProject && (
-            <div className="uploaded-documents">
-              <h2>Uploaded Documents for {selectedProject.title}</h2>
-              <ul>
-                {selectedProject.documents.map((doc, index) => (
-                  <li key={index} className="file-item">
-                    <div className="file-info" onClick={() => handleDocumentClick(doc)}>
-                      <span className={`file-icon ${doc.type}`}></span>
-                      {doc.name}
+            {selectedGroup && (
+              <div className="documents-section">
+                <h3>Documents for Group {selectedGroup.groupId}</h3>
+                {documents.length === 0 ? (
+                  <p>No documents found for this group.</p>
+                ) : (
+                  <div className="documents-list">
+                    {documents.map((doc) => (
+                      <div key={doc._id} className="document-item">
+                        <div className="document-info">
+                          <h4>{doc.title}</h4>
+                          <p>Uploaded by: {doc.uploadedBy?.name || 'Unknown'}</p>
+                          <p>Status: {doc.status}</p>
+                          <p>Uploaded on: {new Date(doc.createdAt).toLocaleDateString()}</p>
+                        </div>
+                        <div className="document-actions">
+                          <button
+                            className="preview-btn"
+                            onClick={() => handlePreviewDocument(doc)}
+                          >
+                            Preview
+                          </button>
+                          <div className="status-buttons">
+                            <button
+                              className={`status-btn ${doc.status === 'pending' ? 'active' : ''}`}
+                              onClick={() => handleStatusUpdate(doc._id, 'pending')}
+                              disabled={updatingStatus || doc.status === 'pending'}
+                            >
+                              Pending
+                            </button>
+                            <button
+                              className={`status-btn ${doc.status === 'reviewed' ? 'active' : ''}`}
+                              onClick={() => handleStatusUpdate(doc._id, 'reviewed')}
+                              disabled={updatingStatus || doc.status === 'reviewed'}
+                            >
+                              Reviewed
+                            </button>
+                            <button
+                              className={`status-btn ${doc.status === 'approved' ? 'active' : ''}`}
+                              onClick={() => handleStatusUpdate(doc._id, 'approved')}
+                              disabled={updatingStatus || doc.status === 'approved'}
+                            >
+                              Approved
+                            </button>
+                            <button
+                              className={`status-btn ${doc.status === 'rejected' ? 'active' : ''}`}
+                              onClick={() => handleStatusUpdate(doc._id, 'rejected')}
+                              disabled={updatingStatus || doc.status === 'rejected'}
+                            >
+                              Rejected
+                            </button>
                     </div>
-                    <div className="comment-section">
+                          <div className="feedback-section">
                       <textarea
-                        placeholder="Add your comments here..."
-                        value={comments[doc.name] || ''}
-                        onChange={(e) => handleCommentChange(doc.name, e.target.value)}
+                              value={feedback[doc._id] || ''}
+                              onChange={(e) => handleFeedbackChange(doc._id, e.target.value)}
+                              placeholder="Enter your feedback..."
+                              disabled={doc.status === 'approved'}
                       />
                       <button
-                        className="done-button"
-                        onClick={() => handleDoneClick(doc.name)}
+                              className="submit-btn"
+                              onClick={() => handleSubmitFeedback(doc._id)}
+                              disabled={submitting || doc.status === 'approved'}
                       >
-                        Done
+                              {submitting ? 'Submitting...' : 'Submit Feedback'}
                       </button>
-                      {confirmation[doc.name] && (
-                        <p className="confirmation-message">{confirmation[doc.name]}</p>
-                      )}
+                          </div>
+                        </div>
                     </div>
-                  </li>
                 ))}
-              </ul>
             </div>
           )}
-
-          {/* Display Selected Document */}
-          {selectedDocument && (
-            <div className="document-viewer">
-              <h3>Viewing: {selectedDocument.name}</h3>
-              {selectedDocument.type === 'pdf' ? (
-                <iframe
-                  src={selectedDocument.path}
-                  width="100%"
-                  height="500px"
-                  title={selectedDocument.name}
-                />
-              ) : (
-                <p>
-                  <a href={selectedDocument.path} target="_blank" rel="noopener noreferrer">
-                    Open : {selectedDocument.name} 
-                  </a>
-                </p>
+              </div>
               )}
             </div>
-          )}
         </div>
       </div>
     </div>

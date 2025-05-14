@@ -11,6 +11,7 @@ const {
   getAllSupervisors,
   createSupervisorRequest,
   getStudentRequests,
+  chatbot,
 } = require("../controllers/auth_Controller");
 const {
   uploadDocument,
@@ -21,9 +22,82 @@ const {
   getConversation,
   sendMessage,
 } = require("../controllers/chat_Controller");
-const upload = require("../middleware/uploadMiddleware");
-const { verifyToken } = require("../utils/token");
+const multer = require("multer");
+const path = require("path");
+const fs = require("fs");
+const jwt = require("jsonwebtoken");
 const Document = require("../models/Document");
+const { verifyToken } = require("../utils/token");
+
+// Configure multer storage
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const fileType = req.body.fileType || "proposals";
+    const uploadPath = path.join(__dirname, "..", "uploads", fileType);
+
+    // Create directory if it doesn't exist
+    if (!fs.existsSync(uploadPath)) {
+      fs.mkdirSync(uploadPath, { recursive: true });
+    }
+
+    cb(null, uploadPath);
+  },
+  filename: function (req, file, cb) {
+    // Create unique filename with original extension
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, uniqueSuffix + path.extname(file.originalname));
+  },
+});
+
+// File filter
+const fileFilter = (req, file, cb) => {
+  // Accept PDF, DOC, DOCX, and image files
+  const allowedTypes = [
+    "application/pdf",
+    "application/msword",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "image/jpeg",
+    "image/png",
+    "image/gif",
+  ];
+
+  if (allowedTypes.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(
+      new Error(
+        "Invalid file type. Only PDF, Word documents, and images are allowed."
+      ),
+      false
+    );
+  }
+};
+
+// Configure multer upload with increased file size limit
+const upload = multer({
+  storage: storage,
+  fileFilter: fileFilter,
+  limits: {
+    fileSize: 50 * 1024 * 1024, // 50MB limit
+  },
+});
+
+// Error handling middleware for Multer
+const handleMulterError = (err, req, res, next) => {
+  if (err instanceof multer.MulterError) {
+    if (err.code === "LIMIT_FILE_SIZE") {
+      return res.status(400).json({
+        success: false,
+        msg: "File size too large. Maximum size is 50MB.",
+      });
+    }
+    return res.status(400).json({
+      success: false,
+      msg: `Upload error: ${err.message}`,
+    });
+  }
+  next(err);
+};
 
 // Auth middleware
 const authMiddleware = (req, res, next) => {
@@ -65,10 +139,105 @@ router.get("/student/details", authMiddleware, getStudentDetails);
 // Document routes
 router.post(
   "/documents/upload",
-  authMiddleware,
-  studentMiddleware,
   upload.single("file"),
-  uploadDocument
+  handleMulterError,
+  async (req, res) => {
+    try {
+      const token = req.headers.authorization?.split(" ")[1];
+      if (!token) {
+        return res
+          .status(401)
+          .json({ success: false, msg: "No token provided" });
+      }
+
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      if (!decoded || decoded.role !== "student") {
+        return res.status(401).json({ success: false, msg: "Invalid token" });
+      }
+
+      if (!req.file) {
+        return res
+          .status(400)
+          .json({ success: false, msg: "No file uploaded" });
+      }
+
+      const { title, description, fileType } = req.body;
+      if (!title || !description || !fileType) {
+        // Delete uploaded file if validation fails
+        if (req.file) {
+          fs.unlinkSync(req.file.path);
+        }
+        return res.status(400).json({
+          success: false,
+          msg: "Title, description, and file type are required",
+        });
+      }
+
+      // Check if student already has a document of this type
+      const existingDoc = await Document.findOne({
+        uploadedBy: decoded.id,
+        fileType: fileType,
+      });
+
+      // If document exists and was rejected, allow new upload
+      if (existingDoc && existingDoc.status === "rejected") {
+        // Delete the old file
+        try {
+          const oldFilePath = path.join(__dirname, "..", existingDoc.filePath);
+          if (fs.existsSync(oldFilePath)) {
+            fs.unlinkSync(oldFilePath);
+          }
+        } catch (err) {
+          console.error("Error deleting old file:", err);
+        }
+
+        // Delete the old document
+        await Document.findByIdAndDelete(existingDoc._id);
+      }
+      // If document exists and wasn't rejected, return error
+      else if (existingDoc) {
+        // Delete the newly uploaded file since we won't use it
+        fs.unlinkSync(req.file.path);
+        return res.status(400).json({
+          success: false,
+          msg: `You already have a ${fileType} document that is ${existingDoc.status}. Please wait for it to be rejected before uploading a new one.`,
+        });
+      }
+
+      // Create new document
+      const document = new Document({
+        title,
+        description,
+        fileType,
+        filePath: req.file.path.replace(/\\/g, "/"), // Convert Windows path to URL format
+        uploadedBy: decoded.id,
+        status: "pending",
+      });
+
+      await document.save();
+
+      res.status(201).json({
+        success: true,
+        msg: "Document uploaded successfully",
+        document,
+      });
+    } catch (err) {
+      console.error("Error uploading document:", err);
+      // If there was an error and a file was uploaded, delete it
+      if (req.file) {
+        try {
+          fs.unlinkSync(req.file.path);
+        } catch (unlinkErr) {
+          console.error("Error deleting uploaded file:", unlinkErr);
+        }
+      }
+      res.status(500).json({
+        success: false,
+        msg: "Error uploading document",
+        error: err.message,
+      });
+    }
+  }
 );
 router.get("/documents/:userId?", authMiddleware, getUserDocuments);
 router.delete(

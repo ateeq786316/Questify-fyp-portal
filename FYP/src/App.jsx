@@ -51,7 +51,7 @@ function App() {
   return (
     <Router>
       <AuthProvider>
-        <ToastContainer position="top-bottom" autoClose={3000} />
+        <ToastContainer position="top-right" autoClose={3000} />
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<LandingPage />} />
@@ -151,6 +151,7 @@ function App() {
 
           {/* Test Route */}
           <Route path='/test' element={<Test />} />
+          <Route path='/supervisor/reviewdocument' element={<ReviewDocument/>} />
         </Routes>
       </AuthProvider>
     </Router>

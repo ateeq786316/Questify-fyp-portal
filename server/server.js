@@ -8,6 +8,7 @@ const authRoutes = require("./routes/auth");
 const adminRoutes = require("./routes/adminRoutes");
 const milestoneRoutes = require("./routes/milestone");
 const studentRoutes = require("./routes/student");
+const supervisorRoutes = require("./routes/supervisor");
 require("dotenv").config();
 
 // Import controllers
@@ -27,15 +28,31 @@ connectDB();
 const app = express();
 
 // Create uploads directory if it doesn't exist
-const uploadsDir = path.join(__dirname, "uploads", "proposals");
+const uploadsDir = path.join(__dirname, "uploads");
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
+
+// Create subdirectories for different document types
+const documentTypes = [
+  "proposals",
+  "srs",
+  "finalReports",
+  "diagrams",
+  "slides",
+];
+documentTypes.forEach((type) => {
+  const dir = path.join(uploadsDir, type);
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+});
 
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Serve static files from uploads directory
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
@@ -45,10 +62,11 @@ app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/milestones", milestoneRoutes);
 app.use("/api/student", studentRoutes);
+app.use("/api/supervisor", supervisorRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+  console.error("Error:", err);
   res.status(500).json({
     success: false,
     msg: "Something went wrong!",
