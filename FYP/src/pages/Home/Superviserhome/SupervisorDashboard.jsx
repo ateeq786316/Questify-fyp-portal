@@ -71,7 +71,7 @@ const SupervisorDashboard = () => {
       <div className="sidebar">
         <Link to="/supervisordashboard" className="active">Home</Link>
         <Link to="/supervisor/reviewdocument">Review Document</Link>
-        <Link to="#evaluate">Evaluate</Link>
+        <Link to="/supervisor/evaluate">Evaluate</Link>
         <Link to="#about">About</Link>
       </div>
 

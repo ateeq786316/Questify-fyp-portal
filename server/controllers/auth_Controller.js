@@ -8,6 +8,7 @@ const { sanitizeInput } = require("../utils/sanitizer");
 const Milestone = require("../models/Milestone");
 const Document = require("../models/Document");
 const SupervisorRequest = require("../models/SupervisorRequest");
+const Evaluation = require("../models/Evaluation");
 require("dotenv").config();
 
 exports.studentLogin = async (req, res) => {
@@ -58,6 +59,16 @@ exports.getStudentDetails = async (req, res) => {
 
     if (!student) return res.status(404).json({ msg: "Student not found" });
 
+    // Get student's evaluation
+    let evaluation = null;
+    try {
+      evaluation = await Evaluation.findOne({ student: student._id })
+        .populate("project", "title description")
+        .lean();
+    } catch (err) {
+      console.error("Error fetching evaluation:", err);
+    }
+
     // Get milestones
     const milestones = await Milestone.find().sort({ deadline: 1 }).lean();
 
@@ -90,6 +101,16 @@ exports.getStudentDetails = async (req, res) => {
           ? new Date(student.submissionDate).toISOString()
           : null,
       },
+      evaluation: evaluation
+        ? {
+            supervisorMarks: evaluation.supervisorMarks || null,
+            internalMarks: evaluation.internalMarks || null,
+            externalMarks: evaluation.externalMarks || null,
+            status: evaluation.status || "pending",
+            evaluatedAt: evaluation.evaluatedAt || null,
+            updatedAt: evaluation.updatedAt || null,
+          }
+        : null,
       teamMembers:
         student.teamMembers?.map((member) => ({
           name: member.name || "Not Available",

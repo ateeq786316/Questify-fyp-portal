@@ -29,6 +29,7 @@ import StudentCommunication from './pages/Home/Studenthome/StudentCommunication.
 import SupervisorLogin from './pages/Home/Superviserhome/Supervisorlogin.jsx'
 import SupervisorDashboard from './pages/Home/Superviserhome/SupervisorDashboard.jsx'
 import ReviewDocument from './pages/Home/Superviserhome/ReviewDocument.jsx'
+import SupervisorEvaluate from './pages/Home/Superviserhome/SupervisorEvaluate.jsx'
 
 // internal
 import InternalLogin from './pages/Home/Internalhome/InternalLogin.jsx';
@@ -36,6 +37,8 @@ import InternalDashboard from './pages/Home/Internalhome/InternalDashboard.jsx'
 
 // external
 import ExternalLogin from './pages/Home/Externalhome/ExternalLogin.jsx';
+import ExternalDashboard from './pages/Home/Externalhome/ExternalDashboard.jsx';
+import ExternalEvaluate from './pages/Home/Externalhome/ExternalEvaluate.jsx';
 
 // admin
 import AdminLogin from './pages/Home/Adminhome/AdminLogin.jsx'
@@ -114,9 +117,14 @@ function App() {
               <SupervisorDashboard />
             </ProtectedRoute>
           } />
-          <Route path='/reviewdocument' element={
+          <Route path='/supervisor/reviewdocument' element={
             <ProtectedRoute>
               <ReviewDocument />
+            </ProtectedRoute>
+          } />
+          <Route path='/supervisor/evaluate' element={
+            <ProtectedRoute>
+              <SupervisorEvaluate />
             </ProtectedRoute>
           } />
 
@@ -149,9 +157,20 @@ function App() {
             </ProtectedRoute>
           } />
 
+          {/* External Routes */}
+          <Route path='/externaldashboard' element={
+            <ProtectedRoute>
+              <ExternalDashboard />
+            </ProtectedRoute>
+          } />
+          <Route path='/external/evaluate' element={
+            <ProtectedRoute>
+              <ExternalEvaluate />
+            </ProtectedRoute>
+          } />
+
           {/* Test Route */}
           <Route path='/test' element={<Test />} />
-          <Route path='/supervisor/reviewdocument' element={<ReviewDocument/>} />
         </Routes>
       </AuthProvider>
     </Router>

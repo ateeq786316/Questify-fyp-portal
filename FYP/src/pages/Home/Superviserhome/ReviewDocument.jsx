@@ -202,8 +202,8 @@ const ReviewDocument = () => {
     <div className="dashboard-container">
       <div className="sidebar">
             <Link to="/supervisordashboard">Home</Link>
-            <Link to="/reviewdocument" className="active">Review Document</Link>
-            <Link to="#evaluate">Evaluate</Link>
+            <Link to="/supervisor/reviewdocument" className="active">Review Document</Link>
+            <Link to="/supervisor/evaluate">Evaluate</Link>
             <Link to="#about">About</Link>
           </div>
           <div className="main-content">
@@ -220,8 +220,8 @@ const ReviewDocument = () => {
       <div className="dashboard-container">
         <div className="sidebar">
           <Link to="/supervisordashboard">Home</Link>
-          <Link to="/reviewdocument" className="active">Review Document</Link>
-          <Link to="#evaluate">Evaluate</Link>
+          <Link to="/supervisor/reviewdocument" className="active">Review Document</Link>
+          <Link to="/supervisor/evaluate">Evaluate</Link>
           <Link to="#about">About</Link>
         </div>
       <div className="main-content">

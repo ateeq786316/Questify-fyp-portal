@@ -9,6 +9,8 @@ const adminRoutes = require("./routes/adminRoutes");
 const milestoneRoutes = require("./routes/milestone");
 const studentRoutes = require("./routes/student");
 const supervisorRoutes = require("./routes/supervisor");
+const internalRoutes = require("./routes/internal");
+const externalRoutes = require("./routes/external");
 require("dotenv").config();
 
 // Import controllers
@@ -55,7 +57,28 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Serve static files from uploads directory
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use(
+  "/uploads",
+  express.static(path.join(__dirname, "uploads"), {
+    setHeaders: (res, path) => {
+      res.set("Content-Disposition", "inline");
+    },
+    fallthrough: false, // This will make Express return 404 for missing files
+  })
+);
+
+// Add error handling for static files
+app.use((err, req, res, next) => {
+  if (err.status === 404 && req.path.startsWith("/uploads/")) {
+    console.error("File not found:", req.path);
+    return res.status(404).json({
+      success: false,
+      msg: "File not found",
+      path: req.path,
+    });
+  }
+  next(err);
+});
 
 // Routes
 app.use("/api/auth", authRoutes);
@@ -63,6 +86,8 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/milestones", milestoneRoutes);
 app.use("/api/student", studentRoutes);
 app.use("/api/supervisor", supervisorRoutes);
+app.use("/api/internal", internalRoutes);
+app.use("/api/external", externalRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

@@ -30,7 +30,7 @@ exports.uploadDocument = async (req, res) => {
     // Create new document record
     const document = new Document({
       fileType,
-      filePath: req.file.path,
+      filePath: req.file.path.replace(/\\/g, "/"),
       uploadedBy: studentId,
       title: title || req.file.originalname,
       description: description || "",

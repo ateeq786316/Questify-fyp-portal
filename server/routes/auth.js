@@ -209,7 +209,9 @@ router.post(
         title,
         description,
         fileType,
-        filePath: req.file.path.replace(/\\/g, "/"), // Convert Windows path to URL format
+        filePath: path
+          .join(fileType, path.basename(req.file.path))
+          .replace(/\\/g, "/"), // Store relative path
         uploadedBy: decoded.id,
         status: "pending",
       });

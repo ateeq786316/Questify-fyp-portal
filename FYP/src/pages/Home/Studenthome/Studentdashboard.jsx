@@ -164,10 +164,10 @@ const StudentDashboard = () => {
             </div>
           </div>
           
-          {/* Top 4 Cards */}
+          {/* Top Cards - 3 per row */}
           <div className="row g-3 mb-4">
             {/* Student Info Card */}
-            <div className="col-md-3">
+            <div className="col-md-4">
               <div className="card text-center p-3">
                 <FaUserGraduate className="icon" />
                 <h3>Student Info</h3>
@@ -182,7 +182,7 @@ const StudentDashboard = () => {
             </div>
 
             {/* Project Info Card */}
-            <div className="col-md-3">
+            <div className="col-md-4">
               <div className="card text-center p-3">
                 <FaProjectDiagram className="icon" />
                 <h3>Project Details</h3>
@@ -200,8 +200,99 @@ const StudentDashboard = () => {
               </div>
             </div>
 
+            {/* Evaluation Card */}
+            <div className="col-md-12">
+              <div className="card">
+                <h3>Evaluation</h3>
+                {studentDetails?.evaluation ? (
+                  <div className="evaluation-marks">
+                    <div className="evaluator-mark">
+                      <h5>Supervisor Evaluation</h5>
+                      <div className="mark">
+                        {studentDetails.evaluation.supervisorMarks?.marks ? (
+                          <>
+                            <span>{studentDetails.evaluation.supervisorMarks.marks}</span>
+                            <span>/ 50</span>
+                          </>
+                        ) : (
+                          <span>Not evaluated</span>
+                        )}
+                      </div>
+                      <div className="feedback">
+                        {studentDetails.evaluation.supervisorMarks?.feedback || "No feedback provided"}
+                      </div>
+                      {studentDetails.evaluation.supervisorMarks?.evaluatedAt && (
+                        <small>Evaluated on: {new Date(studentDetails.evaluation.supervisorMarks.evaluatedAt).toLocaleDateString()}</small>
+                      )}
+                    </div>
+
+                    <div className="evaluator-mark">
+                      <h5>Internal Evaluation</h5>
+                      <div className="mark">
+                        {studentDetails.evaluation.internalMarks?.marks ? (
+                          <>
+                            <span>{studentDetails.evaluation.internalMarks.marks}</span>
+                            <span>/ 50</span>
+                          </>
+                        ) : (
+                          <span>Not evaluated</span>
+                        )}
+                      </div>
+                      <div className="feedback">
+                        {studentDetails.evaluation.internalMarks?.feedback || "No feedback provided"}
+                      </div>
+                      {studentDetails.evaluation.internalMarks?.evaluatedAt && (
+                        <small>Evaluated on: {new Date(studentDetails.evaluation.internalMarks.evaluatedAt).toLocaleDateString()}</small>
+                      )}
+                    </div>
+
+                    <div className="evaluator-mark">
+                      <h5>External Evaluation</h5>
+                      <div className="mark">
+                        {studentDetails.evaluation.externalMarks?.marks ? (
+                          <>
+                            <span>{studentDetails.evaluation.externalMarks.marks}</span>
+                            <span>/ 50</span>
+                          </>
+                        ) : (
+                          <span>Not evaluated</span>
+                        )}
+                      </div>
+                      <div className="feedback">
+                        {studentDetails.evaluation.externalMarks?.feedback || "No feedback provided"}
+                      </div>
+                      {studentDetails.evaluation.externalMarks?.evaluatedAt && (
+                        <small>Evaluated on: {new Date(studentDetails.evaluation.externalMarks.evaluatedAt).toLocaleDateString()}</small>
+                      )}
+                    </div>
+
+                    <div className="total-mark">
+                      <h5>Total Marks</h5>
+                      <div className="mark">
+                        {(() => {
+                          const total = [
+                            studentDetails.evaluation.supervisorMarks?.marks || 0,
+                            studentDetails.evaluation.internalMarks?.marks || 0,
+                            studentDetails.evaluation.externalMarks?.marks || 0
+                          ].reduce((sum, mark) => sum + mark, 0);
+                          return (
+                            <>
+                              <span>{total}</span>
+                              <span>/ 150</span>
+                            </>
+                          );
+                        })()}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <p>No evaluation available</p>
+                )}
+              </div>
+            </div>
+
             {/* Supervisor Info Card */}
-            <div className="col-md-3">
+            <div className="col-md-4">
               <div className="card text-center p-3">
                 <FaChalkboardTeacher className="icon" />
                 <h3>Supervisor</h3>
@@ -215,7 +306,7 @@ const StudentDashboard = () => {
             </div>
 
             {/* Timeline Card */}
-            <div className="col-md-3">
+            <div className="col-md-4">
               <div className="card text-center p-3">
                 <FaCalendarAlt className="icon" />
                 <h3>Timeline</h3>
@@ -240,37 +331,23 @@ const StudentDashboard = () => {
                 <p><strong>Group ID:</strong> {studentDetails?.groupID}</p>
               </div>
             </div>
-          </div>
 
-          {/* Team Members Section */}
-          <div className="row mb-4">
-            <div className="col-12">
-              <div className="card p-3">
-                <h2>👥 Team Members</h2>
-                <div className="row">
-                  {studentDetails?.teamMembers?.length > 0 ? (
-                    studentDetails.teamMembers.map((member, index) => (
-                      <div key={index} className="col-md-4 mb-3">
-                        <div className="card h-100">
-                          <div className="card-body">
-                            <h5 className="card-title">{member.name}</h5>
-                            <p className="card-text">
-                              <strong>ID:</strong> {member.studentId}<br />
-                              <strong>Program:</strong> {member.program}<br />
-                              <strong>Department:</strong> {member.department}<br />
-                              <strong>CGPA:</strong> {member.cgpa}<br />
-                              <strong>Email:</strong> {member.email}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="col-12">
-                      <p className="text-center">No team members assigned</p>
+            {/* Team Members Card */}
+            <div className="col-md-4">
+              <div className="card text-center p-3">
+                <FaUserGraduate className="icon" />
+                <h3>Team Members</h3>
+                {studentDetails?.teamMembers?.length > 0 ? (
+                  studentDetails.teamMembers.map((member, index) => (
+                    <div key={index} className="team-member">
+                      <p><strong>{member.name}</strong></p>
+                      <p>ID: {member.studentId}</p>
+                      <p>Program: {member.program}</p>
                     </div>
-                  )}
-                </div>
+                  ))
+                ) : (
+                  <p>No team members assigned</p>
+                )}
               </div>
             </div>
           </div>

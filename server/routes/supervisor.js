@@ -7,6 +7,8 @@ const Document = require("../models/Document");
 const path = require("path");
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
+const supervisorController = require("../controllers/supervisor_Controller");
+const { protect, authorize } = require("../middleware/auth");
 
 // Middleware to verify supervisor token
 const supervisorAuth = async (req, res, next) => {
@@ -347,21 +349,32 @@ router.get("/documents/:documentId/file", async (req, res) => {
         .json({ success: false, msg: "Document not found" });
     }
 
-    // Use the filePath directly since it's already stored with the correct path
-    const filePath = document.filePath;
+    // Construct the file path relative to the uploads directory
+    const filePath = path.join(__dirname, "..", "uploads", document.filePath);
 
     // Check if file exists
     if (!fs.existsSync(filePath)) {
       console.error("File not found:", filePath);
-      return res.status(404).json({ success: false, msg: "File not found" });
+      return res.status(404).json({
+        success: false,
+        msg: "File not found",
+        path: document.filePath,
+      });
     }
 
+    // Set appropriate headers
+    res.setHeader("Content-Type", "application/octet-stream");
+    res.setHeader("Content-Disposition", "inline");
+
+    // Send the file
     res.sendFile(filePath);
   } catch (err) {
     console.error("Error serving document file:", err);
-    res
-      .status(500)
-      .json({ success: false, msg: "Error serving document file" });
+    res.status(500).json({
+      success: false,
+      msg: "Error serving document file",
+      error: err.message,
+    });
   }
 });
 
@@ -427,5 +440,29 @@ router.put("/documents/:documentId/status", async (req, res) => {
       .json({ success: false, msg: "Error updating document status" });
   }
 });
+
+// Get assigned students
+router.get(
+  "/students",
+  protect,
+  authorize("supervisor"),
+  supervisorController.getAssignedStudents
+);
+
+// Get evaluations
+router.get(
+  "/evaluations",
+  protect,
+  authorize("supervisor"),
+  supervisorController.getEvaluations
+);
+
+// Evaluate student
+router.post(
+  "/evaluate",
+  protect,
+  authorize("supervisor"),
+  supervisorController.evaluateStudent
+);
 
 module.exports = router;
