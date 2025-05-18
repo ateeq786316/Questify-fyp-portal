@@ -1,20 +1,11 @@
-/* Dashboard Layout */
-.admin-dashboard {
-    min-height: 100vh;
-    background-color: #f5f5f5;
-    font-family: Arial, Helvetica, sans-serif;
-    padding-top: 40px;
-  }
-  
-
-  /* Base Styles */
+/* Admin Dashboard Styles */
 .admin-dashboard {
   display: flex;
   min-height: 100vh;
   background-color: #f5f5f5;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   transition: all 0.3s ease;
-
+  padding-top: 40px;
 }
 
 /* Sidebar Styles */
@@ -87,12 +78,14 @@
   margin-left: 250px;
   flex: 1;
   transition: all 0.3s ease;
+  background-color: #ade0ff;
 }
 
 .dashboard-content {
   padding: 25px;
   max-width: 1200px;
   margin: 0 auto;
+  background-color: rgb(201, 249, 250);
 }
 
 /* Collapsed Sidebar */
@@ -135,6 +128,199 @@
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
+/* Stats Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-top: 30px;
+}
+
+.stat-card {
+  background: #a7a7b8;
+  border-radius: 10px;
+  padding: 20px;
+  /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
+  text-align: center;
+  min-height: 140px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+}
+
+.stat-number {
+  font-size: 2rem;
+  /* font-weight: bold; */
+  color: #000000;
+  margin: 10px 0;
+}
+
+.status-group {
+  margin-top: 10px;
+}
+
+.status-group p {
+  margin: 8px 0;
+  font-size: 0.95rem;
+}
+
+.status-group span {
+  /* font-weight: bold; */
+  color: #000000;
+}
+
+/* Data Section */
+.data-section {
+  display: flex;
+  gap: 30px;
+  margin-top: 40px;
+  
+}
+
+.student-list {
+  flex: 1;
+  background: linear-gradient(45deg, #fff1eb, #ace0f9);
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  position: relative;
+  padding-bottom: 50px;
+}
+.student-groups-container{
+  background: linear-gradient(45deg, #fff1eb, #ace0f9);
+}
+
+.chart-container {
+  flex: 1;
+  background: linear-gradient(45deg, #fff1eb, #ace0f9);
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Table Styles */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+/* th, td {
+  padding: 14px;
+  text-align: left;
+  
+} */
+td{
+  background: #d8dc9f;
+  letter-spacing: 0.5px;
+}
+th {
+  background: #fbe9d5;
+  font-weight: 600;
+  color: #485f78;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+}
+
+tr:hover {
+  background-color: #366491;
+}
+
+/* Milestones Section */
+.milestones-section {
+  background: linear-gradient(45deg, #fff1eb, #ace0f9);
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-top: 40px;
+}
+
+.milestones-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 25px;
+  margin-top: 25px;
+}
+
+.milestone-card {
+  padding: 20px;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  background-color: #A7A7B8;
+  transition: all 0.3s ease;
+}
+
+.milestone-card:hover {
+  border-color: #04AA6D;
+  box-shadow: 0 2px 8px rgba(4, 170, 109, 0.1);
+}
+
+/* Form Elements */
+.date-picker-input {
+  width: 100%;
+  margin-top: 5px;
+  padding: 12px;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  transition: border-color 0.3s;
+}
+
+.date-picker-input:focus {
+  outline: none;
+  border-color: #04AA6D;
+  
+}
+
+/* Buttons */
+.milestone-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+  gap: 15px;
+}
+
+.save-button,
+.add-milestone-button {
+  padding: 12px 25px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.3s;
+  flex: 1;
+}
+
+.save-button {
+  background-color: #04AA6D;
+  color: white;
+}
+
+.save-button:hover {
+  background-color: #038a5a;
+  transform: translateY(-2px);
+}
+
+.add-milestone-button {
+  background-color: #2196F3;
+  color: white;
+}
+
+.add-milestone-button:hover {
+  background-color: #0b7dda;
+  transform: translateY(-2px);
+}
+
 /* Responsive Styles */
 @media (max-width: 992px) {
   .sidebar {
@@ -170,733 +356,56 @@
   .mobile-sidebar-toggle {
     display: block;
   }
+
+  .data-section {
+    flex-direction: column;
+  }
+  
+  .student-list, .chart-container {
+    width: 100%;
+  }
 }
 
-/* See More Button */
-.see-more-btn {
-  display: block;
-  margin: 20px auto 0;
-  padding: 10px 25px;
-  background-color: #04AA6D;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 0.95rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .stat-card {
+    min-height: auto;
+    padding: 15px;
+  }
+  
+  .milestone-actions {
+    flex-direction: column;
+  }
+  
+  .save-button, 
+  .add-milestone-button {
+    width: 100%;
+  }
 }
 
-.see-more-btn:hover {
-  background-color: #038a5a;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(4, 170, 109, 0.2);
-}
-
-.see-more-btn:active {
-  transform: translateY(0);
-}
-
-/* Rest of your existing CSS remains the same */
-/* ... (include all your existing styles below this point) */
+@media (max-width: 576px) {
   h1 {
-    text-align: center;
-    color: #333;
-    margin-bottom: 20px;
+    font-size: 1.8rem;
   }
   
   h2 {
-    margin-bottom: 15px;
-    color: #333;
-    font-size: 1.3rem;
-  }
-  
-  h3 {
-    color: #333;
-    font-size: 1.1rem;
-  }
-  
-  .dashboard-content {
-    padding: 20px;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-  
-  /* Stats Grid Styles */
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    margin-top: 30px;
-  }
-  
-  /* Stat Cards */
-  .stat-card {
-    background: white;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    min-height: 140px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    transition: transform 0.3s ease;
-  }
-  
-  .stat-card:hover {
-    transform: translateY(-5px);
-  }
-  
-  .stat-card h3 {
-    font-size: 1.1rem;
-    margin-bottom: 10px;
-    color: #333;
+    font-size: 1.2rem;
   }
   
   .stat-number {
-    font-size: 2rem;
-    font-weight: bold;
-    color: #04AA6D;
-    margin: 10px 0;
-  }
-  
-  .status-group {
-    margin-top: 10px;
-  }
-  
-  .status-group p {
-    margin: 8px 0;
-    font-size: 0.95rem;
-  }
-  
-  .status-group span {
-    font-weight: bold;
-    color: #04AA6D;
-  }
-  
-  /* Data Section - Student List and Pie Chart */
-  .data-section {
-    display: flex;
-    gap: 30px;
-    margin-top: 40px;
-  }
-  
-  .student-list {
-    flex: 1;
-    background: white;
-    padding: 25px;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  .chart-container {
-    flex: 1;
-    background: white;
-    padding: 25px;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  /* Table Styles */
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 15px;
-  }
-  
-  th, td {
-    padding: 14px;
-    text-align: left;
-    border-bottom: 1px solid #e0e0e0;
-  }
-  
-  th {
-    background-color: #f8f9fa;
-    font-weight: 600;
-    color: #495057;
-    text-transform: uppercase;
-    font-size: 0.85rem;
-    letter-spacing: 0.5px;
-  }
-  
-  tr:hover {
-    background-color: #f8f9fa;
-  }
-
-
-
-  /* Add this to your existing AdminDashboard.css file */
-.student-list {
-  position: relative; /* Add this to contain the absolute positioned button */
-  padding-bottom: 50px; /* Add space at bottom for the button */
-}
-
-.student-list button {
-  position: absolute;
-  right: 20px;
-  bottom: 20px;
-  padding: 8px 16px;
-  background-color: #8c94e5;
-  color: white;
-  border: 1px solid #04AA6D;
-  border-radius: 4px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.student-list button:hover {
-  background-color: #6571ea;
-  color: white;
-}
-
-.student-list button:active {
-  transform: scale(0.98);
-}
-
-/* Optional: Add a small icon */
-.student-list button::after {
-  content: ' ›';
-  font-weight: bold;
-}
-
-.student-list button:hover::after {
-  content: ' ››';
-}
-  
-  /* Milestones Section */
-  .milestones-section {
-    background: white;
-    padding: 25px;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin-top: 40px;
+    font-size: 1.8rem;
   }
   
   .milestones-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 25px;
-    margin-top: 25px;
+    grid-template-columns: 1fr;
   }
   
-  .milestone-card {
-    padding: 20px;
-    border: 1px solid #e9ecef;
-    border-radius: 8px;
-    background-color: #f8f9fa;
-    transition: all 0.3s ease;
-  }
-  
-  .milestone-card:hover {
-    border-color: #04AA6D;
-    box-shadow: 0 2px 8px rgba(4, 170, 109, 0.1);
-  }
-  
-  .milestone-card h3 {
-    margin-bottom: 18px;
-    color: #212529;
-    font-size: 1.05rem;
-    font-weight: 600;
-  }
-  
-  .date-picker-input {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #ced4da;
-    border-radius: 6px;
-    font-size: 0.95rem;
-    transition: border-color 0.3s;
-  }
-  
-  .date-picker-input:focus {
-    outline: none;
-    border-color: #04AA6D;
-  }
-  
-  /* Milestone Actions */
-  .milestone-actions {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 30px;
-    gap: 15px;
-  }
-  
-  .save-button {
-    padding: 12px 25px;
-    background-color: #04AA6D;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 500;
-    transition: all 0.3s;
-    flex: 1;
-  }
-  
-  .save-button:hover {
-    background-color: #038a5a;
-    transform: translateY(-2px);
-  }
-  
-  .add-milestone-button {
-    padding: 12px 25px;
-    background-color: #2196F3;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 500;
-    transition: all 0.3s;
-    flex: 1;
-  }
-  
-  .add-milestone-button:hover {
-    background-color: #0b7dda;
-    transform: translateY(-2px);
-  }
-  
-  /* Add Milestone Field */
-  .add-milestone-field {
-    display: flex;
-    gap: 15px;
-    margin-top: 25px;
-    align-items: center;
-    background-color: #f8f9fa;
-    padding: 20px;
-    border-radius: 8px;
-    border: 1px dashed #adb5bd;
-  }
-  
-  .milestone-input {
-    flex: 3;
-    padding: 12px;
-    border: 1px solid #ced4da;
-    border-radius: 6px;
-    font-size: 0.95rem;
-    transition: border-color 0.3s;
-  }
-  
-  .milestone-input:focus {
-    outline: none;
-    border-color: #04AA6D;
-  }
-  
-  .add-button {
-    padding: 12px 20px;
-    background-color: #28a745;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: all 0.3s;
-    flex: 1;
-  }
-  
-  .add-button:hover {
-    background-color: #218838;
-    transform: translateY(-2px);
-  }
-  
-  .cancel-button {
-    padding: 12px 20px;
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: all 0.3s;
-    flex: 1;
-  }
-  
-  .cancel-button:hover {
-    background-color: #c82333;
-    transform: translateY(-2px);
-  }
-  
-  /* Saved Milestones List */
-  .saved-milestones {
-    margin-top: 40px;
-    background-color: #f8f9fa;
-    padding: 25px;
-    border-radius: 10px;
-    border: 1px solid #e9ecef;
-  }
-  
-  .saved-milestones h3 {
-    margin-bottom: 20px;
-    color: #212529;
-    font-size: 1.2rem;
-    font-weight: 600;
-    padding-bottom: 10px;
-    border-bottom: 2px solid #04AA6D;
-  }
-  
-  .milestones-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 15px;
-  }
-  
-  .milestones-table th, 
-  .milestones-table td {
-    padding: 15px;
-    text-align: left;
-    border-bottom: 1px solid #e9ecef;
-  }
-  
-  .milestones-table th {
-    background-color: #e9ecef;
-    color: #495057;
-    font-weight: 600;
-  }
-  
-  .milestones-table tr:last-child td {
-    border-bottom: none;
-  }
-  
-  /* Date Picker Customization */
-  .react-datepicker {
-    font-family: Arial, Helvetica, sans-serif;
-    border-radius: 8px;
-    border: 1px solid #e9ecef;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  }
-  
-  .react-datepicker__header {
-    background-color: #f8f9fa;
-    border-bottom: 1px solid #e9ecef;
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
-  }
-  
-  .react-datepicker__current-month,
-  .react-datepicker__day-name {
-    color: #495057;
-    font-weight: 500;
-  }
-  
-  .react-datepicker__day {
-    color: #212529;
-    transition: all 0.2s;
-  }
-  
-  .react-datepicker__day:hover {
-    background-color: #e9ecef;
-  }
-  
-  .react-datepicker__day--selected {
-    background-color: #04AA6D;
-    color: white;
-  }
-  
-  .react-datepicker__day--selected:hover {
-    background-color: #038a5a;
-  }
-  
-  .react-datepicker__navigation {
-    top: 15px;
-  }
-  
-  /* Responsive Styles */
-  @media (max-width: 1200px) {
-    .dashboard-content {
-      padding: 15px;
-    }
-  }
-  
-  @media (max-width: 992px) {
-    .data-section {
-      flex-direction: column;
-    }
-    
-    .student-list, .chart-container {
-      width: 100%;
-    }
-    
-    .milestones-grid {
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    }
-  }
-  
-  @media (max-width: 768px) {
-    .stats-grid {
-      grid-template-columns: 1fr;
-      gap: 15px;
-    }
-    
-    .stat-card {
-      min-height: auto;
-      padding: 15px;
-    }
-    
-    .milestone-actions {
-      flex-direction: column;
-    }
-    
-    .save-button, 
-    .add-milestone-button {
-      width: 100%;
-    }
-    
-    .add-milestone-field {
-      flex-direction: column;
-    }
-    
-    .milestone-input,
-    .add-button,
-    .cancel-button {
-      width: 100%;
-    }
-  }
-  
-  @media (max-width: 576px) {
-    h1 {
-      font-size: 1.8rem;
-    }
-    
-    h2 {
-      font-size: 1.2rem;
-    }
-    
-    .stat-number {
-      font-size: 1.8rem;
-    }
-    
-    .milestones-grid {
-      grid-template-columns: 1fr;
-    }
-    
-    th, td {
-      padding: 10px;
-      font-size: 0.9rem;
-    }
-  }
-
-.loading-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 200px;
-  padding: 20px;
-}
-
-.loading-spinner {
-  border: 4px solid #f3f3f3;
-  border-top: 4px solid #04AA6D;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  animation: spin 1s linear infinite;
-  margin-bottom: 10px;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-.error-message {
-  background-color: #fff3f3;
-  border: 1px solid #ffcdd2;
-  border-radius: 4px;
-  padding: 15px;
-  margin: 20px 0;
-  color: #d32f2f;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-}
-
-.error-message button {
-  background-color: #04AA6D;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.error-message button:hover {
-  background-color: #038857;
-}
-
-.no-data {
-  text-align: center;
-  padding: 20px;
-  color: #666;
-  font-style: italic;
-}
-
-/* Upload Section Styles */
-.upload-section {
-  background: white;
-  padding: 2rem;
-  border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin-bottom: 2rem;
-}
-
-.upload-section h1 {
-  color: #333;
-  margin-bottom: 1.5rem;
-  font-size: 1.8rem;
-}
-
-.form-group {
-  margin-bottom: 1.5rem;
-}
-
-.form-group label {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-weight: 500;
-  color: #555;
-  margin-bottom: 0.5rem;
-}
-
-.upload-icon {
-  color: #4a90e2;
-  font-size: 1.2rem;
-}
-
-.date-picker-input {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  font-size: 1rem;
-  transition: border-color 0.2s;
-}
-
-.date-picker-input:hover {
-  border-color: #4a90e2;
-}
-
-.date-picker-input:focus {
-  border-color: #4a90e2;
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
-}
-
-.save-button {
-  background: #4a90e2;
-  color: white;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 5px;
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: background-color 0.2s;
-}
-
-.save-button:hover {
-  background: #357abd;
-}
-
-.save-button:disabled {
-  background: #ccc;
-  cursor: not-allowed;
-}
-
-.error-message {
-  color: #dc3545;
-  font-size: 0.9rem;
-  margin-top: 0.5rem;
-}
-
-.feedback-message {
-  margin-top: 1rem;
-  padding: 1rem;
-  border-radius: 5px;
-  font-size: 0.9rem;
-}
-
-.feedback-message.success {
-  background: #d4edda;
-  color: #155724;
-  border: 1px solid #c3e6cb;
-}
-
-.feedback-message.error {
-  background: #f8d7da;
-  color: #721c24;
-  border: 1px solid #f5c6cb;
-}
-
-/* Preview Section Styles */
-.preview-section {
-  background: white;
-  padding: 2rem;
-  border-radius: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.preview-section h2 {
-  color: #333;
-  margin-bottom: 1rem;
-  font-size: 1.5rem;
-}
-
-.table-container {
-  overflow-x: auto;
-  margin-top: 1rem;
-}
-
-.table-container table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.9rem;
-}
-
-.table-container th,
-.table-container td {
-  padding: 0.75rem;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
-}
-
-.table-container th {
-  background: #f8f9fa;
-  font-weight: 600;
-  color: #555;
-}
-
-.table-container tr:hover {
-  background: #f8f9fa;
-}
-
-/* Responsive Styles */
-@media (max-width: 768px) {
-  .upload-section,
-  .preview-section {
-    padding: 1rem;
-  }
-
-  .save-button {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .table-container {
-    margin: 0 -1rem;
+  th, td {
+    padding: 10px;
+    font-size: 0.9rem;
   }
 }
