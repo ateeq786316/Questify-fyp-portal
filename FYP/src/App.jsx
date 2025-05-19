@@ -46,6 +46,7 @@ import AdminDashboard from './pages/Home/Adminhome/AdminDashboard.jsx'
 import UserManagement from './pages/Home/Adminhome/UserManagement.jsx'
 import StudentUpload from './pages/Home/Adminhome/StudentUpload.jsx'
 import UploadSupervisors from './pages/Home/Adminhome/UploadSupervisors'
+import Milestones from './pages/Home/Adminhome/Milestones'
 
 // protected route
 import ProtectedRoute from './components/ProtectedRoute'
@@ -154,6 +155,11 @@ function App() {
           <Route path="/admin/upload-supervisors" element={
             <ProtectedRoute>
               <UploadSupervisors />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/milestones" element={
+            <ProtectedRoute>
+              <Milestones />
             </ProtectedRoute>
           } />
 
