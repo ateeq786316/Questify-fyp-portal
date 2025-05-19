@@ -4,6 +4,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { FaTrash, FaPlus, FaTimes, FaSave, FaBars, FaHome, FaUsers, FaCalendarAlt, FaCog, FaGraduationCap, FaChartPie } from 'react-icons/fa';
 import axios from 'axios';
+import '../../../styles/shared.css';
 import './AdminDashboard.css';
 import Navbar from "../../../components/Navbar";
 import { useNavigate, useLocation } from 'react-router-dom';

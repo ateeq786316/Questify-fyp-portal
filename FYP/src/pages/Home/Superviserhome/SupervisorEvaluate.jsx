@@ -4,6 +4,7 @@ import Navbar from '../../../components/Navbar';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import SupervisorSidebar from './SupervisorSidebar';
 
 const SupervisorEvaluate = () => {
   const [students, setStudents] = useState([]);
@@ -126,12 +127,7 @@ const SupervisorEvaluate = () => {
       <div className="supervisor-evaluate-page">
         <Navbar />
         <div className="supervisor-evaluate-container">
-          <div className="supervisor-evaluate-sidebar">
-            <Link to="/supervisordashboard">Home</Link>
-            <Link to="/supervisor/reviewdocument">Review Document</Link>
-            <Link to="/supervisor/evaluate" className="active">Evaluate</Link>
-            <Link to="#about">About</Link>
-          </div>
+          <SupervisorSidebar />
           <div className="supervisor-evaluate-content">
             <div className="supervisor-evaluate-loading">Loading students...</div>
           </div>
@@ -144,12 +140,7 @@ const SupervisorEvaluate = () => {
     <div className="supervisor-evaluate-page">
       <Navbar />
       <div className="supervisor-evaluate-container">
-        <div className="supervisor-evaluate-sidebar">
-          <Link to="/supervisordashboard">Home</Link>
-          <Link to="/supervisor/reviewdocument">Review Document</Link>
-          <Link to="/supervisor/evaluate" className="active">Evaluate</Link>
-          <Link to="#about">About</Link>
-        </div>
+        <SupervisorSidebar />
         <div className="supervisor-evaluate-content">
           <div className="supervisor-evaluate-section">
             <h2>Student Evaluation</h2>

@@ -242,7 +242,7 @@ html, body {
 }
 
 .tabs button.tab.active {
-  color: white;
+  color: black;
   background: var(--primary);
   box-shadow: 
     3px 3px 6px rgba(0, 0, 0, 0.1),

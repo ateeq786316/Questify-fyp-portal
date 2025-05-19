@@ -149,7 +149,7 @@ const InternalDashboard = () => {
               <div className="detail-item">
                 <h3>Department</h3>
                 <p>{internal.department || "Not Available"}</p>
-              </div>
+      </div>
               <div className="detail-item">
                 <h3>Expertise</h3>
                 <p>{internal.internalExpertise?.join(", ") || "Not Available"}</p>
@@ -197,15 +197,15 @@ const InternalDashboard = () => {
                         )}
                       </td>
                       <td>
-                        <input
-                          type="number"
+              <input
+                type="number"
                           min="0"
                           max="50"
                           value={evaluations[student._id] || 0}
                           onChange={(e) =>
                             handleEvaluationChange(student._id, parseInt(e.target.value))
                           }
-                          className="marks-input"
+                className="marks-input"
                         />
                       </td>
                       <td>
@@ -219,12 +219,12 @@ const InternalDashboard = () => {
                         />
                       </td>
                       <td>
-                        <button
+              <button
                           className="submit-evaluation"
                           onClick={() => handleSubmitEvaluation(student._id)}
-                        >
+              >
                           Submit
-                        </button>
+              </button>
                       </td>
                     </tr>
                   ))}

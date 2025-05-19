@@ -3,6 +3,7 @@ import '../../../styles/SupervisorDashboard.css'; // Custom CSS file for styling
 import Navbar from "../../../components/Navbar.jsx";
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
+import SupervisorSidebar from './SupervisorSidebar';
 
 const SupervisorDashboard = () => {
   const [supervisor, setSupervisor] = useState(null);
@@ -67,13 +68,7 @@ const SupervisorDashboard = () => {
       {/* Navbar */}
       <Navbar />
       {/* Sidebar */}
-      
-      <div className="sidebar">
-        <Link to="/supervisordashboard" className="active">Home</Link>
-        <Link to="/supervisor/reviewdocument">Review Document</Link>
-        <Link to="/supervisor/evaluate">Evaluate</Link>
-        <Link to="#about">About</Link>
-      </div>
+      <SupervisorSidebar />
 
       {/* Main Content */}
       <div className="main-content">

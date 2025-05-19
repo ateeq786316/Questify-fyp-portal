@@ -12,14 +12,11 @@ import {
   FiArrowLeft
 } from 'react-icons/fi';
 import { FaBars, FaHome as FaHomeIcon, FaUsers as FaUsersIcon, FaCalendarAlt, FaCog, FaGraduationCap, FaChartPie } from 'react-icons/fa';
+import '../../../styles/shared.css';
 import './UserManagement.css';
-import Navbar from '../../../components/Navbar';
+import AdminSidebarLayout from '../../../components/AdminSidebarLayout';
 
 const UserManagement = () => {
-  // Sidebar state
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-
   // User Management state
   const [activeTab, setActiveTab] = useState('students');
   const [searchTerm, setSearchTerm] = useState('');
@@ -145,161 +142,6 @@ const UserManagement = () => {
       isActive: false
     }
   ]);
-
-  // Sidebar toggle functions
-  const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen);
-  };
-
-  const toggleMobileSidebar = () => {
-    setMobileSidebarOpen(!mobileSidebarOpen);
-  };
-
-  // Validation functions
-  const validateStudentForm = () => {
-    const errors = {};
-    if (!newStudent.groupId.trim()) errors.groupId = 'Group ID is required';
-    if (!newStudent.project.trim()) errors.project = 'Project title is required';
-    newStudent.members.forEach((member, index) => {
-      if (!member.name.trim()) errors[`memberName${index}`] = 'Member name is required';
-      if (!member.email.trim()) errors[`memberEmail${index}`] = 'Member email is required';
-      else if (!/^\S+@\S+\.\S+$/.test(member.email)) errors[`memberEmail${index}`] = 'Invalid email format';
-    });
-    return errors;
-  };
-
-  const validateSupervisorForm = () => {
-    const errors = {};
-    if (!newSupervisor.name.trim()) errors.name = 'Name is required';
-    if (!newSupervisor.email.trim()) errors.email = 'Email is required';
-    else if (!/^\S+@\S+\.\S+$/.test(newSupervisor.email)) errors.email = 'Invalid email format';
-    if (!newSupervisor.department.trim()) errors.department = 'Department is required';
-    if (newSupervisor.maxGroups < 1) errors.maxGroups = 'Must be at least 1';
-    return errors;
-  };
-
-  const validateInternalForm = () => {
-    const errors = {};
-    if (!newInternal.name.trim()) errors.name = 'Name is required';
-    if (!newInternal.email.trim()) errors.email = 'Email is required';
-    else if (!/^\S+@\S+\.\S+$/.test(newInternal.email)) errors.email = 'Invalid email format';
-    if (!newInternal.domain.trim()) errors.domain = 'Domain is required';
-    return errors;
-  };
-
-  const validateExternalForm = () => {
-    const errors = {};
-    if (!newExternal.name.trim()) errors.name = 'Name is required';
-    if (!newExternal.email.trim()) errors.email = 'Email is required';
-    else if (!/^\S+@\S+\.\S+$/.test(newExternal.email)) errors.email = 'Invalid email format';
-    if (!newExternal.domain.trim()) errors.domain = 'Domain is required';
-    return errors;
-  };
-
-  // Add functions with validation
-  const addStudent = () => {
-    const errors = validateStudentForm();
-    if (Object.keys(errors).length > 0) {
-      setFormErrors({...formErrors, student: errors});
-      return;
-    }
-    
-    const newId = students.length > 0 ? Math.max(...students.map(s => s.id)) + 1 : 1;
-    setStudents([...students, { ...newStudent, id: newId }]);
-    setNewStudent({
-      groupId: '',
-      members: [{ name: '', email: '' }],
-      status: 'Pending',
-      isActive: true,
-      project: ''
-    });
-    setFormErrors({...formErrors, student: {}});
-    setIsAddingNew(false);
-  };
-
-  const addSupervisor = () => {
-    const errors = validateSupervisorForm();
-    if (Object.keys(errors).length > 0) {
-      setFormErrors({...formErrors, supervisor: errors});
-      return;
-    }
-    
-    const newId = supervisors.length > 0 ? Math.max(...supervisors.map(s => s.id)) + 1 : 1;
-    setSupervisors([...supervisors, { ...newSupervisor, id: newId }]);
-    setNewSupervisor({
-      name: '',
-      email: '',
-      isActive: true,
-      department: '',
-      maxGroups: 1
-    });
-    setFormErrors({...formErrors, supervisor: {}});
-    setIsAddingNew(false);
-  };
-
-  const addInternal = () => {
-    const errors = validateInternalForm();
-    if (Object.keys(errors).length > 0) {
-      setFormErrors({...formErrors, internal: errors});
-      return;
-    }
-    
-    const newId = internalUsers.length > 0 ? Math.max(...internalUsers.map(u => u.id)) + 1 : 1;
-    setInternalUsers([...internalUsers, { ...newInternal, id: newId }]);
-    setNewInternal({
-      name: '',
-      email: '',
-      domain: '',
-      isActive: true
-    });
-    setFormErrors({...formErrors, internal: {}});
-    setIsAddingNew(false);
-  };
-
-  const addExternal = () => {
-    const errors = validateExternalForm();
-    if (Object.keys(errors).length > 0) {
-      setFormErrors({...formErrors, external: errors});
-      return;
-    }
-    
-    const newId = externalUsers.length > 0 ? Math.max(...externalUsers.map(u => u.id)) + 1 : 1;
-    setExternalUsers([...externalUsers, { ...newExternal, id: newId }]);
-    setNewExternal({
-      name: '',
-      email: '',
-      domain: '',
-      isActive: true
-    });
-    setFormErrors({...formErrors, external: {}});
-    setIsAddingNew(false);
-  };
-
-  // Member management for student form
-  const handleMemberChange = (index, field, value) => {
-    const updatedMembers = [...newStudent.members];
-    updatedMembers[index][field] = value;
-    setNewStudent({ ...newStudent, members: updatedMembers });
-  };
-
-  const addMemberField = () => {
-    setNewStudent({ 
-      ...newStudent, 
-      members: [...newStudent.members, { name: '', email: '' }] 
-    });
-  };
-
-  const removeMemberField = (index) => {
-    const updatedMembers = [...newStudent.members];
-    updatedMembers.splice(index, 1);
-    setNewStudent({ ...newStudent, members: updatedMembers });
-    
-    // Clear errors for removed member
-    const errors = {...formErrors.student};
-    delete errors[`memberName${index}`];
-    delete errors[`memberEmail${index}`];
-    setFormErrors({...formErrors, student: errors});
-  };
 
   // Filter users based on search term
   useEffect(() => {
@@ -941,53 +783,7 @@ const UserManagement = () => {
   };
 
   return (
-    <div>
-      <Navbar/>
-    <div className={`user-management-container ${sidebarOpen ? 'sidebar-open' : 'sidebar-collapsed'}`}>
-      {/* Mobile Sidebar Toggle */}
-      <button className="mobile-sidebar-toggle" onClick={toggleMobileSidebar}>
-      <FaBars />
-    </button>
-
-      {/* Sidebar */}
-      <div className={`sidebar ${mobileSidebarOpen ? 'mobile-open' : ''}`}>
-        <div className="sidebar-header">
-          <h3>FYP Dashboard</h3>
-          <button className="sidebar-toggle" onClick={toggleSidebar}>
-            {sidebarOpen ? '◀' : '▶'}
-          </button>
-        </div>
-        
-        <ul className="sidebar-menu">
-          <li>
-            <FaHomeIcon className="sidebar-icon" />
-            {sidebarOpen && <span>Dashboard</span>}
-          </li>
-          <li className="active">
-            <FaGraduationCap className="sidebar-icon" />
-            {sidebarOpen && <span>Students</span>}
-          </li>
-          <li>
-            <FaUsersIcon className="sidebar-icon" />
-            {sidebarOpen && <span>Supervisors</span>}
-          </li>
-          <li>
-            <FaCalendarAlt className="sidebar-icon" />
-            {sidebarOpen && <span>Milestones</span>}
-          </li>
-          <li>
-            <FaChartPie className="sidebar-icon" />
-            {sidebarOpen && <span>Reports</span>}
-          </li>
-          <li>
-            <FaCog className="sidebar-icon" />
-            {sidebarOpen && <span>Settings</span>}
-          </li>
-        </ul>
-      </div>
-
-      {/* Main Content */}
-      <div className="main-content">
+    <AdminSidebarLayout>
         <div className="header">
           <h2><FiUsers className="icon" /> User Management System</h2>
           {!isAddingNew && (
@@ -1067,9 +863,7 @@ const UserManagement = () => {
             {renderAddForm()}
           </div>
         )}
-      </div>
-    </div>
-    </div>
+    </AdminSidebarLayout>
   );
 };
 

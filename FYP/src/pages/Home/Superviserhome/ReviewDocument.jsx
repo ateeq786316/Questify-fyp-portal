@@ -4,6 +4,7 @@ import Navbar from '../../../components/Navbar';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import SupervisorSidebar from './SupervisorSidebar';
 
 const ReviewDocument = () => {
   // State for groups and documents
@@ -200,12 +201,7 @@ const ReviewDocument = () => {
       <div className="review-document">
         <Navbar />
     <div className="dashboard-container">
-      <div className="sidebar">
-            <Link to="/supervisordashboard">Home</Link>
-            <Link to="/supervisor/reviewdocument" className="active">Review Document</Link>
-            <Link to="/supervisor/evaluate">Evaluate</Link>
-            <Link to="#about">About</Link>
-          </div>
+      <SupervisorSidebar />
           <div className="main-content">
             <div className="loading">Loading groups...</div>
           </div>
@@ -218,12 +214,7 @@ const ReviewDocument = () => {
     <div className="review-document">
       <Navbar />
       <div className="dashboard-container">
-        <div className="sidebar">
-          <Link to="/supervisordashboard">Home</Link>
-          <Link to="/supervisor/reviewdocument" className="active">Review Document</Link>
-          <Link to="/supervisor/evaluate">Evaluate</Link>
-          <Link to="#about">About</Link>
-        </div>
+        <SupervisorSidebar />
       <div className="main-content">
           <div className="review-document-section">
             <h2>Review Documents</h2>

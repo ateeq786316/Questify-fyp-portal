@@ -1,28 +1,24 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { FaUpload, FaFileExcel } from 'react-icons/fa';
 import axios from 'axios';
-import { FaUpload, FaFileExcel, FaSpinner } from 'react-icons/fa';
-import { toast } from 'react-toastify';
-import AdminSidebarLayout from '../../../components/AdminSidebarLayout';
+import '../../../styles/shared.css';
 import './UploadSupervisors.css';
+import AdminSidebarLayout from '../../../components/AdminSidebarLayout';
 
 const UploadSupervisors = () => {
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
+  const [success, setSuccess] = useState(null);
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
-    if (selectedFile) {
-      if (selectedFile.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
-          selectedFile.type === 'application/vnd.ms-excel') {
-        setFile(selectedFile);
-        setError(null);
-      } else {
-        setError('Please upload an Excel file (.xlsx or .xls)');
-        setFile(null);
-      }
+    if (selectedFile && selectedFile.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+      setFile(selectedFile);
+      setError(null);
+    } else {
+      setFile(null);
+      setError('Please select a valid Excel file (.xlsx)');
     }
   };
 
@@ -34,39 +30,31 @@ const UploadSupervisors = () => {
 
     setLoading(true);
     setError(null);
+    setSuccess(null);
 
     const formData = new FormData();
     formData.append('file', file);
 
     try {
       const token = localStorage.getItem('adminToken');
-      if (!token) {
-        throw new Error('No authentication token found');
-      }
-
-      const response = await axios.post(
-        'http://localhost:5000/api/admin/upload-supervisors',
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            'Authorization': `Bearer ${token}`
-          }
+      const response = await axios.post('http://localhost:5000/api/admin/supervisors/upload', formData, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
         }
-      );
+      });
 
       if (response.data.success) {
-        toast.success('Supervisors uploaded successfully!');
+        setSuccess('Supervisors uploaded successfully');
         setFile(null);
         // Reset file input
         document.getElementById('fileInput').value = '';
       } else {
-        throw new Error(response.data.msg || 'Upload failed');
+        setError(response.data.msg || 'Upload failed');
       }
     } catch (err) {
       console.error('Upload error:', err);
-      setError(err.response?.data?.msg || err.message || 'Failed to upload supervisors');
-      toast.error(err.response?.data?.msg || err.message || 'Failed to upload supervisors');
+      setError(err.response?.data?.msg || 'Failed to upload supervisors');
     } finally {
       setLoading(false);
     }
@@ -74,60 +62,41 @@ const UploadSupervisors = () => {
 
   return (
     <AdminSidebarLayout>
-      <div className="upload-supervisors-container">
-        <h1>Upload Supervisors</h1>
+      <div className="upload-container">
+        <h2><FaUpload className="icon" /> Upload Supervisors</h2>
         
-        <div className="upload-section">
-          <div className="upload-box">
+        <div className="upload-card">
+          <div className="upload-header">
             <FaFileExcel className="excel-icon" />
-            <h2>Upload Supervisor Data</h2>
-            <p>Upload an Excel file containing supervisor information</p>
-            
+            <h3>Upload Supervisor Data</h3>
+          </div>
+
+          <div className="upload-content">
+            <p>Upload an Excel file containing supervisor information.</p>
+            <p className="note">Note: File must be in .xlsx format</p>
+
             <div className="file-input-container">
               <input
                 type="file"
                 id="fileInput"
-                accept=".xlsx, .xls"
+                accept=".xlsx"
                 onChange={handleFileChange}
                 className="file-input"
               />
               <label htmlFor="fileInput" className="file-input-label">
-                Choose File
+                {file ? file.name : 'Choose File'}
               </label>
-              {file && <span className="file-name">{file.name}</span>}
             </div>
 
             {error && <div className="error-message">{error}</div>}
+            {success && <div className="success-message">{success}</div>}
 
             <button 
-              onClick={handleUpload} 
-              disabled={!file || loading}
               className="upload-button"
+              onClick={handleUpload}
+              disabled={!file || loading}
             >
-              {loading ? (
-                <>
-                  <FaSpinner className="spinner" />
-                  Uploading...
-                </>
-              ) : (
-                <>
-                  <FaUpload />
-                  Upload Supervisors
-                </>
-              )}
-            </button>
-          </div>
-
-          <div className="instructions-box">
-            <h3>Instructions</h3>
-            <ol>
-              <li>Download the template file</li>
-              <li>Fill in the supervisor information</li>
-              <li>Save the file in Excel format (.xlsx or .xls)</li>
-              <li>Upload the file using the form above</li>
-            </ol>
-            <button className="download-template-button">
-              Download Template
+              {loading ? 'Uploading...' : 'Upload Supervisors'}
             </button>
           </div>
         </div>
