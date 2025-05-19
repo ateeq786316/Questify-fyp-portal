@@ -1,44 +1,63 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import '../../../components/Sidebar.css';
+import styles from './SupervisorSidebar.module.css';
+
+const menuItems = [
+  { to: '/supervisordashboard', icon: '🏠', text: 'Home' },
+  { to: '/supervisor/reviewdocument', icon: '📄', text: 'Review Document' },
+  { to: '/supervisor/evaluate', icon: '✅', text: 'Evaluate' },
+  { to: '#about', icon: 'ℹ️', text: 'About', hash: true },
+];
 
 const SupervisorSidebar = () => {
+  const [isCollapsed, setIsCollapsed] = useState(true);
   const location = useLocation();
-  const isCollapsed = true; // Always start collapsed, can add state if you want expand/collapse
+
+  useEffect(() => {
+    document.documentElement.style.setProperty(
+      '--sidebar-width',
+      isCollapsed ? '80px' : '250px'
+    );
+    return () => {
+      document.documentElement.style.removeProperty('--sidebar-width');
+    };
+  }, [isCollapsed]);
+
   return (
-    <div className={`student-sidebar ${isCollapsed ? 'student-sidebar--collapsed' : ''}`}
-         onMouseEnter={e => e.currentTarget.classList.remove('student-sidebar--collapsed')}
-         onMouseLeave={e => e.currentTarget.classList.add('student-sidebar--collapsed')}
+    <div
+      className={
+        styles['supervisor-sidebar'] + (isCollapsed ? ' ' + styles['supervisor-sidebar--collapsed'] : '')
+      }
+      onMouseEnter={() => setIsCollapsed(false)}
+      onMouseLeave={() => setIsCollapsed(true)}
     >
-      {/* Sidebar Title */}
-      <h2 className={`student-sidebar__title ${isCollapsed ? 'student-sidebar__title--hidden' : ''}`}>
+      <h2 className={
+        styles['supervisor-sidebar__title'] + (isCollapsed ? ' ' + styles['supervisor-sidebar__title--hidden'] : '')
+      }>
         Supervisor Dashboard
       </h2>
-      <ul className="student-sidebar__menu">
-        <li className={`student-sidebar__item ${location.pathname === "/supervisordashboard" ? "student-sidebar__item--active" : ""}`}>
-          <Link to="/supervisordashboard" className="student-sidebar__link">
-            <span className="student-sidebar__icon">🏠</span>
-            {!isCollapsed && <span className="student-sidebar__text">Home</span>}
-          </Link>
-        </li>
-        <li className={`student-sidebar__item ${location.pathname === "/supervisor/reviewdocument" ? "student-sidebar__item--active" : ""}`}>
-          <Link to="/supervisor/reviewdocument" className="student-sidebar__link">
-            <span className="student-sidebar__icon">📄</span>
-            {!isCollapsed && <span className="student-sidebar__text">Review Document</span>}
-          </Link>
-        </li>
-        <li className={`student-sidebar__item ${location.pathname === "/supervisor/evaluate" ? "student-sidebar__item--active" : ""}`}>
-          <Link to="/supervisor/evaluate" className="student-sidebar__link">
-            <span className="student-sidebar__icon">✅</span>
-            {!isCollapsed && <span className="student-sidebar__text">Evaluate</span>}
-          </Link>
-        </li>
-        <li className={`student-sidebar__item ${location.hash === "#about" ? "student-sidebar__item--active" : ""}`}>
-          <Link to="#about" className="student-sidebar__link">
-            <span className="student-sidebar__icon">ℹ️</span>
-            {!isCollapsed && <span className="student-sidebar__text">About</span>}
-          </Link>
-        </li>
+      <ul className={styles['supervisor-sidebar__menu']}>
+        {menuItems.map((item) => {
+          const isActive = item.hash
+            ? location.hash === item.to
+            : location.pathname === item.to;
+          return (
+            <li
+              key={item.to}
+              className={
+                styles['supervisor-sidebar__item'] +
+                (isActive ? ' ' + styles['supervisor-sidebar__item--active'] : '')
+              }
+            >
+              <Link to={item.to} className={styles['supervisor-sidebar__link']}>
+                <span className={styles['supervisor-sidebar__icon']}>{item.icon}</span>
+                {!isCollapsed && (
+                  <span className={styles['supervisor-sidebar__text']}>{item.text}</span>
+                )}
+              </Link>
+            </li>
+          );
+        })}
       </ul>
     </div>
   );
