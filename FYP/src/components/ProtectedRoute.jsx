@@ -9,7 +9,9 @@ const ProtectedRoute = ({ children }) => {
     const checkAuth = () => {
       const path = location.pathname;
       let token = null;
-      if (path.startsWith('/admin')) {
+      
+      // Check for admin routes
+      if (path.startsWith('/admin') || path === '/usermanagement' || path === '/admindashboard') {
         token = localStorage.getItem('adminToken');
       } else if (path.startsWith('/supervisor')) {
         token = localStorage.getItem('supervisorToken');
@@ -39,7 +41,9 @@ const ProtectedRoute = ({ children }) => {
   // Redirect to login if not authenticated
   if (!isAuthenticated) {
     const path = location.pathname;
-    if (path.startsWith('/admin')) return <Navigate to="/adminlogin" state={{ from: location }} replace />;
+    if (path.startsWith('/admin') || path === '/usermanagement' || path === '/admindashboard') {
+      return <Navigate to="/adminlogin" state={{ from: location }} replace />;
+    }
     if (path.startsWith('/supervisor')) return <Navigate to="/supervisorlogin" state={{ from: location }} replace />;
     if (path.startsWith('/internal')) return <Navigate to="/internallogin" state={{ from: location }} replace />;
     if (path.startsWith('/external')) return <Navigate to="/externallogin" state={{ from: location }} replace />;
