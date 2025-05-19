@@ -56,7 +56,7 @@ const StudentUpload = () => {
       console.error('Upload error:', err);
       setError(err.response?.data?.msg || 'Failed to upload students');
     } finally {
-      setLoading(false);
+    setLoading(false);
     }
   };
 
@@ -70,34 +70,34 @@ const StudentUpload = () => {
             <FaFileExcel className="excel-icon" />
             <h3>Upload Student Data</h3>
           </div>
-
+          
           <div className="upload-content">
             <p>Upload an Excel file containing student information.</p>
             <p className="note">Note: File must be in .xlsx format</p>
 
             <div className="file-input-container">
-              <input
-                type="file"
+                  <input
+                    type="file"
                 id="fileInput"
-                accept=".xlsx"
-                onChange={handleFileChange}
+                    accept=".xlsx"
+                    onChange={handleFileChange}
                 className="file-input"
-              />
+                  />
               <label htmlFor="fileInput" className="file-input-label">
                 {file ? file.name : 'Choose File'}
               </label>
-            </div>
+                </div>
 
             {error && <div className="error-message">{error}</div>}
             {success && <div className="success-message">{success}</div>}
 
-            <button 
+                <button
               className="upload-button"
               onClick={handleUpload}
               disabled={!file || loading}
-            >
+                >
               {loading ? 'Uploading...' : 'Upload Students'}
-            </button>
+                </button>
           </div>
         </div>
       </div>

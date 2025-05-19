@@ -430,7 +430,7 @@ const AdminDashboard = () => {
   };
 
   if (loading) {
-    return (
+  return (
       <AdminSidebarLayout>
         <div className="loading-container">
           <div className="loading-spinner"></div>
@@ -459,7 +459,7 @@ const AdminDashboard = () => {
 
   return (
     <AdminSidebarLayout>
-      <h1>Admin Dashboard</h1>
+          <h1>Admin Dashboard</h1>
       
       {error && (
         <div className="error-message">
@@ -468,29 +468,29 @@ const AdminDashboard = () => {
         </div>
       )}
           
-      {/* Stats Cards */}
-      <div className="stats-grid">
-        <div className="stat-card">
-          <h3>Enrolled Students</h3>
+          {/* Stats Cards */}
+          <div className="stats-grid">
+            <div className="stat-card">
+              <h3>Enrolled Students</h3>
           <p className="stat-number">{stats?.enrolledStudents || 0}</p>
-        </div>
-        <div className="stat-card">
-          <h3>Total Supervisors</h3>
+            </div>
+            <div className="stat-card">
+              <h3>Total Supervisors</h3>
           <p className="stat-number">{stats?.totalSupervisors || 0}</p>
-        </div>
-        <div className="stat-card">
-          <h3>Student Status</h3>
-          <div className="status-group">
+            </div>
+            <div className="stat-card">
+              <h3>Student Status</h3>
+              <div className="status-group">
             <p>Active: <span>{stats?.activeStudents || 0}</span></p>
             <p>Pending: <span>{stats?.pendingStudents || 0}</span></p>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
 
-      {/* Student List and Pie Chart Section */}
-      <div className="data-section">
-        <div className="student-list">
-          <h2>Student Groups</h2>
+          {/* Student List and Pie Chart Section */}
+          <div className="data-section">
+            <div className="student-list">
+              <h2>Student Groups</h2>
           <div className="student-groups-container">
             {studentGroups.length > 0 ? (
               <table>
@@ -527,123 +527,123 @@ const AdminDashboard = () => {
               </div>
             )}
           </div>
-        </div>
-
-        <div className="chart-container">
-          <h2>Student Status Distribution</h2>
-          <PieChart width={400} height={300}>
-            <Pie
-              data={chartData}
-              cx="50%"
-              cy="50%"
-              labelLine={false}
-              outerRadius={80}
-              fill="#8884d8"
-              dataKey="value"
-              label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-            >
-              {chartData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-              ))}
-            </Pie>
-            <Tooltip />
-            <Legend />
-          </PieChart>
-        </div>
-      </div>
-
-      {/* Milestones Section */}
-      <div className="milestones-section">
-        <h2>FYP Milestone Deadlines</h2>
-    
-    {isLoading && (
-      <div className="loading-spinner-container">
-        <Spinner animation="border" role="status" variant="primary">
-          <span className="visually-hidden">Loading...</span>
-        </Spinner>
-      </div>
-    )}
-    
-    {milestoneError && (
-      <div className="error-message">
-        <p>{milestoneError}</p>
-        <button onClick={() => setMilestoneError(null)}>Dismiss</button>
-      </div>
-    )}
-    
-    {milestoneSuccess && (
-      <div className="success-message">
-        <p>{milestoneSuccess}</p>
-        <button onClick={() => setMilestoneSuccess(null)}>Dismiss</button>
-      </div>
-    )}
-
-        <div className="milestones-grid">
-          {milestones.map((milestone) => (
-        <div key={milestone._id} className="milestone-card">
-              <div className="milestone-header">
-                <h3>{milestone.name}</h3>
-                <button 
-              onClick={() => deleteMilestone(milestone.name)} 
-                  className="delete-button"
-                  title="Delete milestone"
-              disabled={isLoading}
-                >
-                  <FaTrash />
-                </button>
-              </div>
-              <DatePicker
-            selected={milestone.deadline ? new Date(milestone.deadline) : null}
-            onChange={(date) => handleDateChange(date, milestone.name)}
-                minDate={new Date()}
-                placeholderText="Select deadline"
-                className="date-picker-input"
-                dateFormat="MMMM d, yyyy"
-                isClearable
-            disabled={isLoading}
-              />
             </div>
-          ))}
-        </div>
 
-        {/* Add New Milestone Field */}
-        {showAddField && (
-          <div className="add-milestone-field">
-            <input
-              type="text"
-              value={newMilestoneName}
-              onChange={(e) => setNewMilestoneName(e.target.value)}
-              placeholder="Enter milestone name"
-              className="milestone-input"
-            />
-            <button onClick={addNewMilestone} className="add-button">
-              <FaPlus /> Add
-            </button>
-            <button 
-              onClick={() => setShowAddField(false)} 
-              className="cancel-button"
-            >
-              <FaTimes /> Cancel
-            </button>
+            <div className="chart-container">
+              <h2>Student Status Distribution</h2>
+              <PieChart width={400} height={300}>
+                <Pie
+                  data={chartData}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  outerRadius={80}
+                  fill="#8884d8"
+                  dataKey="value"
+                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                >
+                  {chartData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip />
+                <Legend />
+              </PieChart>
+            </div>
+          </div>
+
+          {/* Milestones Section */}
+          <div className="milestones-section">
+            <h2>FYP Milestone Deadlines</h2>
+        
+        {isLoading && (
+          <div className="loading-spinner-container">
+            <Spinner animation="border" role="status" variant="primary">
+              <span className="visually-hidden">Loading...</span>
+            </Spinner>
+          </div>
+        )}
+        
+        {milestoneError && (
+          <div className="error-message">
+            <p>{milestoneError}</p>
+            <button onClick={() => setMilestoneError(null)}>Dismiss</button>
+          </div>
+        )}
+        
+        {milestoneSuccess && (
+          <div className="success-message">
+            <p>{milestoneSuccess}</p>
+            <button onClick={() => setMilestoneSuccess(null)}>Dismiss</button>
           </div>
         )}
 
-        <div className="milestone-actions">
-          <button onClick={saveMilestones} className="save-button">
-            <FaSave /> Save Milestones
-          </button>
-          {!showAddField && (
-            <button 
-              onClick={() => setShowAddField(true)} 
-              className="add-milestone-button"
-            >
-              <FaPlus /> Add Milestone
-            </button>
-          )}
+            <div className="milestones-grid">
+              {milestones.map((milestone) => (
+            <div key={milestone._id} className="milestone-card">
+                  <div className="milestone-header">
+                    <h3>{milestone.name}</h3>
+                    <button 
+                  onClick={() => deleteMilestone(milestone.name)} 
+                      className="delete-button"
+                      title="Delete milestone"
+                  disabled={isLoading}
+                    >
+                      <FaTrash />
+                    </button>
+                  </div>
+                  <DatePicker
+                selected={milestone.deadline ? new Date(milestone.deadline) : null}
+                onChange={(date) => handleDateChange(date, milestone.name)}
+                    minDate={new Date()}
+                    placeholderText="Select deadline"
+                    className="date-picker-input"
+                    dateFormat="MMMM d, yyyy"
+                    isClearable
+                disabled={isLoading}
+                  />
+                </div>
+              ))}
+            </div>
+
+            {/* Add New Milestone Field */}
+            {showAddField && (
+              <div className="add-milestone-field">
+                <input
+                  type="text"
+                  value={newMilestoneName}
+                  onChange={(e) => setNewMilestoneName(e.target.value)}
+                  placeholder="Enter milestone name"
+                  className="milestone-input"
+                />
+                <button onClick={addNewMilestone} className="add-button">
+                  <FaPlus /> Add
+                </button>
+                <button 
+                  onClick={() => setShowAddField(false)} 
+                  className="cancel-button"
+                >
+                  <FaTimes /> Cancel
+                </button>
+              </div>
+            )}
+
+            <div className="milestone-actions">
+              <button onClick={saveMilestones} className="save-button">
+                <FaSave /> Save Milestones
+              </button>
+              {!showAddField && (
+                <button 
+                  onClick={() => setShowAddField(true)} 
+                  className="add-milestone-button"
+                >
+                  <FaPlus /> Add Milestone
+                </button>
+              )}
+        </div>
       </div>
-    </div>
-  </AdminSidebarLayout>
-);
+    </AdminSidebarLayout>
+  );
 };
 
 export default AdminDashboard;

@@ -329,25 +329,25 @@ const StudentDashboard = () => {
                 <p><strong>Start Date:</strong> {studentDetails?.dates?.startDate ? new Date(studentDetails.dates.startDate).toLocaleDateString() : "Not set"}</p>
                 <p><strong>End Date:</strong> {studentDetails?.dates?.endDate ? new Date(studentDetails.dates.endDate).toLocaleDateString() : "Not set"}</p>
                 <p><strong>Group ID:</strong> {studentDetails?.groupID}</p>
-              </div>
             </div>
+          </div>
 
             {/* Team Members Card */}
             <div className="col-md-4">
               <div className="card text-center p-3">
                 <FaUserGraduate className="icon" />
                 <h3>Team Members</h3>
-                {studentDetails?.teamMembers?.length > 0 ? (
-                  studentDetails.teamMembers.map((member, index) => (
+                  {studentDetails?.teamMembers?.length > 0 ? (
+                    studentDetails.teamMembers.map((member, index) => (
                     <div key={index} className="team-member">
                       <p><strong>{member.name}</strong></p>
                       <p>ID: {member.studentId}</p>
                       <p>Program: {member.program}</p>
-                    </div>
-                  ))
-                ) : (
+                      </div>
+                    ))
+                  ) : (
                   <p>No team members assigned</p>
-                )}
+                  )}
               </div>
             </div>
           </div>

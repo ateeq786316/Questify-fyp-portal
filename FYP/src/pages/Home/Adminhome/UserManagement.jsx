@@ -784,85 +784,85 @@ const UserManagement = () => {
 
   return (
     <AdminSidebarLayout>
-      <div className="header">
-        <h2><FiUsers className="icon" /> User Management System</h2>
-        {!isAddingNew && (
-          <div className="search-box">
-            <FiSearch className="search-icon" />
-            <input
-              type="text"
-              placeholder={`Search ${activeTab} by name, ID, email, domain...`}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-        )}
-      </div>
-      
-      {!isAddingNew ? (
-        <>
-          <div className="tabs">
-            <button 
-              className={`tab ${activeTab === 'students' ? 'active' : ''}`}
-              onClick={() => {
-                setActiveTab('students');
-                setSearchTerm('');
-              }}
-            >
-              <FiUsers /> Student Groups
-            </button>
-            <button 
-              className={`tab ${activeTab === 'supervisors' ? 'active' : ''}`}
-              onClick={() => {
-                setActiveTab('supervisors');
-                setSearchTerm('');
-              }}
-            >
-              <FiUser /> Supervisors
-            </button>
-            <button 
-              className={`tab ${activeTab === 'internal' ? 'active' : ''}`}
-              onClick={() => {
-                setActiveTab('internal');
-                setSearchTerm('');
-              }}
-            >
-              <FiHome /> Internal
-            </button>
-            <button 
-              className={`tab ${activeTab === 'external' ? 'active' : ''}`}
-              onClick={() => {
-                setActiveTab('external');
-                setSearchTerm('');
-              }}
-            >
-              <FiGlobe /> External
-            </button>
-          </div>
-          
-          <div className="content">
-            <div className="action-bar">
+        <div className="header">
+          <h2><FiUsers className="icon" /> User Management System</h2>
+          {!isAddingNew && (
+            <div className="search-box">
+              <FiSearch className="search-icon" />
+              <input
+                type="text"
+                placeholder={`Search ${activeTab} by name, ID, email, domain...`}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+          )}
+        </div>
+        
+        {!isAddingNew ? (
+          <>
+            <div className="tabs">
               <button 
-                className="add-button"
-                onClick={() => setIsAddingNew(true)}
+                className={`tab ${activeTab === 'students' ? 'active' : ''}`}
+                onClick={() => {
+                  setActiveTab('students');
+                  setSearchTerm('');
+                }}
               >
-                + Add New {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+                <FiUsers /> Student Groups
               </button>
-              <div className="results-count">
-                Showing {getCurrentData().length} of {getAllDataCount()} {activeTab}
-              </div>
+              <button 
+                className={`tab ${activeTab === 'supervisors' ? 'active' : ''}`}
+                onClick={() => {
+                  setActiveTab('supervisors');
+                  setSearchTerm('');
+                }}
+              >
+                <FiUser /> Supervisors
+              </button>
+              <button 
+                className={`tab ${activeTab === 'internal' ? 'active' : ''}`}
+                onClick={() => {
+                  setActiveTab('internal');
+                  setSearchTerm('');
+                }}
+              >
+                <FiHome /> Internal
+              </button>
+              <button 
+                className={`tab ${activeTab === 'external' ? 'active' : ''}`}
+                onClick={() => {
+                  setActiveTab('external');
+                  setSearchTerm('');
+                }}
+              >
+                <FiGlobe /> External
+              </button>
             </div>
             
-            <div className="table-container">
-              {renderTable()}
+            <div className="content">
+              <div className="action-bar">
+                <button 
+                  className="add-button"
+                  onClick={() => setIsAddingNew(true)}
+                >
+                  + Add New {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+                </button>
+                <div className="results-count">
+                  Showing {getCurrentData().length} of {getAllDataCount()} {activeTab}
+                </div>
+              </div>
+              
+              <div className="table-container">
+                {renderTable()}
+              </div>
             </div>
+          </>
+        ) : (
+          <div className="content">
+            {renderAddForm()}
           </div>
-        </>
-      ) : (
-        <div className="content">
-          {renderAddForm()}
-        </div>
-      )}
+        )}
     </AdminSidebarLayout>
   );
 };
