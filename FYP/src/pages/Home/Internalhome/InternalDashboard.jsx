@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import "../../../styles/InternalDashboard.css";
+import InternalSidebar from './InternalSidebar';
 
 const InternalDashboard = () => {
   const [internal, setInternal] = useState(null);
@@ -124,13 +125,9 @@ const InternalDashboard = () => {
   return (
     <div className="internal-dashboard">
       <Navbar />
-      <div className="dashboard-container">
-        <div className="sidebar">
-          <Link to="/internaldashboard" className="active">Home</Link>
-          <Link to="#about">About</Link>
-        </div>
-
-        <div className="main-content">
+      <div className="internal-dashboard-container">
+        <InternalSidebar />
+        <div className="internal-dashboard-content">
           {/* Internal Examiner Details */}
           {internal && (
             <div className="internal-details">
@@ -149,7 +146,7 @@ const InternalDashboard = () => {
               <div className="detail-item">
                 <h3>Department</h3>
                 <p>{internal.department || "Not Available"}</p>
-      </div>
+              </div>
               <div className="detail-item">
                 <h3>Expertise</h3>
                 <p>{internal.internalExpertise?.join(", ") || "Not Available"}</p>

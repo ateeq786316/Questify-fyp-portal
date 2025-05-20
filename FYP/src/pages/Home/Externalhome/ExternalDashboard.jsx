@@ -4,6 +4,7 @@ import Navbar from '../../../components/Navbar';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import ExternalSidebar from './ExternalSidebar';
 
 const ExternalDashboard = () => {
   const [external, setExternal] = useState(null);
@@ -61,13 +62,9 @@ const ExternalDashboard = () => {
   return (
     <div className="external-dashboard">
       <Navbar />
-      <div className="dashboard-container">
-        <div className="sidebar">
-          <Link to="/externaldashboard" className="active">Home</Link>
-          <Link to="/external/evaluate">Evaluate</Link>
-          <Link to="#about">About</Link>
-        </div>
-        <div className="main-content">
+      <div className="external-dashboard-container">
+        <ExternalSidebar />
+        <div className="external-dashboard-content">
           {error && <div className="error">{error}</div>}
 
           {/* External Examiner Profile */}

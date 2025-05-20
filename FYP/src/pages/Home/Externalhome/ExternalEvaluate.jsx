@@ -4,6 +4,7 @@ import Navbar from '../../../components/Navbar';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import ExternalSidebar from './ExternalSidebar';
 
 const ExternalEvaluate = () => {
   const [students, setStudents] = useState([]);
@@ -121,16 +122,12 @@ const ExternalEvaluate = () => {
 
   if (loading) {
     return (
-      <div className="external-evaluate">
+      <div className="external-evaluate-page">
         <Navbar />
-        <div className="dashboard-container">
-          <div className="sidebar">
-            <Link to="/externaldashboard">Home</Link>
-            <Link to="/external/evaluate" className="active">Evaluate</Link>
-            <Link to="#about">About</Link>
-          </div>
-          <div className="main-content">
-            <div className="loading">Loading students...</div>
+        <div className="external-evaluate-container">
+          <ExternalSidebar />
+          <div className="external-evaluate-content">
+            <div className="external-evaluate-loading">Loading students...</div>
           </div>
         </div>
       </div>
@@ -138,71 +135,68 @@ const ExternalEvaluate = () => {
   }
 
   return (
-    <div className="external-evaluate">
+    <div className="external-evaluate-page">
       <Navbar />
-      <div className="dashboard-container">
-        <div className="sidebar">
-          <Link to="/externaldashboard">Home</Link>
-          <Link to="/external/evaluate" className="active">Evaluate</Link>
-          <Link to="#about">About</Link>
-        </div>
-        <div className="main-content">
-          <h2>Student Evaluations</h2>
-          
-          {error && <div className="error">{error}</div>}
+      <div className="external-evaluate-container">
+        <ExternalSidebar />
+        <div className="external-evaluate-content">
+          <div className="external-evaluate-section">
+            <h2>Student Evaluation</h2>
+            {error && <div className="error">{error}</div>}
 
-          <div className="students-list">
-            {students.map(student => (
-              <div key={student._id} className="student-card">
-                <div className="student-info">
-                  <h3>{student.name}</h3>
-                  <p>Student ID: {student.studentId}</p>
-                  <p>Department: {student.department}</p>
-                  <p>Project: {student.projectTitle}</p>
-                </div>
-
-                <div className="evaluation-form">
-                  <div className="form-group">
-                    <label>Marks (out of 100):</label>
-                    <input
-                      type="number"
-                      min="0"
-                      max="100"
-                      value={evaluations[student._id]?.marks || 0}
-                      onChange={(e) => handleEvaluationChange(student._id, 'marks', parseInt(e.target.value))}
-                      disabled={submitting}
-                    />
+            <div className="students-list">
+              {students.map(student => (
+                <div key={student._id} className="student-card">
+                  <div className="student-info">
+                    <h3>{student.name}</h3>
+                    <p>Student ID: {student.studentId}</p>
+                    <p>Department: {student.department}</p>
+                    <p>Project: {student.projectTitle}</p>
                   </div>
 
-                  <div className="form-group">
-                    <label>Feedback:</label>
-                    <textarea
-                      value={evaluations[student._id]?.feedback || ''}
-                      onChange={(e) => handleEvaluationChange(student._id, 'feedback', e.target.value)}
-                      placeholder="Enter your feedback..."
-                      disabled={submitting}
-                    />
-                  </div>
+                  <div className="evaluation-form">
+                    <div className="form-group">
+                      <label>Marks (out of 100):</label>
+                      <input
+                        type="number"
+                        min="0"
+                        max="100"
+                        value={evaluations[student._id]?.marks || 0}
+                        onChange={(e) => handleEvaluationChange(student._id, 'marks', parseInt(e.target.value))}
+                        disabled={submitting}
+                      />
+                    </div>
 
-                  <div className="actions">
-                    <button
-                      className="preview-btn"
-                      onClick={() => handlePreviewDocument(student)}
-                      disabled={!student.finalReport}
-                    >
-                      Preview Final Report
-                    </button>
-                    <button
-                      className="submit-btn"
-                      onClick={() => handleSubmitEvaluation(student._id)}
-                      disabled={submitting}
-                    >
-                      {submitting ? 'Submitting...' : 'Submit Evaluation'}
-                    </button>
+                    <div className="form-group">
+                      <label>Feedback:</label>
+                      <textarea
+                        value={evaluations[student._id]?.feedback || ''}
+                        onChange={(e) => handleEvaluationChange(student._id, 'feedback', e.target.value)}
+                        placeholder="Enter your feedback..."
+                        disabled={submitting}
+                      />
+                    </div>
+
+                    <div className="actions">
+                      <button
+                        className="preview-btn"
+                        onClick={() => handlePreviewDocument(student)}
+                        disabled={!student.finalReport}
+                      >
+                        Preview Final Report
+                      </button>
+                      <button
+                        className="submit-btn"
+                        onClick={() => handleSubmitEvaluation(student._id)}
+                        disabled={submitting}
+                      >
+                        {submitting ? 'Submitting...' : 'Submit Evaluation'}
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>
