@@ -370,7 +370,15 @@ exports.uploadSupervisors = async (req, res) => {
       return res.status(400).json({ success: false, msg: "No file uploaded." });
     }
     // 2. Parse Excel file
-    const workbook = xlsx.readFile(req.file.path);
+    let workbook;
+    try {
+      workbook = xlsx.readFile(req.file.path);
+    } catch (err) {
+      console.error("Error parsing Excel file:", err);
+      return res
+        .status(400)
+        .json({ success: false, msg: "Invalid Excel file format." });
+    }
     const sheetName = workbook.SheetNames[0];
     const sheet = workbook.Sheets[sheetName];
     const supervisors = xlsx.utils.sheet_to_json(sheet);
@@ -401,7 +409,9 @@ exports.uploadSupervisors = async (req, res) => {
     const supervisorsToInsert = uniqueSupervisors.map((s) => ({
       name: s.Name || s.name,
       email: s.Email || s.email,
-      password: s.Password || Math.random().toString(36).slice(-8),
+      password: String(
+        s.Password || s.password || Math.random().toString(36).slice(-8)
+      ),
       department: s.Department || s.department,
       contact: s.Contact || s.contact || "",
       role: s.Role || s.role || "supervisor",
@@ -494,6 +504,7 @@ exports.uploadSupervisors = async (req, res) => {
     }
     res.status(200).json(response);
   } catch (err) {
+    console.error("Server error uploading supervisors:", err);
     res.status(500).json({
       success: false,
       msg: "Server error uploading supervisors.",
@@ -629,6 +640,7 @@ exports.addSingleStudent = async (req, res) => {
 exports.downloadSupervisorTemplate = async (req, res) => {
   try {
     const workbook = xlsx.utils.book_new();
+    // Only include the Supervisor Template sheet for direct data entry
     const templateData = [
       {
         Name: "Dr. John Smith",
@@ -643,24 +655,35 @@ exports.downloadSupervisorTemplate = async (req, res) => {
       {
         Name: "Dr. Jane Doe",
         Email: "jane.doe@example.com",
-        Password: "supervisor123",
+        Password: "supervisor456",
         Department: "Software Engineering",
         Contact: "03007654321",
         SupervisorID: "SUP002",
-        SupervisorExpertise: "Data Science,Cloud",
+        SupervisorExpertise: "Data Science,Cloud Computing",
         Role: "supervisor",
       },
     ];
-    const worksheet = xlsx.utils.json_to_sheet(templateData);
+    const worksheet = xlsx.utils.json_to_sheet(templateData, {
+      header: [
+        "Name",
+        "Email",
+        "Password",
+        "Department",
+        "Contact",
+        "SupervisorID",
+        "SupervisorExpertise",
+        "Role",
+      ],
+    });
     worksheet["!cols"] = [
-      { wch: 20 }, // Name
-      { wch: 30 }, // Email
-      { wch: 15 }, // Password
-      { wch: 20 }, // Department
+      { wch: 25 }, // Name
+      { wch: 35 }, // Email
+      { wch: 20 }, // Password
+      { wch: 25 }, // Department
       { wch: 15 }, // Contact
-      { wch: 12 }, // SupervisorID
-      { wch: 30 }, // SupervisorExpertise
-      { wch: 10 }, // Role
+      { wch: 15 }, // SupervisorID
+      { wch: 40 }, // SupervisorExpertise
+      { wch: 15 }, // Role
     ];
     xlsx.utils.book_append_sheet(workbook, worksheet, "Supervisor Template");
     const buffer = xlsx.write(workbook, { type: "buffer", bookType: "xlsx" });
@@ -674,9 +697,12 @@ exports.downloadSupervisorTemplate = async (req, res) => {
     );
     res.send(buffer);
   } catch (err) {
-    res
-      .status(500)
-      .json({ success: false, msg: "Error generating supervisor template" });
+    console.error("Error generating supervisor template:", err);
+    res.status(500).json({
+      success: false,
+      msg: "Error generating supervisor template",
+      error: err.message,
+    });
   }
 };
 

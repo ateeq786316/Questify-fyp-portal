@@ -31,10 +31,10 @@ const UploadSupervisors = () => {
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile && selectedFile.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
-      setFile(selectedFile);
-      setError(null);
-    } else {
-      setFile(null);
+        setFile(selectedFile);
+        setError(null);
+      } else {
+        setFile(null);
       setError('Please select a valid Excel file (.xlsx)');
     }
   };
@@ -79,7 +79,7 @@ const UploadSupervisors = () => {
     try {
       const token = localStorage.getItem('adminToken');
       const response = await axios.post('http://localhost:5000/api/admin/supervisors/upload', formData, {
-        headers: {
+          headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'multipart/form-data'
         }
@@ -194,9 +194,9 @@ const UploadSupervisors = () => {
                 </ul>
               </div>
             )}
-            <button
+            <button 
               className="upload-button"
-              onClick={handleUpload}
+              onClick={handleUpload} 
               disabled={!file || loading}
             >
               {loading ? 'Uploading...' : 'Upload Supervisors'}
@@ -275,7 +275,7 @@ const UploadSupervisors = () => {
               </div>
               <button type="submit" className="upload-button" disabled={singleSupervisorLoading}>
                 {singleSupervisorLoading ? 'Adding...' : 'Add Supervisor'}
-              </button>
+            </button>
               {singleSupervisorMsg && <div className="success-message">{singleSupervisorMsg}</div>}
               {singleSupervisorError && <div className="error-message">{singleSupervisorError}</div>}
             </form>
