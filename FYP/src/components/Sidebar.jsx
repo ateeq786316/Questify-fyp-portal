@@ -77,6 +77,12 @@ const Sidebar = () => {
             {!isCollapsed && <span className="student-sidebar__text">Chat</span>}
           </Link>
         </li>
+        <li className={`student-sidebar__item ${location.pathname === "/studentgrouprequest" ? "student-sidebar__item--active" : ""}`}>
+          <Link to="/studentgrouprequest" className="student-sidebar__link">
+            <span className="student-sidebar__icon">🤝</span>
+            {!isCollapsed && <span className="student-sidebar__text">Group Requests</span>}
+          </Link>
+        </li>
       </ul>
     </div>
   );

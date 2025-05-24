@@ -24,6 +24,7 @@ import StudentRequestSupervisor from './pages/Home/Studenthome/StudentRequestSup
 import StudentUploadDocument from './pages/Home/Studenthome/StudentUploadDocument.jsx'
 import StudentFeedbackComments from './pages/Home/Studenthome/StudentFeedbackComments.jsx'
 import StudentCommunication from './pages/Home/Studenthome/StudentCommunication.jsx'
+import StudentGroupRequest from './pages/Home/Studenthome/StudentGroupRequest.jsx'
 
 // supervisor
 import SupervisorLogin from './pages/Home/Superviserhome/Supervisorlogin.jsx'
@@ -109,6 +110,11 @@ function App() {
           <Route path='/studentcommunication' element={
             <ProtectedRoute>
               <StudentCommunication />
+            </ProtectedRoute>
+          } />
+          <Route path='/studentgrouprequest' element={
+            <ProtectedRoute>
+              <StudentGroupRequest />
             </ProtectedRoute>
           } />
 
