@@ -27,9 +27,6 @@ const userSchema = new mongoose.Schema({
   ],
   groupID: {
     type: String,
-    required: function () {
-      return this.role === "student";
-    },
   },
   projectTitle: { type: String },
   projectDescription: { type: String },

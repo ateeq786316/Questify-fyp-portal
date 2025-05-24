@@ -106,8 +106,8 @@ const InternalDashboard = () => {
   };
 
   if (loading) {
-    return (
-      <div className="internal-dashboard">
+  return (
+    <div className="internal-dashboard">
         <Navbar />
         <div className="dashboard-container">
           <div className="sidebar">
@@ -122,7 +122,7 @@ const InternalDashboard = () => {
     );
   }
 
-  return (
+          return (
     <div className="internal-dashboard">
       <Navbar />
       <div className="internal-dashboard-container">

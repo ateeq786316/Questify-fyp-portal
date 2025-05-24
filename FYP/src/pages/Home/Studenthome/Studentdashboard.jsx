@@ -167,7 +167,7 @@ const StudentDashboard = () => {
           {/* Top Cards - 3 per row */}
           <div className="row g-3 mb-4">
             {/* Student Info Card */}
-            <div className="col-md-4">
+            <div className="col-lg-6">
               <div className="card text-center p-3">
                 <FaUserGraduate className="icon" />
                 <h3>Student Info</h3>
@@ -182,7 +182,7 @@ const StudentDashboard = () => {
             </div>
 
             {/* Project Info Card */}
-            <div className="col-md-4">
+            <div className="col-lg-6">
               <div className="card text-center p-3">
                 <FaProjectDiagram className="icon" />
                 <h3>Project Details</h3>

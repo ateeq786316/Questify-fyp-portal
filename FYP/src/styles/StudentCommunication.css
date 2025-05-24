@@ -155,7 +155,7 @@
 
 .supervisor .message-content {
     background-color: #f8f9fa;
-    color: #2c3e50;
+    color: #12181f;
     border-bottom-left-radius: 4px;
 }
 
@@ -198,7 +198,7 @@
     display: flex;
     align-items: center;
     gap: 0.2rem;
-    background-color: #46494b;
+    background-color: #ffffff;
 }
 
 .message-input {
@@ -206,7 +206,7 @@
     padding: 0.5rem 1rem;
     font-size: 1rem;
     background-color: #d9d7d7;
-    color: #2c3e50;
+    color: #000000;
 }
 
 .message-input::placeholder {
@@ -215,7 +215,7 @@
 
 .message-input:focus {
     outline: none;
-    background-color: #424242;
+    background-color: #ffffff;
     box-shadow: none;
 }
 
