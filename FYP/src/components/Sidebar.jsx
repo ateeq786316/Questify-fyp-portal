@@ -35,22 +35,22 @@ const Sidebar = () => {
             {!isCollapsed && <span className="student-sidebar__text">Home</span>}
           </Link>
         </li>
-        <li className={`student-sidebar__item ${location.pathname === "/studentproposal" ? "student-sidebar__item--active" : ""}`}>
-          <Link to="/studentproposal" className="student-sidebar__link">
-            <span className="student-sidebar__icon">📜</span>
-            {!isCollapsed && <span className="student-sidebar__text">Submit Proposal</span>}
-          </Link>
-        </li>
-        <li className={`student-sidebar__item ${location.pathname === "/studenttrackprogress" ? "student-sidebar__item--active" : ""}`}>
-          <Link to="/studenttrackprogress" className="student-sidebar__link">
-            <span className="student-sidebar__icon">📈</span>
-            {!isCollapsed && <span className="student-sidebar__text">Track Progress</span>}
+        <li className={`student-sidebar__item ${location.pathname === "/studentgrouprequest" ? "student-sidebar__item--active" : ""}`}>
+          <Link to="/studentgrouprequest" className="student-sidebar__link">
+            <span className="student-sidebar__icon">🤝</span>
+            {!isCollapsed && <span className="student-sidebar__text">Group Requests</span>}
           </Link>
         </li>
         <li className={`student-sidebar__item ${location.pathname === "/studentrequestsuperviser" ? "student-sidebar__item--active" : ""}`}>
           <Link to="/studentrequestsuperviser" className="student-sidebar__link">
             <span className="student-sidebar__icon">👨‍🏫</span>
             {!isCollapsed && <span className="student-sidebar__text">Request Supervisor</span>}
+          </Link>
+        </li>
+        <li className={`student-sidebar__item ${location.pathname === "/studentproposal" ? "student-sidebar__item--active" : ""}`}>
+          <Link to="/studentproposal" className="student-sidebar__link">
+            <span className="student-sidebar__icon">📜</span>
+            {!isCollapsed && <span className="student-sidebar__text">Submit Proposal</span>}
           </Link>
         </li>
         <li className={`student-sidebar__item ${location.pathname === "/studentuploaddocument" ? "student-sidebar__item--active" : ""}`}>
@@ -65,10 +65,10 @@ const Sidebar = () => {
             {!isCollapsed && <span className="student-sidebar__text">Feedback/Comments</span>}
           </Link>
         </li>
-        <li className={`student-sidebar__item ${location.pathname === "/studentcommunication" ? "student-sidebar__item--active" : ""}`}>
-          <Link to="/studentcommunication" className="student-sidebar__link">
-            <span className="student-sidebar__icon">📬</span>
-            {!isCollapsed && <span className="student-sidebar__text">Communication</span>}
+        <li className={`student-sidebar__item ${location.pathname === "/studenttrackprogress" ? "student-sidebar__item--active" : ""}`}>
+          <Link to="/studenttrackprogress" className="student-sidebar__link">
+            <span className="student-sidebar__icon">📈</span>
+            {!isCollapsed && <span className="student-sidebar__text">Track Progress</span>}
           </Link>
         </li>
         <li className={`student-sidebar__item ${location.pathname === "/studentchatbot" ? "student-sidebar__item--active" : ""}`}>
@@ -77,10 +77,10 @@ const Sidebar = () => {
             {!isCollapsed && <span className="student-sidebar__text">Chat</span>}
           </Link>
         </li>
-        <li className={`student-sidebar__item ${location.pathname === "/studentgrouprequest" ? "student-sidebar__item--active" : ""}`}>
-          <Link to="/studentgrouprequest" className="student-sidebar__link">
-            <span className="student-sidebar__icon">🤝</span>
-            {!isCollapsed && <span className="student-sidebar__text">Group Requests</span>}
+        <li className={`student-sidebar__item ${location.pathname === "/studentcommunication" ? "student-sidebar__item--active" : ""}`}>
+          <Link to="/studentcommunication" className="student-sidebar__link">
+            <span className="student-sidebar__icon">📬</span>
+            {!isCollapsed && <span className="student-sidebar__text">Communication</span>}
           </Link>
         </li>
       </ul>

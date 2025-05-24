@@ -5,6 +5,7 @@ import "../../../styles/StudentRequestSupervisor.css";
 import { Table, Form, Button, Alert, Spinner } from "react-bootstrap";
 import bgImage from "../../../assets/lgubgimg.jpg"; // Background Image Import
 import API from "../../../services/api";
+import { toast } from 'react-toastify';
 
 const StudentRequestSupervisor = () => {
   const [supervisors, setSupervisors] = useState([]);
@@ -14,6 +15,12 @@ const StudentRequestSupervisor = () => {
   const [error, setError] = useState(null);
   const [previousRequests, setPreviousRequests] = useState([]);
   const [submitting, setSubmitting] = useState(false);
+
+  // Derived state: check if student has a pending or approved request
+  const hasPendingOrApproved = previousRequests.some(
+    (req) => req.status === "pending" || req.status === "approved"
+  );
+  const latestRequest = previousRequests.length > 0 ? previousRequests[0] : null;
 
   // Fetch supervisors and previous requests
   useEffect(() => {
@@ -58,6 +65,7 @@ const StudentRequestSupervisor = () => {
 
       if (response.data.success) {
         setRequestStatus("pending");
+        toast.success("Supervisor request sent successfully!");
         // Refresh previous requests
         const requestsResponse = await API.get("/auth/supervisor-request");
         if (requestsResponse.data.success) {
@@ -67,6 +75,7 @@ const StudentRequestSupervisor = () => {
     } catch (err) {
       console.error("Error submitting request:", err);
       setError(err.response?.data?.msg || "Failed to submit request");
+      toast.error(err.response?.data?.msg || "Failed to submit request");
     } finally {
       setSubmitting(false);
     }
@@ -103,6 +112,15 @@ const StudentRequestSupervisor = () => {
             </Alert>
           )}
 
+          {/* Status Banner */}
+          {hasPendingOrApproved && (
+            <Alert variant={latestRequest.status === "approved" ? "success" : "info"} className="supervisor-request-alert mb-4">
+              {latestRequest.status === "approved"
+                ? "Your supervisor request has been approved! You can now proceed to upload your proposal."
+                : "You have a pending supervisor request. Please wait for approval."}
+            </Alert>
+          )}
+
           {/* Available Supervisors Table */}
           <div className="supervisor-list-section mb-4">
             <h2>👨‍🏫 Available Supervisors</h2>
@@ -136,7 +154,7 @@ const StudentRequestSupervisor = () => {
                   value={selectedSupervisor}
                   onChange={(e) => setSelectedSupervisor(e.target.value)}
                   required
-                  disabled={submitting}
+                  disabled={submitting || hasPendingOrApproved}
                   className="supervisor-select"
                 >
                   <option value="">-- Choose a Supervisor --</option>
@@ -150,7 +168,7 @@ const StudentRequestSupervisor = () => {
               <Button 
                 variant="primary" 
                 type="submit" 
-                disabled={!selectedSupervisor || submitting}
+                disabled={!selectedSupervisor || submitting || hasPendingOrApproved}
                 className="supervisor-submit-btn"
               >
                 {submitting ? (
@@ -162,6 +180,17 @@ const StudentRequestSupervisor = () => {
                   "Submit Request"
                 )}
               </Button>
+              {/* Inline guidance for disabled state */}
+              {hasPendingOrApproved && (
+                <div className="mt-2 text-muted">
+                  You cannot submit another request while you have a pending or approved supervisor request.
+                </div>
+              )}
+              {!selectedSupervisor && !hasPendingOrApproved && (
+                <div className="mt-2 text-muted">
+                  Please select a supervisor to enable the submit button.
+                </div>
+              )}
             </Form>
           </div>
 

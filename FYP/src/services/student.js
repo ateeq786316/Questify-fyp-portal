@@ -23,6 +23,16 @@ export const fetchMilestonesAndFeedback = async () => {
 // Submit Project Proposal
 export const submitProjectProposal = async (proposalData) => {
   try {
+    // Validate required fields
+    if (
+      !proposalData.title ||
+      !proposalData.description ||
+      !proposalData.category ||
+      !proposalData.proposalFile
+    ) {
+      throw new Error("Missing required fields");
+    }
+
     const formData = new FormData();
     formData.append("title", proposalData.title);
     formData.append("description", proposalData.description);
@@ -43,7 +53,22 @@ export const submitProjectProposal = async (proposalData) => {
     );
     return response.data;
   } catch (error) {
-    throw error;
+    console.error("Error in submitProjectProposal:", error);
+    if (error.response) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx
+      throw new Error(error.response.data?.msg || "Failed to submit proposal");
+    } else if (error.request) {
+      // The request was made but no response was received
+      throw new Error(
+        "No response from server. Please check your internet connection."
+      );
+    } else {
+      // Something happened in setting up the request that triggered an Error
+      throw new Error(
+        error.message || "An error occurred while submitting the proposal"
+      );
+    }
   }
 };
 
