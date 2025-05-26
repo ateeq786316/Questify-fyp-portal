@@ -5,23 +5,81 @@ import "../../../styles/StudentCommunication.css";
 import { Card, Form, Button, Spinner } from "react-bootstrap";
 import { FaPaperPlane, FaVideo } from "react-icons/fa";
 import axios from "axios";
-import { useAuth } from "../../../context/AuthContext"; // Make sure this path is correct
+import { useAuth } from "../../../context/AuthContext";
+import io from 'socket.io-client';
+
+const socket = io('http://localhost:5000');
 
 const StudentCommunication = () => {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [selectedSupervisor, setSelectedSupervisor] = useState(null);
+  const [supervisors, setSupervisors] = useState([]);
   const chatBoxRef = useRef(null);
   const bottomRef = useRef(null);
   const [shouldScrollToBottom, setShouldScrollToBottom] = useState(true);
-  const { user } = useAuth(); // Get current user from auth context
+  const { user } = useAuth();
 
-  // Fetch messages on component mount
+  // Join chat room when supervisor is selected
+  useEffect(() => {
+    if (selectedSupervisor?._id && user?._id) {
+      socket.emit('join_chat', {
+        senderId: user._id,
+        receiverId: selectedSupervisor._id
+      });
+    }
+  }, [selectedSupervisor, user]);
+
+  // Listen for new messages
+  useEffect(() => {
+    socket.on('receive_message', (newMessage) => {
+      setMessages(prev => [...prev, newMessage]);
+      setShouldScrollToBottom(true);
+    });
+
+    return () => {
+      socket.off('receive_message');
+    };
+  }, []);
+
+  // Fetch supervisors
+  useEffect(() => {
+    const fetchSupervisors = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/student/supervisors', {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('studentToken')}`
+          }
+        });
+        
+        if (response.data.success) {
+          setSupervisors(response.data.supervisors);
+          if (response.data.supervisors.length > 0) {
+            setSelectedSupervisor(response.data.supervisors[0]);
+          } else {
+            setError("No supervisor has been assigned to you yet.");
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching supervisors:', err);
+        setError('Failed to load supervisors. Please try again.');
+      }
+    };
+
+    if (user?._id) {
+      fetchSupervisors();
+    }
+  }, [user]);
+
+  // Fetch messages when a supervisor is selected
   useEffect(() => {
     const fetchMessages = async () => {
+      if (!selectedSupervisor?._id) return;
+
       try {
-        const response = await axios.get(`http://localhost:5000/api/auth/chat/${user._id}`, {
+        const response = await axios.get(`http://localhost:5000/api/auth/chat/${selectedSupervisor._id}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('studentToken')}`
           }
@@ -36,10 +94,8 @@ const StudentCommunication = () => {
       }
     };
 
-    if (user?._id) {
-      fetchMessages();
-    }
-  }, [user]);
+    fetchMessages();
+  }, [selectedSupervisor]);
 
   // Handle scroll events
   const handleScroll = (e) => {
@@ -58,71 +114,34 @@ const StudentCommunication = () => {
   }, [messages, shouldScrollToBottom]);
 
   const createGoogleMeet = () => {
-    console.log("\n=== Creating Google Meet Session ===");
-    console.log("Student Details:", {
-      name: user?.name,
-      email: user?.email,
-      studentId: user?.studentId
-    });
-    console.log("Supervisor Details:", {
-      name: user?.supervisor?.name,
-      email: user?.supervisor?.email,
-      department: user?.supervisor?.department
-    });
+    if (!selectedSupervisor) {
+      setError("Please select a supervisor first");
+      return;
+    }
 
-    // Get student and supervisor emails
+    const supervisorEmail = selectedSupervisor.email;
     const studentEmail = user?.email;
-    const supervisorEmail = user?.supervisor?.email;
 
-    if (!studentEmail || !supervisorEmail) {
-      console.error("Meeting creation failed:", {
-        missingStudentEmail: !studentEmail,
-        missingSupervisorEmail: !supervisorEmail
-      });
+    if (!supervisorEmail || !studentEmail) {
       setError("Unable to create meeting: Missing email information");
       return;
     }
 
-    // Create a pre-populated Google Meet link with both emails
     const meetLink = `https://meet.google.com/new?authuser=${studentEmail}&participants=${supervisorEmail}`;
-    
-    console.log("Meeting Link Created:", {
-      timestamp: new Date().toISOString(),
-      link: meetLink,
-      participants: {
-        student: studentEmail,
-        supervisor: supervisorEmail
-      }
-    });
-
-    // Open the meeting link in a new tab
     window.open(meetLink, '_blank');
   };
 
   const sendMessage = async (e) => {
     e.preventDefault();
-    console.log("\n=== Attempting to send message ===");
-    console.log("Message:", message);
-    console.log("Is Loading:", isLoading);
-    console.log("User:", user);
-
-    if (!message.trim() || isLoading || !user?._id) {
-      console.log("Message sending blocked:", {
-        isEmpty: !message.trim(),
-        isLoading,
-        noUserId: !user?._id
-      });
-      return;
-    }
+    if (!message.trim() || isLoading || !selectedSupervisor?._id) return;
 
     setIsLoading(true);
     setError(null);
     setShouldScrollToBottom(true);
 
     try {
-      console.log("Making API call to send message...");
       const response = await axios.post(
-        `http://localhost:5000/api/auth/chat/${user._id}/send`,
+        `http://localhost:5000/api/auth/chat/${selectedSupervisor._id}/send`,
         { text: message },
         {
           headers: {
@@ -131,24 +150,22 @@ const StudentCommunication = () => {
         }
       );
 
-      console.log("API Response:", response.data);
-
       if (response.data.success) {
-        console.log("Message sent successfully");
-        setMessages(prev => [...prev, response.data.message]);
+        const newMessage = response.data.message;
+        setMessages(prev => [...prev, newMessage]);
         setMessage("");
+
+        // Emit the message through socket
+        socket.emit('send_message', {
+          ...newMessage,
+          senderId: user._id,
+          receiverId: selectedSupervisor._id
+        });
       } else {
-        console.log("Message sending failed:", response.data);
         setError(response.data.msg || "Failed to send message");
       }
     } catch (err) {
-      console.error("\n=== Error Sending Message ===");
-      console.error("Error details:", {
-        status: err.response?.status,
-        statusText: err.response?.statusText,
-        data: err.response?.data,
-        message: err.message
-      });
+      console.error("Error sending message:", err);
       setError("Failed to send message. Please try again.");
     } finally {
       setIsLoading(false);
@@ -177,86 +194,121 @@ const StudentCommunication = () => {
               variant="primary" 
               className="meet-button"
               onClick={createGoogleMeet}
+              disabled={!selectedSupervisor}
             >
               <FaVideo className="me-2" />
               Create Google Meet
             </Button>
           </div>
 
-          <Card className="chat-section">
-            <Card.Body className="p-0 d-flex flex-column">
-              <div 
-                className="chat-box" 
-                ref={chatBoxRef}
-                onScroll={handleScroll}
-              >
-                <div className="messages-container">
-                  {Object.entries(groupedMessages).map(([date, dateMessages]) => (
-                    <React.Fragment key={date}>
-                      <div className="message-date">{date}</div>
-                      {dateMessages.map((msg, index) => (
-                        <div 
-                          key={index} 
-                          className={`chat-message ${msg.sender === "Student" ? "student" : "supervisor"}`}
+          <div className="row mb-4">
+            <div className="col-md-4">
+              <Card>
+                <Card.Header>Supervisors</Card.Header>
+                <Card.Body className="p-0">
+                  {supervisors.length > 0 ? (
+                    <div className="student-list">
+                      {supervisors.map((supervisor) => (
+                        <div
+                          key={supervisor._id}
+                          className={`student-item ${selectedSupervisor?._id === supervisor._id ? 'active' : ''}`}
+                          onClick={() => setSelectedSupervisor(supervisor)}
                         >
-                          <div className="message-content">
-                            <div className="message-text">{msg.text}</div>
-                            <div className="message-timestamp">{msg.timestamp}</div>
+                          <div className="student-info">
+                            <h6>{supervisor.name}</h6>
+                            <small>{supervisor.department}</small>
                           </div>
                         </div>
                       ))}
-                    </React.Fragment>
-                  ))}
-                  {isLoading && (
-                    <div className="message-status">
-                      <Spinner animation="border" size="sm" />
-                      <span>Sending...</span>
+                    </div>
+                  ) : (
+                    <div className="p-3 text-center text-muted">
+                      No supervisor assigned yet
                     </div>
                   )}
-                  {error && (
-                    <div className="message-error">
-                      {error}
-                    </div>
-                  )}
-                  <div ref={bottomRef} />
-                </div>
-              </div>
+                </Card.Body>
+              </Card>
+            </div>
+            <div className="col-md-8">
+              <Card className="chat-section">
+                <Card.Body className="p-0 d-flex flex-column">
+                  {selectedSupervisor ? (
+                    <>
+                      <div 
+                        className="chat-box" 
+                        ref={chatBoxRef}
+                        onScroll={handleScroll}
+                      >
+                        <div className="messages-container">
+                          {Object.entries(groupedMessages).map(([date, dateMessages]) => (
+                            <React.Fragment key={date}>
+                              <div className="message-date">{date}</div>
+                              {dateMessages.map((msg, index) => (
+                                <div 
+                                  key={index} 
+                                  className={`chat-message ${msg.sender === "Student" ? "student" : "supervisor"}`}
+                                >
+                                  <div className="message-content">
+                                    <div className="message-text">{msg.text}</div>
+                                    <div className="message-timestamp">{msg.timestamp}</div>
+                                  </div>
+                                </div>
+                              ))}
+                            </React.Fragment>
+                          ))}
+                          {isLoading && (
+                            <div className="message-status">
+                              <Spinner animation="border" size="sm" />
+                              <span>Sending...</span>
+                            </div>
+                          )}
+                          {error && (
+                            <div className="message-error">
+                              {error}
+                            </div>
+                          )}
+                          <div ref={bottomRef} />
+                        </div>
+                      </div>
 
-              <Form onSubmit={sendMessage} className="chat-input">
-                <div className="input-group">
-                  <Form.Control
-                    type="text"
-                    placeholder="Type your message..."
-                    value={message}
-                    onChange={(e) => {
-                      console.log("Message input changed:", e.target.value);
-                      setMessage(e.target.value);
-                    }}
-                    onKeyPress={(e) => {
-                      if (e.key === 'Enter') {
-                        console.log("Enter key pressed");
-                        sendMessage(e);
-                      }
-                    }}
-                    disabled={isLoading}
-                    className="message-input"
-                  />
-                  <Button 
-                    type="submit" 
-                    variant="primary"
-                    disabled={isLoading || !message.trim()}
-                    className="send-button"
-                    onClick={(e) => {
-                      console.log("Send button clicked");
-                      sendMessage(e);
-                    }}
-                  >
-                    <FaPaperPlane />
-                  </Button>
-                </div>
-              </Form>
-            </Card.Body>
-          </Card>
+                      <Form onSubmit={sendMessage} className="chat-input">
+                        <div className="input-group">
+                          <Form.Control
+                            type="text"
+                            placeholder="Type your message..."
+                            value={message}
+                            onChange={(e) => setMessage(e.target.value)}
+                            onKeyPress={(e) => {
+                              if (e.key === 'Enter') {
+                                sendMessage(e);
+                              }
+                            }}
+                            disabled={isLoading}
+                            className="message-input"
+                          />
+                          <Button 
+                            type="submit" 
+                            variant="primary"
+                            disabled={isLoading || !message.trim()}
+                            className="send-button"
+                          >
+                            <FaPaperPlane />
+                          </Button>
+                        </div>
+                      </Form>
+                    </>
+                  ) : (
+                    <div className="d-flex align-items-center justify-content-center h-100">
+                      <div className="text-center text-muted">
+                        <h5>No Supervisor Selected</h5>
+                        <p>Please wait for a supervisor to be assigned to you.</p>
+                      </div>
+                    </div>
+                  )}
+                </Card.Body>
+              </Card>
+            </div>
+          </div>
         </div>
       </div>
     </div>

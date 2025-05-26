@@ -1,4 +1,5 @@
 const Milestone = require("../models/Milestone");
+const User = require("../models/User");
 
 // Get all milestones
 exports.getMilestones = async (req, res) => {
@@ -6,14 +7,16 @@ exports.getMilestones = async (req, res) => {
     console.log("Fetching all milestones...");
 
     const milestones = await Milestone.find()
-      .sort({ order: 1 })
-      .select("name deadline order status");
+      .populate("student", "name email studentId")
+      .populate("supervisor", "name email")
+      .sort({ dueDate: 1 });
 
     console.log(`Found ${milestones.length} milestones`);
 
     res.status(200).json({
       success: true,
-      milestones,
+      milestones: milestones || [],
+      count: milestones.length,
     });
   } catch (err) {
     console.error("Error in getMilestones:", err.message);
@@ -126,66 +129,165 @@ exports.deleteMilestone = async (req, res) => {
   }
 };
 
-// Create new milestone
+// Get all milestones for a student
+exports.getStudentMilestones = async (req, res) => {
+  try {
+    const { studentId } = req.params;
+
+    const milestones = await Milestone.find({ student: studentId })
+      .populate("supervisor", "name email")
+      .sort({ dueDate: 1 });
+
+    res.status(200).json({
+      success: true,
+      milestones,
+    });
+  } catch (err) {
+    console.error("Error fetching milestones:", err);
+    res.status(500).json({
+      success: false,
+      msg: "Server error",
+      error: err.message,
+    });
+  }
+};
+
+// Get all milestones for a supervisor
+exports.getSupervisorMilestones = async (req, res) => {
+  try {
+    const supervisorId = req.user.id;
+
+    const milestones = await Milestone.find({ supervisor: supervisorId })
+      .populate("student", "name email studentId")
+      .sort({ dueDate: 1 });
+
+    res.status(200).json({
+      success: true,
+      milestones,
+    });
+  } catch (err) {
+    console.error("Error fetching milestones:", err);
+    res.status(500).json({
+      success: false,
+      msg: "Server error",
+      error: err.message,
+    });
+  }
+};
+
+// Create a new milestone
 exports.createMilestone = async (req, res) => {
   try {
-    const { name, deadline } = req.body;
+    const { studentId, title, description, dueDate } = req.body;
+    const supervisorId = req.user.id;
 
-    console.log("Creating new milestone:", { name, deadline });
-
-    if (!name) {
-      console.log("Error: Milestone name is required");
-      return res.status(400).json({
+    // Validate student exists
+    const student = await User.findOne({ _id: studentId, role: "student" });
+    if (!student) {
+      return res.status(404).json({
         success: false,
-        msg: "Milestone name is required",
+        msg: "Student not found",
       });
     }
 
-    // Check if milestone already exists
-    const existingMilestone = await Milestone.findOne({ name });
-    if (existingMilestone) {
-      console.log("Error: Milestone already exists:", name);
-      return res.status(400).json({
-        success: false,
-        msg: "Milestone with this name already exists",
-      });
-    }
-
-    // Get the highest order number
-    const highestOrder = await Milestone.findOne()
-      .sort("-order")
-      .select("order");
-    const newOrder = highestOrder ? highestOrder.order + 1 : 1;
-
-    // Create new milestone
-    const newMilestone = new Milestone({
-      name,
-      deadline: deadline ? new Date(deadline) : null,
-      order: newOrder,
+    const milestone = new Milestone({
+      student: studentId,
+      supervisor: supervisorId,
+      title,
+      description,
+      dueDate: new Date(dueDate),
     });
 
-    await newMilestone.save();
-    console.log("Successfully created milestone:", newMilestone);
+    await milestone.save();
 
     res.status(201).json({
       success: true,
-      msg: "Milestone created successfully",
-      milestone: newMilestone,
+      milestone,
     });
   } catch (err) {
-    console.error("Error in createMilestone:", err.message);
+    console.error("Error creating milestone:", err);
+    res.status(500).json({
+      success: false,
+      msg: "Server error",
+      error: err.message,
+    });
+  }
+};
 
-    if (err.name === "ValidationError") {
-      return res.status(400).json({
+// Update milestone status
+exports.updateMilestoneStatus = async (req, res) => {
+  try {
+    const { milestoneId } = req.params;
+    const { status, feedback } = req.body;
+
+    const milestone = await Milestone.findById(milestoneId);
+    if (!milestone) {
+      return res.status(404).json({
         success: false,
-        msg: "Validation error",
-        errors: Object.values(err.errors).map((e) => e.message),
+        msg: "Milestone not found",
       });
     }
 
+    // Only allow status updates by the assigned supervisor
+    if (milestone.supervisor.toString() !== req.user.id) {
+      return res.status(403).json({
+        success: false,
+        msg: "Not authorized to update this milestone",
+      });
+    }
+
+    milestone.status = status;
+    if (feedback) milestone.feedback = feedback;
+    if (status === "Completed") milestone.completedDate = new Date();
+
+    await milestone.save();
+
+    res.status(200).json({
+      success: true,
+      milestone,
+    });
+  } catch (err) {
+    console.error("Error updating milestone:", err);
     res.status(500).json({
       success: false,
-      msg: "Error creating milestone",
+      msg: "Server error",
+      error: err.message,
+    });
+  }
+};
+
+// Delete a milestone
+exports.deleteMilestone = async (req, res) => {
+  try {
+    const { milestoneId } = req.params;
+
+    const milestone = await Milestone.findById(milestoneId);
+    if (!milestone) {
+      return res.status(404).json({
+        success: false,
+        msg: "Milestone not found",
+      });
+    }
+
+    // Only allow deletion by the assigned supervisor
+    if (milestone.supervisor.toString() !== req.user.id) {
+      return res.status(403).json({
+        success: false,
+        msg: "Not authorized to delete this milestone",
+      });
+    }
+
+    await milestone.remove();
+
+    res.status(200).json({
+      success: true,
+      msg: "Milestone deleted successfully",
+    });
+  } catch (err) {
+    console.error("Error deleting milestone:", err);
+    res.status(500).json({
+      success: false,
+      msg: "Server error",
       error: err.message,
     });
   }

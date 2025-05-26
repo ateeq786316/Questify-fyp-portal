@@ -11,6 +11,8 @@ const studentRoutes = require("./routes/student");
 const supervisorRoutes = require("./routes/supervisor");
 const internalRoutes = require("./routes/internal");
 const externalRoutes = require("./routes/external");
+const http = require("http");
+const socketIo = require("socket.io");
 require("dotenv").config();
 
 // Import controllers
@@ -28,6 +30,25 @@ const connectDB = require("./config/db");
 connectDB();
 
 const app = express();
+const server = http.createServer(app);
+
+// Configure CORS
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
+
+// Configure Socket.IO with CORS
+const io = socketIo(server, {
+  cors: {
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
+});
 
 // Create uploads directory if it doesn't exist
 const uploadsDir = path.join(__dirname, "uploads");
@@ -51,7 +72,6 @@ documentTypes.forEach((type) => {
 });
 
 // Middleware
-app.use(cors());
 app.use(bodyParser.json());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -78,6 +98,28 @@ app.use((err, req, res, next) => {
     });
   }
   next(err);
+});
+
+// Socket.IO connection handling
+io.on("connection", (socket) => {
+  console.log("New client connected");
+
+  // Join a chat room
+  socket.on("join_chat", (data) => {
+    const roomId = `chat_${data.senderId}_${data.receiverId}`;
+    socket.join(roomId);
+    console.log(`User joined room: ${roomId}`);
+  });
+
+  // Handle new messages
+  socket.on("send_message", (data) => {
+    const roomId = `chat_${data.senderId}_${data.receiverId}`;
+    io.to(roomId).emit("receive_message", data);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("Client disconnected");
+  });
 });
 
 // Routes
@@ -109,7 +151,13 @@ app.use((req, res) => {
   });
 });
 
+// MongoDB connection
+mongoose
+  .connect(process.env.MONGODB_URI)
+  .then(() => console.log("MongoDB connected"))
+  .catch((err) => console.log(err));
+
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });

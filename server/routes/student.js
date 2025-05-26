@@ -265,4 +265,48 @@ router.get("/proposal", studentAuth, async (req, res) => {
   }
 });
 
+// Get student's assigned supervisor
+router.get("/supervisors", studentAuth, async (req, res) => {
+  try {
+    const student = await User.findById(req.user.id);
+    if (!student) {
+      return res.status(404).json({
+        success: false,
+        msg: "Student not found",
+      });
+    }
+
+    // If student has an assigned supervisor
+    if (student.supervisor?.id) {
+      const supervisor = await User.findById(student.supervisor.id);
+      if (supervisor) {
+        return res.json({
+          success: true,
+          supervisors: [
+            {
+              _id: supervisor._id,
+              name: supervisor.name,
+              email: supervisor.email,
+              department: supervisor.department,
+            },
+          ],
+        });
+      }
+    }
+
+    // If no supervisor is assigned, return empty array
+    res.json({
+      success: true,
+      supervisors: [],
+    });
+  } catch (err) {
+    console.error("Error fetching supervisor:", err);
+    res.status(500).json({
+      success: false,
+      msg: "Error fetching supervisor",
+      error: err.message,
+    });
+  }
+});
+
 module.exports = router;

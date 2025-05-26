@@ -15,46 +15,36 @@ const supervisorAuth = async (req, res, next) => {
   try {
     const token = req.headers.authorization?.split(" ")[1];
     if (!token) {
-      return res.status(401).json({ success: false, msg: "No token provided" });
+      return res.status(401).json({ msg: "No token provided" });
     }
 
     const decoded = verifyToken(token);
-    if (!decoded) {
-      return res.status(401).json({ success: false, msg: "Invalid token" });
+    if (!decoded || decoded.role !== "supervisor") {
+      return res.status(401).json({ msg: "Not authorized as supervisor" });
     }
 
-    const supervisor = await User.findOne({
-      _id: decoded.id,
-      role: "supervisor",
-    });
-    if (!supervisor) {
-      return res
-        .status(403)
-        .json({ success: false, msg: "Not authorized as supervisor" });
-    }
-
-    req.supervisor = supervisor;
+    req.user = decoded;
     next();
   } catch (err) {
-    console.error("Supervisor auth error:", err);
-    res.status(401).json({ success: false, msg: "Token is not valid" });
+    console.error("Supervisor auth middleware error:", err);
+    res.status(401).json({ msg: "Token is not valid" });
   }
 };
 
 // Get supervisor dashboard data
 router.get("/dashboard", supervisorAuth, async (req, res) => {
   try {
-    const supervisor = req.supervisor;
+    const supervisor = req.user;
 
     // Get approved students
     const approvedStudents = await User.find({
-      "supervisor.id": supervisor._id,
+      "supervisor.id": supervisor.id,
       role: "student",
     }).select("studentId name projectTitle projectStatus");
 
     // Get pending requests
     const pendingRequests = await SupervisorRequest.find({
-      supervisorId: supervisor._id,
+      supervisorId: supervisor.id,
       status: "pending",
     })
       .populate("studentId", "studentId name projectTitle")
@@ -63,7 +53,7 @@ router.get("/dashboard", supervisorAuth, async (req, res) => {
     res.status(200).json({
       success: true,
       supervisor: {
-        supervisorId: supervisor.supervisorId,
+        supervisorId: supervisor.id,
         name: supervisor.name,
         supervisorExpertise: supervisor.supervisorExpertise,
       },
@@ -86,7 +76,7 @@ router.post(
   async (req, res) => {
     try {
       const { requestId, action } = req.params;
-      const supervisor = req.supervisor;
+      const supervisor = req.user;
 
       if (!["approve", "reject"].includes(action)) {
         return res.status(400).json({
@@ -103,7 +93,7 @@ router.post(
         });
       }
 
-      if (request.supervisorId.toString() !== supervisor._id.toString()) {
+      if (request.supervisorId.toString() !== supervisor.id.toString()) {
         return res.status(403).json({
           success: false,
           msg: "Not authorized to handle this request",
@@ -138,17 +128,31 @@ router.post(
       await request.save();
 
       if (action === "approve") {
-        // Update student's supervisor and project status
+        // Get supervisor details
+        const supervisorDetails = await User.findById(supervisor.id);
+        if (!supervisorDetails) {
+          return res.status(404).json({
+            success: false,
+            msg: "Supervisor not found",
+          });
+        }
+
+        // Update student's supervisor and project status with complete supervisor information
         await User.findByIdAndUpdate(request.studentId, {
-          "supervisor.id": supervisor._id,
-          "supervisor.name": supervisor.name,
-          "supervisor.department": supervisor.department,
-          "supervisor.email": supervisor.email,
+          supervisor: {
+            id: supervisor.id,
+            name: supervisorDetails.name,
+            department: supervisorDetails.department,
+            email: supervisorDetails.email,
+            contact: supervisorDetails.contact,
+            supervisorId: supervisorDetails.supervisorId,
+            supervisorExpertise: supervisorDetails.supervisorExpertise,
+          },
           projectStatus: "Approved",
         });
 
         // Update supervisor's current students list
-        await User.findByIdAndUpdate(supervisor._id, {
+        await User.findByIdAndUpdate(supervisor.id, {
           $push: { currentGroupId: request.studentId },
         });
       }
@@ -170,7 +174,7 @@ router.post(
 // Get all groups assigned to supervisor
 router.get("/groups", supervisorAuth, async (req, res) => {
   try {
-    const supervisorId = req.supervisor._id;
+    const supervisorId = req.user.id;
 
     // Find all students who have this supervisor
     const students = await User.find({
@@ -223,7 +227,7 @@ router.get("/groups", supervisorAuth, async (req, res) => {
 router.get("/groups/:groupId/documents", supervisorAuth, async (req, res) => {
   try {
     const { groupId } = req.params;
-    const supervisorId = req.supervisor._id;
+    const supervisorId = req.user.id;
 
     // Verify the group belongs to this supervisor
     const groupExists = await User.findOne({
@@ -464,5 +468,28 @@ router.post(
   authorize("supervisor"),
   supervisorController.evaluateStudent
 );
+
+// Get assigned students
+router.get("/assigned-students", supervisorAuth, async (req, res) => {
+  try {
+    // Find all students who have this supervisor assigned
+    const students = await User.find({
+      "supervisor.id": req.user.id,
+      role: "student",
+    }).select("name email studentId department");
+
+    res.json({
+      success: true,
+      students,
+    });
+  } catch (err) {
+    console.error("Error fetching assigned students:", err);
+    res.status(500).json({
+      success: false,
+      msg: "Error fetching assigned students",
+      error: err.message,
+    });
+  }
+});
 
 module.exports = router;

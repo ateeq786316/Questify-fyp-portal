@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
 
 const userSchema = new mongoose.Schema({
   //Common Fields:name, email, password, contact, role, Common fields for to all users.
@@ -97,8 +98,37 @@ const userSchema = new mongoose.Schema({
 });
 
 // Add method to compare passwords
-userSchema.methods.comparePassword = function (candidatePassword) {
-  return this.password === candidatePassword;
+userSchema.methods.comparePassword = async function (candidatePassword) {
+  try {
+    // First try direct comparison (for plain text passwords)
+    if (this.password === candidatePassword) {
+      return true;
+    }
+
+    // If direct comparison fails, try bcrypt comparison (for hashed passwords)
+    return await bcrypt.compare(candidatePassword, this.password);
+  } catch (err) {
+    console.error("Password comparison error:", err);
+    return false;
+  }
 };
+
+// Pre-save middleware to hash password if it's not already hashed
+userSchema.pre("save", async function (next) {
+  try {
+    // Only hash the password if it's modified (or new) and not already hashed
+    if (!this.isModified("password")) return next();
+
+    // Check if password is already hashed (bcrypt hashes start with $2)
+    if (this.password.startsWith("$2")) return next();
+
+    // Hash the password
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
 
 module.exports = mongoose.model("User", userSchema);

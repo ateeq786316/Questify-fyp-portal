@@ -31,6 +31,7 @@ import SupervisorLogin from './pages/Home/Superviserhome/Supervisorlogin.jsx'
 import SupervisorDashboard from './pages/Home/Superviserhome/SupervisorDashboard.jsx'
 import ReviewDocument from './pages/Home/Superviserhome/ReviewDocument.jsx'
 import SupervisorEvaluate from './pages/Home/Superviserhome/SupervisorEvaluate.jsx'
+import SupervisorCommunication from './pages/Home/Superviserhome/SupervisorCommunication.jsx'
 
 // internal
 import InternalLogin from './pages/Home/Internalhome/InternalLogin.jsx';
@@ -132,6 +133,11 @@ function App() {
           <Route path='/supervisor/evaluate' element={
             <ProtectedRoute>
               <SupervisorEvaluate />
+            </ProtectedRoute>
+          } />
+          <Route path='/supervisor/communication' element={
+            <ProtectedRoute>
+              <SupervisorCommunication />
             </ProtectedRoute>
           } />
 

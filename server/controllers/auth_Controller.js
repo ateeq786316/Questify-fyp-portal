@@ -13,21 +13,33 @@ require("dotenv").config();
 
 exports.studentLogin = async (req, res) => {
   const { email, password } = req.body;
-  console.log("Login attempt with:", email, password);
+  console.log("Login attempt with:", email);
 
   try {
     const user = await User.findOne({ email, role: "student" });
     if (!user) {
       return res.status(404).json({ msg: "Student not found" });
     }
-    if (user.password !== password) {
+
+    // Use the comparePassword method
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
       return res.status(400).json({ msg: "Invalid credentials" });
     }
+
     // Generate JWT token
     const token = generateToken(user);
-    // Send token and user details in response so user can login
-    res.status(200).json({ token, student: user });
-    console.log("Genreated token is: ", token);
+
+    // Remove password from response
+    const userData = user.toObject();
+    delete userData.password;
+
+    // Send token and user details in response
+    res.status(200).json({
+      success: true,
+      token,
+      student: userData,
+    });
   } catch (err) {
     console.error("Login error in controller:", err);
     res.status(500).json({ msg: "Server error", error: err.message });
@@ -597,7 +609,9 @@ exports.internalLogin = async (req, res) => {
       return res.status(404).json({ msg: "Internal examiner not found" });
     }
 
-    if (internal.password !== password) {
+    // Use the comparePassword method
+    const isMatch = await internal.comparePassword(password);
+    if (!isMatch) {
       console.log("Invalid credentials for internal examiner:", internal.name);
       return res.status(400).json({ msg: "Invalid credentials" });
     }
@@ -634,7 +648,9 @@ exports.externalLogin = async (req, res) => {
       return res.status(404).json({ msg: "External examiner not found" });
     }
 
-    if (external.password !== password) {
+    // Use the comparePassword method
+    const isMatch = await external.comparePassword(password);
+    if (!isMatch) {
       console.log("Invalid credentials for external examiner:", external.name);
       return res.status(400).json({ msg: "Invalid credentials" });
     }
