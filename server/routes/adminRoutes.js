@@ -35,4 +35,9 @@ router.post(
   adminController.uploadSupervisors
 );
 
+// User Management Routes
+router.get("/users", isAdmin, adminController.getUsers);
+router.put("/users/:id", isAdmin, adminController.updateUser);
+router.delete("/users/:id", isAdmin, adminController.deleteUser);
+
 module.exports = router;

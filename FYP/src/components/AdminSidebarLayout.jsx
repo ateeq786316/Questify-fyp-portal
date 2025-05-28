@@ -62,12 +62,12 @@ const AdminSidebarLayout = ({ children }) => {
                 {!isCollapsed && <span className="admin-sidebar__text">Dashboard</span>}
               </div>
             </li>
-            {/* <li className={`admin-sidebar__item ${location.pathname === "/usermanagement" ? "admin-sidebar__item--active" : ""}`}>
-              <div onClick={() => navigate('/usermanagement')} className="admin-sidebar__link">
+            <li className={`admin-sidebar__item ${location.pathname === "/admin/usermanagement" ? "admin-sidebar__item--active" : ""}`}>
+              <div onClick={() => navigate('/admin/usermanagement')} className="admin-sidebar__link">
                 <FaUsers className="admin-sidebar__icon" />
                 {!isCollapsed && <span className="admin-sidebar__text">User Management</span>}
               </div>
-            </li> */}
+            </li>
             <li className={`admin-sidebar__item ${location.pathname === "/admin/upload-students" ? "admin-sidebar__item--active" : ""}`}>
               <div onClick={() => navigate('/admin/upload-students')} className="admin-sidebar__link">
                 <FaGraduationCap className="admin-sidebar__icon" />

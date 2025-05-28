@@ -766,3 +766,101 @@ exports.addSingleSupervisor = async (req, res) => {
     });
   }
 };
+
+// Get all users with optional role filter
+exports.getUsers = async (req, res) => {
+  try {
+    const { role } = req.query;
+    let filter = {};
+    if (role) {
+      filter.role = role;
+    }
+
+    const users = await User.find(filter).select("-password").sort({ name: 1 });
+
+    res.status(200).json({
+      success: true,
+      users,
+    });
+  } catch (err) {
+    console.error("Error fetching users:", err);
+    res.status(500).json({
+      success: false,
+      msg: "Error fetching users",
+      error: err.message,
+    });
+  }
+};
+
+// Update a user by ID
+exports.updateUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updates = { ...req.body };
+
+    // Prevent password updates via this route
+    delete updates.password;
+
+    const user = await User.findByIdAndUpdate(id, updates, {
+      new: true,
+      runValidators: true, // Run schema validators on update
+    }).select("-password");
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        msg: "User not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      msg: "User updated successfully",
+      user,
+    });
+  } catch (err) {
+    console.error("Error updating user:", err);
+
+    // Handle validation errors specifically
+    if (err.name === "ValidationError") {
+      return res.status(400).json({
+        success: false,
+        msg: err.message, // Send the validation error message from Mongoose/schema
+      });
+    }
+
+    res.status(500).json({
+      success: false,
+      msg: "Error updating user",
+      error: err.message,
+    });
+  }
+};
+
+// Delete a user by ID
+exports.deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const user = await User.findByIdAndDelete(id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        msg: "User not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      msg: "User deleted successfully",
+    });
+  } catch (err) {
+    console.error("Error deleting user:", err);
+    res.status(500).json({
+      success: false,
+      msg: "Error deleting user",
+      error: err.message,
+    });
+  }
+};
