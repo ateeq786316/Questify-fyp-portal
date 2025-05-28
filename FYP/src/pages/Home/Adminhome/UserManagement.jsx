@@ -69,6 +69,9 @@ const UserManagement = () => {
       supervisorExpertise: Array.isArray(user.supervisorExpertise) ? user.supervisorExpertise.join(', ') : '', // Handle arrays
       internalExpertise: Array.isArray(user.internalExpertise) ? user.internalExpertise.join(', ') : '',
       externalExpertise: Array.isArray(user.externalExpertise) ? user.externalExpertise.join(', ') : '',
+      groupID: user.groupID || '', // Include group ID for students
+      projectTitle: user.projectTitle || '', // Include project title for students
+      projectStatus: user.projectStatus || 'Pending', // Include project status for students
       // Add other relevant fields here
     });
     setShowEditModal(true);
@@ -158,18 +161,25 @@ const UserManagement = () => {
     }
   };
 
+  // Add status badge component
+  const StatusBadge = ({ status }) => {
+    // Map 'Approved' status to 'completed' styling
+    const displayStatus = status; // Use the exact status string
+    const statusClass = `status-badge status-${displayStatus.toLowerCase().replace(' ', '-')}`;
+    return <span className={statusClass}>{status}</span>;
+  };
+
   return (
     <AdminSidebarLayout>
       <div className="admin-dashboard-container">
         <h1 className="dashboard-title">User Management</h1>
 
-        <div className="filter-buttons mb-3">
+        <div className="filter-buttons">
           {userRoles.map(role => (
             <Button
               key={role}
               variant={filteredRole === (role === 'All' ? '' : role) ? 'primary' : 'secondary'}
               onClick={() => handleFilterClick(role)}
-              className="me-2"
             >
               {role}
             </Button>
@@ -177,7 +187,9 @@ const UserManagement = () => {
         </div>
 
         {loading ? (
-          <Spinner animation="border" />
+          <div className="loading-spinner">
+            <Spinner animation="border" variant="primary" />
+          </div>
         ) : error ? (
           <div className="error-message">{error}</div>
         ) : (
@@ -189,7 +201,9 @@ const UserManagement = () => {
                   <th>Email</th>
                   <th>Role</th>
                   <th>Department</th>
-                  {/* Add more headers based on common/relevant fields */}
+                  <th>Group ID</th>
+                  <th>Supervisor</th>
+                  <th>Project Status</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -197,20 +211,28 @@ const UserManagement = () => {
                 {users.length > 0 ? (
                   users.map(user => (
                     <tr key={user._id}>
-                      <td>{user.name}</td>
-                      <td>{user.email}</td>
-                      <td>{user.role}</td>
-                      <td>{user.department || 'N/A'}</td>
-                      {/* Render other relevant user data here */}
-                      <td>
-                        <Button variant="info" size="sm" className="me-2" onClick={() => handleEditClick(user)}>Edit</Button>
-                        <Button variant="danger" size="sm" onClick={() => handleDeleteClick(user)}>Delete</Button>
+                      <td>{user.name || '×'}</td>
+                      <td>{user.email || '×'}</td>
+                      <td>{user.role || '×'}</td>
+                      <td>{user.department || '×'}</td>
+                      <td>{user.role === 'student' ? (user.groupID || 'Not Assigned') : '×'}</td>
+                      <td>{user.role === 'student' ? (user.supervisor?.name || 'Not Assigned') : '×'}</td>
+                      <td>{user.role === 'student' ? <StatusBadge status={user.projectStatus || 'Pending'} /> : '×'}</td>
+                      <td className="actions">
+                        <Button variant="info" size="sm" onClick={() => handleEditClick(user)}>
+                          Edit
+                        </Button>
+                        <Button variant="danger" size="sm" onClick={() => handleDeleteClick(user)}>
+                          Delete
+                        </Button>
                       </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="5" className="text-center">No users found</td>
+                    <td colSpan={8} className="text-center">
+                      No users found
+                    </td>
                   </tr>
                 )}
               </tbody>
@@ -219,85 +241,139 @@ const UserManagement = () => {
         )}
 
         {/* Edit User Modal */}
-        <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
+        <Modal show={showEditModal} onHide={() => setShowEditModal(false)} size="lg">
           <Modal.Header closeButton>
             <Modal.Title>Edit User</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             {currentUser && (
               <Form>
-                <Form.Group className="mb-3">
-                  <Form.Label>Name</Form.Label>
-                  <Form.Control type="text" name="name" value={editFormData.name || ''} onChange={handleEditFormChange} />
-                </Form.Group>
-                <Form.Group className="mb-3">
-                  <Form.Label>Email</Form.Label>
-                  {/* Email should probably not be editable or handle carefully */}
-                  <Form.Control type="email" name="email" value={editFormData.email || ''} onChange={handleEditFormChange} disabled />
-                </Form.Group>
-                <Form.Group className="mb-3">
-                  <Form.Label>Department</Form.Label>
-                  <Form.Control type="text" name="department" value={editFormData.department || ''} onChange={handleEditFormChange} />
-                </Form.Group>
-                 <Form.Group className="mb-3">
-                  <Form.Label>Contact</Form.Label>
-                  <Form.Control type="text" name="contact" value={editFormData.contact || ''} onChange={handleEditFormChange} />
-                </Form.Group>
-                {/* Add more fields based on the user's role and available data in editFormData */}
-                 {currentUser.role === 'student' && (
-                   <>
+                <div className="row">
+                  <div className="col-md-6">
                     <Form.Group className="mb-3">
-                      <Form.Label>Student ID</Form.Label>
-                      <Form.Control type="text" name="studentId" value={editFormData.studentId || ''} onChange={handleEditFormChange} />
+                      <Form.Label>Name</Form.Label>
+                      <Form.Control type="text" name="name" value={editFormData.name || ''} onChange={handleEditFormChange} />
                     </Form.Group>
-                    {/* Add other student-specific fields like program, batch, cgpa, groupID, project details if needed */}
-                   </>
-                 )}
-                 {currentUser.role === 'supervisor' && (
-                   <>
+                  </div>
+                  <div className="col-md-6">
                     <Form.Group className="mb-3">
-                      <Form.Label>Supervisor ID</Form.Label>
-                      <Form.Control type="text" name="supervisorId" value={editFormData.supervisorId || ''} onChange={handleEditFormChange} />
+                      <Form.Label>Email</Form.Label>
+                      <Form.Control type="email" name="email" value={editFormData.email || ''} onChange={handleEditFormChange} disabled />
                     </Form.Group>
+                  </div>
+                </div>
+
+                <div className="row">
+                  <div className="col-md-6">
                     <Form.Group className="mb-3">
-                      <Form.Label>Expertise (comma separated)</Form.Label>
-                      <Form.Control type="text" name="supervisorExpertise" value={editFormData.supervisorExpertise || ''} onChange={handleEditFormChange} />
+                      <Form.Label>Department</Form.Label>
+                      <Form.Control type="text" name="department" value={editFormData.department || ''} onChange={handleEditFormChange} />
                     </Form.Group>
-                   </>
-                 )}
-                 {currentUser.role === 'internal' && (
-                   <>
+                  </div>
+                  <div className="col-md-6">
                     <Form.Group className="mb-3">
-                      <Form.Label>Internal ID</Form.Label>
-                      <Form.Control type="text" name="internalId" value={editFormData.internalId || ''} onChange={handleEditFormChange} />
+                      <Form.Label>Contact</Form.Label>
+                      <Form.Control type="text" name="contact" value={editFormData.contact || ''} onChange={handleEditFormChange} />
                     </Form.Group>
-                     <Form.Group className="mb-3">
-                      <Form.Label>Expertise (comma separated)</Form.Label>
-                      <Form.Control type="text" name="internalExpertise" value={editFormData.internalExpertise || ''} onChange={handleEditFormChange} />
-                    </Form.Group>
-                   </>
-                 )}
-                  {currentUser.role === 'external' && (
-                   <>
-                     <Form.Group className="mb-3">
-                      <Form.Label>External ID</Form.Label>
-                      <Form.Control type="text" name="externalId" value={editFormData.externalId || ''} onChange={handleEditFormChange} />
-                    </Form.Group>
-                     <Form.Group className="mb-3">
-                      <Form.Label>Organization</Form.Label>
-                      <Form.Control type="text" name="externalOrganization" value={editFormData.externalOrganization || ''} onChange={handleEditFormChange} />
-                    </Form.Group>
+                  </div>
+                </div>
+
+                {currentUser.role === 'student' && (
+                  <div className="row">
+                    <div className="col-md-6">
                       <Form.Group className="mb-3">
-                      <Form.Label>Position</Form.Label>
-                      <Form.Control type="text" name="externalPosition" value={editFormData.externalPosition || ''} onChange={handleEditFormChange} />
-                    </Form.Group>
+                        <Form.Label>Student ID</Form.Label>
+                        <Form.Control type="text" name="studentId" value={editFormData.studentId || ''} onChange={handleEditFormChange} />
+                      </Form.Group>
+                    </div>
+                    <div className="col-md-6">
                       <Form.Group className="mb-3">
-                      <Form.Label>Expertise (comma separated)</Form.Label>
-                      <Form.Control type="text" name="externalExpertise" value={editFormData.externalExpertise || ''} onChange={handleEditFormChange} />
-                    </Form.Group>
-                   </>
-                 )}
-                {/* Password change is excluded */}
+                        <Form.Label>Group ID</Form.Label>
+                        <Form.Control type="text" name="groupID" value={editFormData.groupID || ''} onChange={handleEditFormChange} />
+                      </Form.Group>
+                    </div>
+                    <div className="col-md-12">
+                      <Form.Group className="mb-3">
+                        <Form.Label>Project Title</Form.Label>
+                        <Form.Control type="text" name="projectTitle" value={editFormData.projectTitle || ''} onChange={handleEditFormChange} />
+                      </Form.Group>
+                    </div>
+                    <div className="col-md-12">
+                      <Form.Group className="mb-3">
+                        <Form.Label>Project Status</Form.Label>
+                        <Form.Select name="projectStatus" value={editFormData.projectStatus || 'Pending'} onChange={handleEditFormChange}>
+                          <option value="Pending">Pending</option>
+                          <option value="Reviewed">Reviewed</option>
+                          <option value="Approved">Approved</option>
+                          <option value="Rejected">Rejected</option>
+                        </Form.Select>
+                      </Form.Group>
+                    </div>
+                  </div>
+                )}
+
+                {currentUser.role === 'supervisor' && (
+                  <div className="row">
+                    <div className="col-md-6">
+                      <Form.Group className="mb-3">
+                        <Form.Label>Supervisor ID</Form.Label>
+                        <Form.Control type="text" name="supervisorId" value={editFormData.supervisorId || ''} onChange={handleEditFormChange} />
+                      </Form.Group>
+                    </div>
+                    <div className="col-md-6">
+                      <Form.Group className="mb-3">
+                        <Form.Label>Expertise (comma separated)</Form.Label>
+                        <Form.Control type="text" name="supervisorExpertise" value={editFormData.supervisorExpertise || ''} onChange={handleEditFormChange} />
+                      </Form.Group>
+                    </div>
+                  </div>
+                )}
+
+                {currentUser.role === 'internal' && (
+                  <div className="row">
+                    <div className="col-md-6">
+                      <Form.Group className="mb-3">
+                        <Form.Label>Internal ID</Form.Label>
+                        <Form.Control type="text" name="internalId" value={editFormData.internalId || ''} onChange={handleEditFormChange} />
+                      </Form.Group>
+                    </div>
+                    <div className="col-md-6">
+                      <Form.Group className="mb-3">
+                        <Form.Label>Expertise (comma separated)</Form.Label>
+                        <Form.Control type="text" name="internalExpertise" value={editFormData.internalExpertise || ''} onChange={handleEditFormChange} />
+                      </Form.Group>
+                    </div>
+                  </div>
+                )}
+
+                {currentUser.role === 'external' && (
+                  <div className="row">
+                    <div className="col-md-6">
+                      <Form.Group className="mb-3">
+                        <Form.Label>External ID</Form.Label>
+                        <Form.Control type="text" name="externalId" value={editFormData.externalId || ''} onChange={handleEditFormChange} />
+                      </Form.Group>
+                    </div>
+                    <div className="col-md-6">
+                      <Form.Group className="mb-3">
+                        <Form.Label>Organization</Form.Label>
+                        <Form.Control type="text" name="externalOrganization" value={editFormData.externalOrganization || ''} onChange={handleEditFormChange} />
+                      </Form.Group>
+                    </div>
+                    <div className="col-md-6">
+                      <Form.Group className="mb-3">
+                        <Form.Label>Position</Form.Label>
+                        <Form.Control type="text" name="externalPosition" value={editFormData.externalPosition || ''} onChange={handleEditFormChange} />
+                      </Form.Group>
+                    </div>
+                    <div className="col-md-6">
+                      <Form.Group className="mb-3">
+                        <Form.Label>Expertise (comma separated)</Form.Label>
+                        <Form.Control type="text" name="externalExpertise" value={editFormData.externalExpertise || ''} onChange={handleEditFormChange} />
+                      </Form.Group>
+                    </div>
+                  </div>
+                )}
               </Form>
             )}
           </Modal.Body>
@@ -306,29 +382,48 @@ const UserManagement = () => {
               Close
             </Button>
             <Button variant="primary" onClick={handleSaveChanges} disabled={saving}>
-              {saving ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> : ''} Save Changes
+              {saving ? (
+                <>
+                  <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-2" />
+                  Saving...
+                </>
+              ) : (
+                'Save Changes'
+              )}
             </Button>
           </Modal.Footer>
         </Modal>
 
         {/* Delete Confirmation Modal */}
-        <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
+        <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)} centered>
           <Modal.Header closeButton>
             <Modal.Title>Confirm Delete</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            Are you sure you want to delete user: {currentUser?.name} ({currentUser?.email})?
+            <p>Are you sure you want to delete this user?</p>
+            <div className="alert alert-warning">
+              <strong>Name:</strong> {currentUser?.name}<br />
+              <strong>Email:</strong> {currentUser?.email}<br />
+              <strong>Role:</strong> {currentUser?.role}
+            </div>
+            <p className="text-danger">This action cannot be undone.</p>
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
               Cancel
             </Button>
             <Button variant="danger" onClick={handleConfirmDelete} disabled={saving}>
-              {saving ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> : ''} Delete
+              {saving ? (
+                <>
+                  <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-2" />
+                  Deleting...
+                </>
+              ) : (
+                'Delete User'
+              )}
             </Button>
           </Modal.Footer>
         </Modal>
-
       </div>
     </AdminSidebarLayout>
   );

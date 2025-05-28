@@ -13,15 +13,16 @@ html, body {
   --light: #f8f9fa;
   --dark: #2d3436;
   --gray: #636e72;
-  --success: #00b894;
-  --warning: #fdcb6e;
-  --danger: #d63031;
+  --success: #28a745; /* Bootstrap success */
+  --warning: #ffc107; /* Bootstrap warning */
+  --danger: #dc3545; /* Bootstrap danger */
+  --info: #17a2b8; /* Bootstrap info */
   --card-bg: #ffffff;
-  --hover-light: rgba(108, 92, 231, 0.1);
+  --hover-light: rgba(108, 92, 231, 0.05); /* Lighter hover */
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   display: flex;
   min-height: 100vh;
-  background-color: #f5f7fa;
+  background-color: #f5f7fa; /* Light background */
 }
 
 /* Sidebar Styles */
@@ -338,19 +339,19 @@ table tr:hover {
   color: #e17055;
 }
 
-.status-badge.complete {
-  background: rgba(0, 184, 148, 0.2);
-  color: var(--success);
+.status-badge.reviewed {
+  background-color: #cce5ff; /* Light blue */
+  color: #004085; /* Dark blue text */
 }
 
-.status-badge.active {
-  background: rgba(0, 184, 148, 0.2);
-  color: var(--success);
+.status-badge.approved {
+  background-color: #d4edda; /* Light green */
+  color: #155724; /* Dark green text */
 }
 
-.status-badge.inactive {
-  background: rgba(214, 48, 49, 0.1);
-  color: var(--danger);
+.status-badge.rejected {
+  background-color: #f8d7da; /* Light red */
+  color: #721c24; /* Dark red text */
 }
 
 /* Action Buttons */
