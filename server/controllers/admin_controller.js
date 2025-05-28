@@ -247,12 +247,12 @@ exports.uploadStudents = async (req, res) => {
     const studentsToInsert = uniqueStudents.map((s) => ({
       name: s.Name || s.name,
       email: s.Email || s.email,
-      password: s.Password || Math.random().toString(36).slice(-8),
+      password: String(s.Password || Math.random().toString(36).slice(-8)),
       department: s.Department || s.department,
-      contact: s.Contact || s.contact || "",
+      contact: String(s.Contact || s.contact || ""),
       role: s.Role || s.role || "student",
       studentId: s["Roll Number"] ? String(s["Roll Number"]) : undefined,
-      batch: s.Batch || s.batch || "",
+      batch: s.Batch ? String(s.Batch) : s.batch ? String(s.batch) : "",
     }));
     console.log("fileDuplicates:", fileDuplicates);
 
@@ -285,7 +285,7 @@ exports.uploadStudents = async (req, res) => {
 
     // Hash passwords for all new students before insert
     for (const stu of newStudents) {
-      stu.password = await bcrypt.hash(stu.password, 10);
+      stu.password = await bcrypt.hash(String(stu.password), 10);
     }
 
     let result = { insertedCount: 0, insertedStudents: [] };
@@ -409,18 +409,17 @@ exports.uploadSupervisors = async (req, res) => {
     const supervisorsToInsert = uniqueSupervisors.map((s) => ({
       name: s.Name || s.name,
       email: s.Email || s.email,
-      password: String(
-        s.Password || s.password || Math.random().toString(36).slice(-8)
-      ),
+      password: String(s.Password || Math.random().toString(36).slice(-8)),
       department: s.Department || s.department,
-      contact: s.Contact || s.contact || "",
+      contact: String(s.Contact || s.contact || ""),
       role: s.Role || s.role || "supervisor",
-      supervisorId: s.SupervisorID || s.supervisorId || "",
+      supervisorId: s.SupervisorID || s.supervisorId,
       supervisorExpertise: s.SupervisorExpertise
         ? String(s.SupervisorExpertise)
             .split(",")
             .map((e) => e.trim())
         : [],
+      batch: s.Batch ? String(s.Batch) : s.batch ? String(s.batch) : "",
     }));
     // Validate required fields
     for (const sup of supervisorsToInsert) {
@@ -449,9 +448,8 @@ exports.uploadSupervisors = async (req, res) => {
       existingEmailSet.has(s.email)
     );
     // Hash passwords for all new supervisors before insert
-    const bcrypt = require("bcryptjs");
     for (const sup of newSupervisors) {
-      sup.password = await bcrypt.hash(sup.password, 10);
+      sup.password = await bcrypt.hash(String(sup.password), 10);
     }
     let result = { insertedCount: 0, insertedSupervisors: [] };
     let errors = [];
@@ -630,7 +628,7 @@ exports.addSingleStudent = async (req, res) => {
     console.error("Error adding single student:", err);
     res.status(500).json({
       success: false,
-      msg: "Server error adding student.",
+      msg: "Error Invalid mail formate of adding student.",
       error: err.message,
     });
   }
@@ -763,7 +761,7 @@ exports.addSingleSupervisor = async (req, res) => {
     console.error("Error adding single supervisor:", err);
     res.status(500).json({
       success: false,
-      msg: "Server error adding supervisor.",
+      msg: "Error Invalid mail formate of adding supervisor.",
       error: err.message,
     });
   }

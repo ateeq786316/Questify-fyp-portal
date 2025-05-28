@@ -1,5 +1,4 @@
 const upload = require("../middleware/uploadMiddleware");
-
 // Student routes
 router.post(
   "/student/project-proposal",

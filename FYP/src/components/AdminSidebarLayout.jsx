@@ -62,12 +62,12 @@ const AdminSidebarLayout = ({ children }) => {
                 {!isCollapsed && <span className="admin-sidebar__text">Dashboard</span>}
               </div>
             </li>
-            <li className={`admin-sidebar__item ${location.pathname === "/usermanagement" ? "admin-sidebar__item--active" : ""}`}>
+            {/* <li className={`admin-sidebar__item ${location.pathname === "/usermanagement" ? "admin-sidebar__item--active" : ""}`}>
               <div onClick={() => navigate('/usermanagement')} className="admin-sidebar__link">
                 <FaUsers className="admin-sidebar__icon" />
                 {!isCollapsed && <span className="admin-sidebar__text">User Management</span>}
               </div>
-            </li>
+            </li> */}
             <li className={`admin-sidebar__item ${location.pathname === "/admin/upload-students" ? "admin-sidebar__item--active" : ""}`}>
               <div onClick={() => navigate('/admin/upload-students')} className="admin-sidebar__link">
                 <FaGraduationCap className="admin-sidebar__icon" />
@@ -86,12 +86,12 @@ const AdminSidebarLayout = ({ children }) => {
                 {!isCollapsed && <span className="admin-sidebar__text">Milestones</span>}
               </div>
             </li>
-            <li className={`admin-sidebar__item ${location.pathname === "/admin/settings" ? "admin-sidebar__item--active" : ""}`}>
+            {/* <li className={`admin-sidebar__item ${location.pathname === "/admin/settings" ? "admin-sidebar__item--active" : ""}`}>
               <div onClick={() => navigate('/admin/settings')} className="admin-sidebar__link">
                 <FaCog className="admin-sidebar__icon" />
                 {!isCollapsed && <span className="admin-sidebar__text">Settings</span>}
               </div>
-            </li>
+            </li> */}
           </ul>
         </div>
 

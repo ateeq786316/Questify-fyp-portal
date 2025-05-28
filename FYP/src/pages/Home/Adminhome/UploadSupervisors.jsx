@@ -219,7 +219,7 @@ const UploadSupervisors = () => {
                 <input
                   type="email"
                   name="email"
-                  placeholder="Email"
+                  placeholder="Email must be @lgu.edu.pk"
                   value={singleSupervisor.email}
                   onChange={handleSingleSupervisorChange}
                   required

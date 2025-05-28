@@ -20,8 +20,8 @@ const AdminDashboard = () => {
   const [stats, setStats] = useState({
     enrolledStudents: 0,
     totalSupervisors: 0,
-    activeStudents: 0,
-    pendingStudents: 0,
+    activeStudents: 1,
+    pendingStudents: 1,
   });
 
   const [studentGroups, setStudentGroups] = useState([]);

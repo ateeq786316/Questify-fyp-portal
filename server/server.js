@@ -11,6 +11,7 @@ const studentRoutes = require("./routes/student");
 const supervisorRoutes = require("./routes/supervisor");
 const internalRoutes = require("./routes/internal");
 const externalRoutes = require("./routes/external");
+const groupRequestRoutes = require("./routes/groupRequest_Routes");
 const http = require("http");
 const socketIo = require("socket.io");
 require("dotenv").config();
@@ -102,8 +103,7 @@ app.use((err, req, res, next) => {
 
 // Socket.IO connection handling
 io.on("connection", (socket) => {
-  console.log("New client connected");
-
+  // console.log("New client connected");
   // Join a chat room
   socket.on("join_chat", (data) => {
     const roomId = `chat_${data.senderId}_${data.receiverId}`;
@@ -118,7 +118,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    console.log("Client disconnected");
+    // console.log("Client disconnected");
   });
 });
 
@@ -130,6 +130,7 @@ app.use("/api/student", studentRoutes);
 app.use("/api/supervisor", supervisorRoutes);
 app.use("/api/internal", internalRoutes);
 app.use("/api/external", externalRoutes);
+app.use("/api/student/group-request", groupRequestRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

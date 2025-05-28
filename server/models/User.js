@@ -131,4 +131,19 @@ userSchema.pre("save", async function (next) {
   }
 });
 
+// Add email format validation for student and supervisor roles
+userSchema.pre("save", function (next) {
+  if (this.role === "student" || this.role === "supervisor") {
+    const emailRegex = /@lgu\.edu\.pk$/;
+    if (!emailRegex.test(this.email)) {
+      const error = new Error(
+        "Invalid email domain. Only @lgu.edu.pk emails are allowed for this role."
+      );
+      error.name = "ValidationError"; // Use ValidationError name for consistency
+      return next(error);
+    }
+  }
+  next();
+});
+
 module.exports = mongoose.model("User", userSchema);

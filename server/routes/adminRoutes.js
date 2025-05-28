@@ -15,24 +15,19 @@ router.post(
   upload.single("file"),
   adminController.uploadStudents
 );
-
 // Student template download route
 router.get(
   "/student-template",
   isAdmin,
   adminController.downloadStudentTemplate
 );
-
 router.post("/add-student", isAdmin, adminController.addSingleStudent);
-
 router.get(
   "/supervisor-template",
   isAdmin,
   adminController.downloadSupervisorTemplate
 );
-
 router.post("/add-supervisor", isAdmin, adminController.addSingleSupervisor);
-
 router.post(
   "/supervisors/upload",
   isAdmin,

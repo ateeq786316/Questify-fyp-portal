@@ -236,7 +236,7 @@ const StudentUpload = () => {
                 <input
                   type="email"
                   name="email"
-                  placeholder="Email"
+                  placeholder="Email must be @lgu.edu.pk"
                   value={singleStudent.email}
                   onChange={handleSingleStudentChange}
                   required

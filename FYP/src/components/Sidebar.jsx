@@ -65,24 +65,24 @@ const Sidebar = () => {
             {!isCollapsed && <span className="student-sidebar__text">Feedback/Comments</span>}
           </Link>
         </li>
-        <li className={`student-sidebar__item ${location.pathname === "/studenttrackprogress" ? "student-sidebar__item--active" : ""}`}>
+        {/* <li className={`student-sidebar__item ${location.pathname === "/studenttrackprogress" ? "student-sidebar__item--active" : ""}`}>
           <Link to="/studenttrackprogress" className="student-sidebar__link">
             <span className="student-sidebar__icon">📈</span>
             {!isCollapsed && <span className="student-sidebar__text">Track Progress</span>}
           </Link>
-        </li>
+        </li> */}
         <li className={`student-sidebar__item ${location.pathname === "/studentchatbot" ? "student-sidebar__item--active" : ""}`}>
           <Link to="/studentchatbot" className="student-sidebar__link">
             <span className="student-sidebar__icon">💬</span>
             {!isCollapsed && <span className="student-sidebar__text">Chat</span>}
           </Link>
         </li>
-        <li className={`student-sidebar__item ${location.pathname === "/studentcommunication" ? "student-sidebar__item--active" : ""}`}>
+        {/* <li className={`student-sidebar__item ${location.pathname === "/studentcommunication" ? "student-sidebar__item--active" : ""}`}>
           <Link to="/studentcommunication" className="student-sidebar__link">
             <span className="student-sidebar__icon">📬</span>
             {!isCollapsed && <span className="student-sidebar__text">Communication</span>}
           </Link>
-        </li>
+        </li> */}
       </ul>
     </div>
   );
