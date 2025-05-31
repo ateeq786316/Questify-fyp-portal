@@ -44,11 +44,11 @@ function LandingPage() {
                       <p className="text-center mb-5">
                         The portal for managing your final year projects.
                       </p>
-                      <div className="text-center d-flex justify-content-center gap-3"> {/* Added gap between buttons */}
+                      <div className="text-center justify-content-center gap-1"> {/* Added gap between buttons */}
                         <Button variant="primary" onClick={handleLoginClick}>
                           Login
                         </Button>
-                        <Button variant="outline-primary" onClick={handleSignupClick}>
+                        <Button variant="text-center justify-content-center gap-1" onClick={handleSignupClick}>
                           Sign Up
                         </Button>
                       </div>                      
