@@ -1,0 +1,125 @@
+.auth-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image: url('../../assets/lgubgimg.jpg');
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  padding: 1rem;
+}
+
+.auth-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+}
+
+.auth-form-container {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  padding: 1.5rem;
+  border-radius: 15px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  width: 100%;
+  max-width: 800px;
+  position: relative;
+  z-index: 1;
+}
+
+.auth-form-container h2 {
+  color: #ffffff;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  text-align: center;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form-label {
+  font-weight: 500;
+  color: #ffffff;
+  margin-bottom: 0.25rem;
+  font-size: 0.9rem;
+}
+
+.form-control {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  transition: all 0.3s ease;
+  color: #2d3436;
+  font-size: 0.9rem;
+}
+
+.form-control:focus {
+  background: rgba(255, 255, 255, 1);
+  border-color: #352897;
+  box-shadow: 0 0 0 0.2rem rgba(53, 40, 151, 0.25);
+}
+
+.form-group {
+  margin-bottom: 0.75rem;
+}
+
+.btn-primary {
+  background-color: #352897;
+  border-color: #352897;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.btn-primary:hover {
+  background-color: #5649c0;
+  border-color: #5649c0;
+  transform: translateY(-1px);
+}
+
+.btn-primary:disabled {
+  background-color: #a29bd6;
+  border-color: #a29bd6;
+}
+
+.btn-link {
+  color: #ffffff;
+  text-decoration: none;
+  padding: 0;
+  background: none;
+  border: none;
+  font-size: 0.9rem;
+}
+
+.btn-link:hover {
+  color: #352897;
+  text-decoration: underline;
+}
+
+.alert {
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .auth-container {
+    padding: 0.5rem;
+  }
+  
+  .auth-form-container {
+    padding: 1rem;
+    margin: 0.5rem;
+  }
+} 

@@ -28,6 +28,7 @@ const fs = require("fs");
 const jwt = require("jsonwebtoken");
 const Document = require("../models/Document");
 const { verifyToken } = require("../utils/token");
+const authController = require("../controllers/authController");
 
 // Configure multer storage
 const storage = multer.diskStorage({
@@ -324,5 +325,11 @@ router.get("/documents/:docId", authMiddleware, async (req, res) => {
 // Chat routes
 router.get("/chat/:studentId", authMiddleware, getConversation);
 router.post("/chat/:studentId/send", authMiddleware, sendMessage);
+
+// Student signup route
+router.post("/student/signup", authController.studentSignup);
+
+// OTP verification route
+router.post("/student/verify-otp", authController.verifyOTP);
 
 module.exports = router;

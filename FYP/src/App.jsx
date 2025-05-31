@@ -13,6 +13,7 @@ import PortalPage from './PortalPage.jsx'
 import LandingPage from './LandingPage'
 import ContactUs from './ContactUs.jsx'
 import AboutUs from './AboutUs.jsx'
+import StudentSignup from './pages/Auth/StudentSignup.jsx'
 
 // student
 import StudentLogin from './pages/Home/Studenthome/Studentlogin.jsx'
@@ -65,6 +66,8 @@ function App() {
           <Route path="/login" element={<PortalPage />} />
           <Route path="/contactus" element={<ContactUs />} />
           <Route path="/aboutus" element={<AboutUs />} />
+          <Route path="/signup" element={<StudentSignup />} />
+
           
           <Route path="/studentlogin" element={<StudentLogin />} />
           <Route path='/adminlogin' element={<AdminLogin />} /> 

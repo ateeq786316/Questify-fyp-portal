@@ -12,7 +12,9 @@ function LandingPage() {
     navigate('/login'); // Navigate to the /login route
   };
 
-
+  const handleSignupClick = () => {
+    navigate('/signup'); // Navigate to the /signup route
+  };
 
   return (
     <div
@@ -42,11 +44,14 @@ function LandingPage() {
                       <p className="text-center mb-5">
                         The portal for managing your final year projects.
                       </p>
-                      <div className="text-center"> {/* Center the button */}
-                      <Button variant="primary" onClick={handleLoginClick}>
-                        Login
-                      </Button>
-                    </div>                      
+                      <div className="text-center d-flex justify-content-center gap-3"> {/* Added gap between buttons */}
+                        <Button variant="primary" onClick={handleLoginClick}>
+                          Login
+                        </Button>
+                        <Button variant="outline-primary" onClick={handleSignupClick}>
+                          Sign Up
+                        </Button>
+                      </div>                      
                     </Col>
                   </Row>
                 </Container>
