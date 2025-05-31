@@ -183,31 +183,31 @@ const UserManagement = () => {
             >
               {role}
             </Button>
-          ))}
-        </div>
+                    ))}
+                  </div>
 
         {loading ? (
           <div className="loading-spinner">
             <Spinner animation="border" variant="primary" />
-          </div>
+                  </div>
         ) : error ? (
           <div className="error-message">{error}</div>
         ) : (
           <div className="user-table-container">
             <table className="user-table">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Email</th>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
                   <th>Role</th>
                   <th>Department</th>
                   <th>Group ID</th>
                   <th>Supervisor</th>
                   <th>Project Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
                 {users.length > 0 ? (
                   users.map(user => (
                     <tr key={user._id}>
@@ -225,18 +225,18 @@ const UserManagement = () => {
                         <Button variant="danger" size="sm" onClick={() => handleDeleteClick(user)}>
                           Delete
                         </Button>
-                      </td>
-                    </tr>
+                </td>
+              </tr>
                   ))
                 ) : (
                   <tr>
                     <td colSpan={8} className="text-center">
                       No users found
-                    </td>
-                  </tr>
+                </td>
+              </tr>
                 )}
-              </tbody>
-            </table>
+          </tbody>
+        </table>
           </div>
         )}
 
@@ -254,13 +254,13 @@ const UserManagement = () => {
                       <Form.Label>Name</Form.Label>
                       <Form.Control type="text" name="name" value={editFormData.name || ''} onChange={handleEditFormChange} />
                     </Form.Group>
-                  </div>
+          </div>
                   <div className="col-md-6">
                     <Form.Group className="mb-3">
                       <Form.Label>Email</Form.Label>
                       <Form.Control type="email" name="email" value={editFormData.email || ''} onChange={handleEditFormChange} disabled />
                     </Form.Group>
-                  </div>
+          </div>
                 </div>
 
                 <div className="row">
@@ -269,15 +269,15 @@ const UserManagement = () => {
                       <Form.Label>Department</Form.Label>
                       <Form.Control type="text" name="department" value={editFormData.department || ''} onChange={handleEditFormChange} />
                     </Form.Group>
-                  </div>
+                </div>
                   <div className="col-md-6">
                     <Form.Group className="mb-3">
                       <Form.Label>Contact</Form.Label>
                       <Form.Control type="text" name="contact" value={editFormData.contact || ''} onChange={handleEditFormChange} />
                     </Form.Group>
-                  </div>
-                </div>
-
+              </div>
+          </div>
+          
                 {currentUser.role === 'student' && (
                   <div className="row">
                     <div className="col-md-6">
@@ -285,19 +285,19 @@ const UserManagement = () => {
                         <Form.Label>Student ID</Form.Label>
                         <Form.Control type="text" name="studentId" value={editFormData.studentId || ''} onChange={handleEditFormChange} />
                       </Form.Group>
-                    </div>
+          </div>
                     <div className="col-md-6">
                       <Form.Group className="mb-3">
                         <Form.Label>Group ID</Form.Label>
                         <Form.Control type="text" name="groupID" value={editFormData.groupID || ''} onChange={handleEditFormChange} />
                       </Form.Group>
-                    </div>
+        </div>
                     <div className="col-md-12">
                       <Form.Group className="mb-3">
                         <Form.Label>Project Title</Form.Label>
                         <Form.Control type="text" name="projectTitle" value={editFormData.projectTitle || ''} onChange={handleEditFormChange} />
                       </Form.Group>
-                    </div>
+          </div>
                     <div className="col-md-12">
                       <Form.Group className="mb-3">
                         <Form.Label>Project Status</Form.Label>
@@ -308,8 +308,8 @@ const UserManagement = () => {
                           <option value="Rejected">Rejected</option>
                         </Form.Select>
                       </Form.Group>
-                    </div>
-                  </div>
+          </div>
+          </div>
                 )}
 
                 {currentUser.role === 'supervisor' && (
@@ -319,14 +319,14 @@ const UserManagement = () => {
                         <Form.Label>Supervisor ID</Form.Label>
                         <Form.Control type="text" name="supervisorId" value={editFormData.supervisorId || ''} onChange={handleEditFormChange} />
                       </Form.Group>
-                    </div>
+          </div>
                     <div className="col-md-6">
                       <Form.Group className="mb-3">
                         <Form.Label>Expertise (comma separated)</Form.Label>
                         <Form.Control type="text" name="supervisorExpertise" value={editFormData.supervisorExpertise || ''} onChange={handleEditFormChange} />
                       </Form.Group>
-                    </div>
-                  </div>
+          </div>
+        </div>
                 )}
 
                 {currentUser.role === 'internal' && (
@@ -336,14 +336,14 @@ const UserManagement = () => {
                         <Form.Label>Internal ID</Form.Label>
                         <Form.Control type="text" name="internalId" value={editFormData.internalId || ''} onChange={handleEditFormChange} />
                       </Form.Group>
-                    </div>
+          </div>
                     <div className="col-md-6">
                       <Form.Group className="mb-3">
                         <Form.Label>Expertise (comma separated)</Form.Label>
                         <Form.Control type="text" name="internalExpertise" value={editFormData.internalExpertise || ''} onChange={handleEditFormChange} />
                       </Form.Group>
-                    </div>
-                  </div>
+          </div>
+          </div>
                 )}
 
                 {currentUser.role === 'external' && (
@@ -353,27 +353,27 @@ const UserManagement = () => {
                         <Form.Label>External ID</Form.Label>
                         <Form.Control type="text" name="externalId" value={editFormData.externalId || ''} onChange={handleEditFormChange} />
                       </Form.Group>
-                    </div>
+          </div>
                     <div className="col-md-6">
                       <Form.Group className="mb-3">
                         <Form.Label>Organization</Form.Label>
                         <Form.Control type="text" name="externalOrganization" value={editFormData.externalOrganization || ''} onChange={handleEditFormChange} />
                       </Form.Group>
-                    </div>
+        </div>
                     <div className="col-md-6">
                       <Form.Group className="mb-3">
                         <Form.Label>Position</Form.Label>
                         <Form.Control type="text" name="externalPosition" value={editFormData.externalPosition || ''} onChange={handleEditFormChange} />
                       </Form.Group>
-                    </div>
+          </div>
                     <div className="col-md-6">
                       <Form.Group className="mb-3">
                         <Form.Label>Expertise (comma separated)</Form.Label>
                         <Form.Control type="text" name="externalExpertise" value={editFormData.externalExpertise || ''} onChange={handleEditFormChange} />
                       </Form.Group>
-                    </div>
-                  </div>
-                )}
+      </div>
+            </div>
+          )}
               </Form>
             )}
           </Modal.Body>
@@ -417,10 +417,10 @@ const UserManagement = () => {
                 <>
                   <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" className="me-2" />
                   Deleting...
-                </>
-              ) : (
+          </>
+        ) : (
                 'Delete User'
-              )}
+        )}
             </Button>
           </Modal.Footer>
         </Modal>

@@ -16,19 +16,8 @@ const http = require("http");
 const socketIo = require("socket.io");
 require("dotenv").config();
 
-// Import controllers
-const {
-  studentLogin,
-  getStudentDetails,
-  chatbot,
-} = require("./controllers/auth_Controller");
-
-// Import middleware
-const { chatbotLimiter } = require("./middleware/rateLimiter");
-
 // Import Database connection
 const connectDB = require("./config/db");
-connectDB();
 
 const app = express();
 const server = http.createServer(app);
@@ -103,7 +92,6 @@ app.use((err, req, res, next) => {
 
 // Socket.IO connection handling
 io.on("connection", (socket) => {
-  // console.log("New client connected");
   // Join a chat room
   socket.on("join_chat", (data) => {
     const roomId = `chat_${data.senderId}_${data.receiverId}`;
@@ -118,7 +106,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    // console.log("Client disconnected");
+    // Handle disconnect if needed
   });
 });
 
@@ -152,7 +140,21 @@ app.use((req, res) => {
   });
 });
 
-const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+// Start server only after DB connection
+const startServer = async () => {
+  try {
+    // Connect to MongoDB first
+    await connectDB();
+    // Then start the server
+    const PORT = process.env.PORT || 5000;
+    server.listen(PORT, () => {
+      console.log(`✅ Server running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error("❌ Failed to start server:", error);
+    process.exit(1);
+  }
+};
+
+// Start the application
+startServer();

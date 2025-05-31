@@ -53,6 +53,7 @@ import Milestones from './pages/Home/Adminhome/Milestones'
 
 // protected route
 import ProtectedRoute from './components/ProtectedRoute'
+import Login from './pages/Login'
 
 function App() {
   return (
@@ -63,7 +64,8 @@ function App() {
           {/* Public Routes */}
           <Route path="/" element={<LandingPage />} />
           <Route path="/intro" element={<LandingPage />} />
-          <Route path="/login" element={<PortalPage />} />
+          <Route path="/portalpage" element={<PortalPage />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/contactus" element={<ContactUs />} />
           <Route path="/aboutus" element={<AboutUs />} />
           <Route path="/signup" element={<StudentSignup />} />
