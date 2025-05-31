@@ -23,18 +23,3 @@ app.use("/api/auth", authRoutes);
 app.use("/api/supervisor", supervisorRoutes);
 app.use("/api/student", studentRoutes);
 app.use("/api/admin", adminRoutes);
-
-// Connect to MongoDB
-mongoose
-  .connect(process.env.MONGODB_URI)
-  .then(() => {
-    console.log("Connected to MongoDB");
-    // Start server
-    const PORT = process.env.PORT || 5000;
-    app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
-    });
-  })
-  .catch((err) => {
-    console.error("MongoDB connection error:", err);
-  });

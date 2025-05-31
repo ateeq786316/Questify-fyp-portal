@@ -12,7 +12,7 @@ exports.studentSignup = async (req, res) => {
     const { rollNumber, name, email, password, department, batch, contact } =
       req.body;
 
-    // Check if email or roll number already exists
+    // Check if email or roll number already exists in User collection
     const existingStudent = await User.findOne({
       $or: [{ email }, { studentId: rollNumber }],
       role: "student",
@@ -28,11 +28,19 @@ exports.studentSignup = async (req, res) => {
     const existingTempSignup = await TempSignup.findOne({
       $or: [{ email }, { rollNumber }],
     });
+
+    // If there's a pending signup, check if OTP has expired
     if (existingTempSignup) {
-      return res.status(400).json({
-        success: false,
-        msg: "A signup request is already pending for this email or roll number",
-      });
+      const now = new Date();
+      if (now < existingTempSignup.otpExpiry) {
+        return res.status(400).json({
+          success: false,
+          msg: "A signup request is already pending. Please wait for the OTP to expire or check your email.",
+        });
+      } else {
+        // If OTP has expired, delete the old record
+        await TempSignup.deleteOne({ email });
+      }
     }
 
     // Rate limiting check
@@ -110,7 +118,7 @@ exports.verifyOTP = async (req, res) => {
       await TempSignup.deleteOne({ email });
       return res.status(400).json({
         success: false,
-        msg: "OTP has expired",
+        msg: "OTP has expired. Please request a new OTP.",
       });
     }
 
