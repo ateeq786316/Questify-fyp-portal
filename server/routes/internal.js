@@ -5,6 +5,8 @@ const User = require("../models/User");
 const Evaluation = require("../models/Evaluation");
 const Document = require("../models/Document");
 const Project = require("../models/Project");
+const path = require("path");
+const fs = require("fs");
 
 // Middleware to verify internal examiner token
 const internalAuth = async (req, res, next) => {
@@ -75,7 +77,7 @@ router.get("/students", internalAuth, async (req, res) => {
             uploadedBy: student._id,
             fileType: "finalReport",
           })
-            .select("filePath")
+            .select("filePath _id")
             .lean(),
           Evaluation.findOne({ student: student._id }).lean(),
         ]);
@@ -99,6 +101,76 @@ router.get("/students", internalAuth, async (req, res) => {
     res.status(500).json({
       success: false,
       msg: "Error fetching students for evaluation",
+    });
+  }
+});
+
+// Get document file
+router.get("/documents/:documentId/file", internalAuth, async (req, res) => {
+  try {
+    const document = await Document.findById(req.params.documentId);
+    if (!document) {
+      return res.status(404).json({
+        success: false,
+        msg: "Document not found",
+      });
+    }
+
+    // Log the document details for debugging
+    console.log("Document found:", document);
+
+    // Get the file path from the document
+    const filePath = document.filePath;
+    const fileType = document.fileType;
+
+    // Extract just the filename without any directory
+    const fileName = filePath.includes("\\")
+      ? filePath.split("\\").pop()
+      : filePath.split("/").pop();
+
+    // Construct the full path based on fileType
+    let fullPath;
+    if (fileType === "finalReport") {
+      fullPath = path.join(
+        __dirname,
+        "..",
+        "uploads",
+        "finalReports",
+        fileName
+      );
+    } else if (fileType === "srs") {
+      fullPath = path.join(__dirname, "..", "uploads", "srs", fileName);
+    } else if (fileType === "proposal") {
+      fullPath = path.join(__dirname, "..", "uploads", "proposals", fileName);
+    } else {
+      fullPath = path.join(__dirname, "..", "uploads", fileName);
+    }
+
+    // Log the path for debugging
+    console.log("Looking for file at:", fullPath);
+
+    // Check if file exists
+    if (!fs.existsSync(fullPath)) {
+      console.error("File not found at path:", fullPath);
+      return res.status(404).json({
+        success: false,
+        msg: "File not found",
+        path: fullPath,
+      });
+    }
+
+    // Set appropriate headers for PDF
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", "inline; filename=" + fileName);
+
+    // Send the file
+    res.sendFile(fullPath);
+  } catch (err) {
+    console.error("Error serving document file:", err);
+    res.status(500).json({
+      success: false,
+      msg: "Error serving document file",
+      error: err.message,
     });
   }
 });

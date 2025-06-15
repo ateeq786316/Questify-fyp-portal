@@ -145,6 +145,9 @@ const StudentDashboard = () => {
           {/* Banner Component */}
           <div className="banner-container">
             <div className="banner-content">
+              <div className="banner-image">
+                <img src={bell} alt="Notifications" className="bell-icon" />
+              </div>
               <div className="banner-text">
                 <div className="banner-date">
                   <p>Date: {new Date().toLocaleDateString()}</p>
@@ -154,11 +157,6 @@ const StudentDashboard = () => {
                 </div>
                 <div className="banner-message">
                   Always stay updated in your student portal
-                </div>
-              </div>
-              <div className="banner-image">
-                <div className="icon-wrapper" data-number="1">
-                  <img src={bell} alt="" className="bell-icon" />
                 </div>
               </div>
             </div>
@@ -172,11 +170,12 @@ const StudentDashboard = () => {
                 <FaUserGraduate className="icon" />
                 <h3>Student Info</h3>
                 <div className="student-details">
-                  <p><strong>ID:</strong> {studentDetails?.studentInfo?.studentId}</p>
-                  <p><strong>Program:</strong> {studentDetails?.studentInfo?.program}</p>
-                  <p><strong>CGPA:</strong> {studentDetails?.studentInfo?.cgpa}</p>
-                  <p><strong>Department:</strong> {studentDetails?.studentInfo?.department}</p>
-                  <p><strong>Contact:</strong> {studentDetails?.studentInfo?.contact}</p>
+                  <p><strong>ID:</strong> {studentDetails?.studentInfo?.studentId || studentDetails?.studentId}</p>
+                  <p><strong>Name:</strong> {studentDetails?.studentInfo?.name || studentDetails?.name}</p>
+                  <p><strong>Department:</strong> {studentDetails?.studentInfo?.department || studentDetails?.department}</p>
+                  <p><strong>Contact:</strong> {studentDetails?.studentInfo?.contact || studentDetails?.contact}</p>
+                  <p><strong>Email:</strong> {studentDetails?.studentInfo?.email || studentDetails?.email}</p>
+                  <p><strong>Project Category:</strong> {studentDetails?.projectCategory || 'Not Available'}</p>
                 </div>
               </div>
             </div>
@@ -186,17 +185,12 @@ const StudentDashboard = () => {
               <div className="card text-center p-3">
                 <FaProjectDiagram className="icon" />
                 <h3>Project Details</h3>
-                <p><strong>Title:</strong> {studentDetails?.projectInfo?.title}</p>
-                <p><strong>Category:</strong> {studentDetails?.projectInfo?.category}</p>
-                <p><strong>Status:</strong> {studentDetails?.projectInfo?.status}</p>
-                <p><strong>Proposal:</strong> {studentDetails?.projectInfo?.proposalStatus}</p>
-                <p><strong>Submitted:</strong> {studentDetails?.projectInfo?.submissionDate ? new Date(studentDetails.projectInfo.submissionDate).toLocaleDateString() : "Not submitted"}</p>
-                {studentDetails?.projectInfo?.proposalFile && (
-                  <p><strong>Proposal File:</strong> <a href={studentDetails.projectInfo.proposalFile} target="_blank" rel="noopener noreferrer">View</a></p>
-                )}
-                {studentDetails?.projectInfo?.plagiarismReport && (
-                  <p><strong>Plagiarism Report:</strong> <a href={studentDetails.projectInfo.plagiarismReport} target="_blank" rel="noopener noreferrer">View</a></p>
-                )}
+                <p><strong>Title:</strong> {studentDetails?.projectTitle || 'Not Available'}</p>
+                <p><strong>Category:</strong> {studentDetails?.projectCategory || 'Not Available'}</p>
+                <p><strong>Status:</strong> {studentDetails?.projectStatus || 'Not Available'}</p>
+                <p><strong>Proposal:</strong> {studentDetails?.proposalStatus || 'Not Available'}</p>
+                <p><strong>Description:</strong> {studentDetails?.projectDescription || 'Not Available'}</p>
+                <p><strong>Group ID:</strong> {studentDetails?.groupID || 'Not Available'}</p>
               </div>
             </div>
 
@@ -325,10 +319,7 @@ const StudentDashboard = () => {
                 ) : (
                   <p>No upcoming deadlines</p>
                 )}
-                <hr />
-                <p><strong>Start Date:</strong> {studentDetails?.dates?.startDate ? new Date(studentDetails.dates.startDate).toLocaleDateString() : "Not set"}</p>
-                <p><strong>End Date:</strong> {studentDetails?.dates?.endDate ? new Date(studentDetails.dates.endDate).toLocaleDateString() : "Not set"}</p>
-                <p><strong>Group ID:</strong> {studentDetails?.groupID}</p>
+                
             </div>
           </div>
 

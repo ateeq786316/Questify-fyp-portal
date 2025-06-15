@@ -36,6 +36,11 @@ const StudentUpload = () => {
     }
   };
 
+  const validateEmail = (email) => {
+    const emailRegex = /@lgu\.edu\.pk$/;
+    return emailRegex.test(email);
+  };
+
   const handleUpload = async () => {
     if (!file) {
       setError('Please select a file first');
@@ -65,7 +70,13 @@ const StudentUpload = () => {
       if (response.data.success) {
         setSuccess('Students uploaded successfully');
         setFile(null);
-        setDuplicateEmails(response.data.details?.duplicates?.map(d => d.email) || []);
+        // Check for invalid emails in the response
+        if (response.data.invalidEmails && response.data.invalidEmails.length > 0) {
+          setError('Some emails were invalid. Only @lgu.edu.pk emails are allowed for students.');
+          setDuplicateEmails(response.data.invalidEmails);
+        } else {
+          setDuplicateEmails(response.data.details?.duplicates?.map(d => d.email) || []);
+        }
         // Reset file input
         document.getElementById('fileInput').value = '';
       } else {
@@ -113,14 +124,31 @@ const StudentUpload = () => {
   };
 
   const handleSingleStudentChange = (e) => {
+    const { name, value } = e.target;
+    
+    if (name === 'email') {
+      if (!validateEmail(value)) {
+        setSingleStudentError('Invalid email domain. Only @lgu.edu.pk emails are allowed for students.');
+      } else {
+        setSingleStudentError(null);
+      }
+    }
+    
     setSingleStudent({
       ...singleStudent,
-      [e.target.name]: e.target.value,
+      [name]: value,
     });
   };
 
   const handleSingleStudentSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validate email before submission
+    if (!validateEmail(singleStudent.email)) {
+      setSingleStudentError('Invalid email domain. Only @lgu.edu.pk emails are allowed for students.');
+      return;
+    }
+    
     setSingleStudentMsg(null);
     setSingleStudentError(null);
     setSingleStudentLoading(true);

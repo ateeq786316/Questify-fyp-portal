@@ -25,11 +25,14 @@ const SupervisorDashboard = () => {
         const response = await axios.get('http://localhost:5000/api/supervisor/dashboard', {
           headers: { Authorization: `Bearer ${token}` }
         });
+        console.log('Supervisor API Response:', response.data);
+        console.log('Supervisor Data:', response.data.supervisor);
         setSupervisor(response.data.supervisor);
         setApprovedStudents(response.data.approvedStudents || []);
         setPendingRequests(response.data.pendingRequests || []);
         setLoading(false);
       } catch (err) {
+        console.error('Supervisor API Error:', err);
         setError(err.response?.data?.msg || 'Error fetching supervisor data');
         setLoading(false);
       }

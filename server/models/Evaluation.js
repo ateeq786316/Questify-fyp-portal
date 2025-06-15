@@ -15,13 +15,13 @@ const evaluationSchema = new mongoose.Schema(
     externalExaminer: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      default: null,
     },
     supervisorMarks: {
       marks: {
         type: Number,
         min: 0,
-        max: 100,
+        max: 50,
       },
       feedback: String,
       evaluatedAt: Date,
@@ -30,7 +30,7 @@ const evaluationSchema = new mongoose.Schema(
       marks: {
         type: Number,
         min: 0,
-        max: 100,
+        max: 50,
       },
       feedback: String,
       evaluatedAt: Date,

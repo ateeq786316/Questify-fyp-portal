@@ -34,17 +34,24 @@ const supervisorAuth = async (req, res, next) => {
 // Get supervisor dashboard data
 router.get("/dashboard", supervisorAuth, async (req, res) => {
   try {
-    const supervisor = req.user;
+    // Fetch complete supervisor data from database
+    const supervisorData = await User.findById(req.user.id);
+    if (!supervisorData) {
+      return res.status(404).json({
+        success: false,
+        msg: "Supervisor not found",
+      });
+    }
 
     // Get approved students
     const approvedStudents = await User.find({
-      "supervisor.id": supervisor.id,
+      "supervisor.id": req.user.id,
       role: "student",
     }).select("studentId name projectTitle projectStatus");
 
     // Get pending requests
     const pendingRequests = await SupervisorRequest.find({
-      supervisorId: supervisor.id,
+      supervisorId: req.user.id,
       status: "pending",
     })
       .populate("studentId", "studentId name projectTitle")
@@ -53,9 +60,12 @@ router.get("/dashboard", supervisorAuth, async (req, res) => {
     res.status(200).json({
       success: true,
       supervisor: {
-        supervisorId: supervisor.id,
-        name: supervisor.name,
-        supervisorExpertise: supervisor.supervisorExpertise,
+        supervisorId: supervisorData.supervisorId,
+        name: supervisorData.name,
+        email: supervisorData.email,
+        department: supervisorData.department,
+        contact: supervisorData.contact,
+        supervisorExpertise: supervisorData.supervisorExpertise,
       },
       approvedStudents,
       pendingRequests,
@@ -366,9 +376,27 @@ router.get("/documents/:documentId/file", async (req, res) => {
       });
     }
 
+    // Get file extension and set appropriate content type
+    const ext = path.extname(filePath).toLowerCase();
+    const contentType =
+      {
+        ".pdf": "application/pdf",
+        ".doc": "application/msword",
+        ".docx":
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        ".jpg": "image/jpeg",
+        ".jpeg": "image/jpeg",
+        ".png": "image/png",
+        ".pptx":
+          "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+      }[ext] || "application/octet-stream";
+
     // Set appropriate headers
-    res.setHeader("Content-Type", "application/octet-stream");
-    res.setHeader("Content-Disposition", "inline");
+    res.setHeader("Content-Type", contentType);
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="${document.title || "document"}${ext}"`
+    );
 
     // Send the file
     res.sendFile(filePath);

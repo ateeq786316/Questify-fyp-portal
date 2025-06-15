@@ -3,6 +3,7 @@ import axios from 'axios';
 import Navbar from '../../../components/Navbar';
 import Sidebar from '../../../components/Sidebar';
 import { toast } from 'react-toastify';
+import '../../../styles/StudentGroupRequest.css';
 
 const StudentGroupRequest = () => {
   const [searchEmail, setSearchEmail] = useState('');
@@ -137,57 +138,76 @@ const StudentGroupRequest = () => {
   };
 
   return (
-    <>
+    <div className="stgr-container">
       <Navbar />
-      <div style={{ display: 'flex' }}>
+      <div className="stgr-wrapper">
         <Sidebar />
-        <div style={{ flex: 1, padding: '2rem' }}>
-          <h1 style={{ marginBottom: '2rem' }}>Group Requests</h1>
+        <div className="stgr-content">
+          <h1 className="stgr-title">Group Requests</h1>
+          
           {/* Status Banner */}
           {currentUser?.groupID && (
-            <div style={{ background: '#e9ecef', color: '#333', padding: '1rem', borderRadius: 8, marginBottom: 24, fontWeight: 500 }}>
+            <div className="stgr-status-banner">
               You are already in a group (Group ID: {currentUser.groupID}). You cannot send or receive new group requests.
             </div>
           )}
-          <div className="card" style={{ padding: '2rem', borderRadius: 12, boxShadow: '0 4px 16px rgba(0,0,0,0.08)', marginBottom: '2rem' }}>
-            <h2>Request a Group Member</h2>
+
+          <div className="stgr-card">
+            <h2 className="stgr-card-title">Request a Group Member</h2>
             {currentUser?.groupID ? null : (
               <>
-                <form onSubmit={handleSearch} style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
+                <form onSubmit={handleSearch} className="stgr-search-form">
                   <input
                     type="email"
                     placeholder="Enter student email"
                     value={searchEmail}
                     onChange={e => setSearchEmail(e.target.value)}
                     required
-                    style={{ flex: 1, padding: '0.75rem', borderRadius: 6, border: '1px solid #ccc' }}
+                    className="stgr-search-input"
                     disabled={!!currentUser?.groupID}
                   />
-                  <button type="submit" disabled={loading || !!currentUser?.groupID} style={{ padding: '0.75rem 1.5rem', borderRadius: 6, background: '#007bff', color: '#fff', border: 'none' }}>
+                  <button 
+                    type="submit" 
+                    disabled={loading || !!currentUser?.groupID}
+                    className="stgr-search-btn"
+                  >
                     {loading ? 'Searching...' : 'Search'}
                   </button>
                 </form>
-                {searchError && <div style={{ color: 'red', marginBottom: 8 }}>{searchError}</div>}
+
+                {searchError && <div className="stgr-error">{searchError}</div>}
+                
                 {searchResult && (
-                  <div style={{ marginBottom: 8, background: '#f9f9f9', padding: '1rem', borderRadius: 6 }}>
-                    <div><b>Name:</b> {searchResult.name}</div>
-                    <div><b>Email:</b> {searchResult.email}</div>
-                    <div><b>Department:</b> {searchResult.department}</div>
+                  <div className="stgr-result">
+                    <div className="stgr-result-info">
+                      <div><b>Name:</b> {searchResult.name}</div>
+                      <div><b>Email:</b> {searchResult.email}</div>
+                      <div><b>Department:</b> {searchResult.department}</div>
+                    </div>
                     {searchResult.groupID ? (
-                      <div style={{ color: '#888', marginTop: 8 }}>
+                      <div className="stgr-result-warning">
                         This student is already in a group (Group ID: {searchResult.groupID}).
                       </div>
                     ) : (
-                      <button onClick={handleSendRequest} disabled={loading || !!currentUser?.groupID || !!searchResult.groupID} style={{ marginTop: 8, padding: '0.5rem 1.2rem', borderRadius: 6, background: '#28a745', color: '#fff', border: 'none' }}>
+                      <button 
+                        onClick={handleSendRequest} 
+                        disabled={loading || !!currentUser?.groupID || !!searchResult.groupID}
+                        className="stgr-send-btn"
+                      >
                         {loading ? 'Sending...' : 'Send Group Request'}
                       </button>
                     )}
                   </div>
                 )}
-                {requestMsg && <div style={{ color: requestMsg.includes('sent') ? 'green' : 'red' }}>{requestMsg}</div>}
-                {/* Inline guidance for disabled state */}
+
+                {requestMsg && (
+                  <div className={`stgr-message ${requestMsg.includes('sent') ? 'stgr-message--success' : 'stgr-message--error'}`}>
+                    {requestMsg}
+                  </div>
+                )}
+
                 {!searchResult && (
-                  <div className="mt-2 text-muted">
+                  <div className="stgr-guidance">
                     Enter a student email and click Search to find a student to request.
                   </div>
                 )}
@@ -195,33 +215,54 @@ const StudentGroupRequest = () => {
             )}
           </div>
 
-          <div className="card" style={{ padding: '2rem', borderRadius: 12, boxShadow: '0 4px 16px rgba(0,0,0,0.08)' }}>
-            <h2>Incoming Group Requests</h2>
-            {actionMsg && <div style={{ color: actionMsg.includes('approve') ? 'green' : 'red', marginBottom: 8 }}>{actionMsg}</div>}
+          <div className="stgr-card">
+            <h2 className="stgr-card-title">Incoming Group Requests</h2>
+            {actionMsg && (
+              <div className={`stgr-message ${actionMsg.includes('approve') ? 'stgr-message--success' : 'stgr-message--error'}`}>
+                {actionMsg}
+              </div>
+            )}
+            
             {incomingRequests.length === 0 ? (
-              <div style={{ color: '#888' }}>No incoming requests.</div>
+              <div className="stgr-guidance">No incoming requests.</div>
             ) : (
-              <ul style={{ listStyle: 'none', padding: 0 }}>
+              <ul className="stgr-list">
                 {incomingRequests.map((req) => (
-                  <li key={req._id} style={{ marginBottom: 16, background: '#f9f9f9', padding: '1rem', borderRadius: 6 }}>
-                    <div><b>From:</b> {req.fromName} ({req.fromEmail})</div>
-                    <div><b>Department:</b> {req.fromDepartment}</div>
-                    <button onClick={() => handleApprove(req._id)} disabled={loading || !!currentUser?.groupID} style={{ marginRight: 8, padding: '0.5rem 1.2rem', borderRadius: 6, background: '#28a745', color: '#fff', border: 'none' }}>Approve</button>
-                    <button onClick={() => handleReject(req._id)} disabled={loading || !!currentUser?.groupID} style={{ padding: '0.5rem 1.2rem', borderRadius: 6, background: '#dc3545', color: '#fff', border: 'none' }}>Reject</button>
+                  <li key={req._id} className="stgr-item">
+                    <div className="stgr-item-info">
+                      <div><b>From:</b> {req.fromName} ({req.fromEmail})</div>
+                      <div><b>Department:</b> {req.fromDepartment}</div>
+                    </div>
+                    <div className="stgr-actions">
+                      <button 
+                        onClick={() => handleApprove(req._id)} 
+                        disabled={loading || !!currentUser?.groupID}
+                        className="stgr-approve-btn"
+                      >
+                        Approve
+                      </button>
+                      <button 
+                        onClick={() => handleReject(req._id)} 
+                        disabled={loading || !!currentUser?.groupID}
+                        className="stgr-reject-btn"
+                      >
+                        Reject
+                      </button>
+                    </div>
                   </li>
                 ))}
               </ul>
             )}
-            {/* Inline guidance for disabled state */}
+
             {currentUser?.groupID && (
-              <div className="mt-2 text-muted">
+              <div className="stgr-guidance">
                 You cannot approve or reject group requests while you are in a group.
               </div>
             )}
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

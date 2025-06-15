@@ -145,25 +145,25 @@ const ReviewDocument = () => {
   };
 
   // Handle document preview
-  const handlePreviewDocument = (doc) => {
-    const token = localStorage.getItem('supervisorToken');
-    const url = `http://localhost:5000/api/supervisor/documents/${doc._id}/file`;
-    
-    // Create a hidden iframe to handle the file download
-    const iframe = document.createElement('iframe');
-    iframe.style.display = 'none';
-    document.body.appendChild(iframe);
-    
-    // Add the token to the URL as a query parameter
-    const urlWithToken = `${url}?token=${token}`;
-    
-    // Set the iframe src to trigger the download
-    iframe.src = urlWithToken;
-    
-    // Remove the iframe after a short delay
-    setTimeout(() => {
-      document.body.removeChild(iframe);
-    }, 1000);
+  const handlePreviewDocument = async (doc) => {
+    try {
+      const token = localStorage.getItem('supervisorToken');
+      const url = `http://localhost:5000/api/supervisor/documents/${doc._id}/file`;
+      
+      // Create a temporary link element
+      const link = document.createElement('a');
+      link.href = `${url}?token=${token}`;
+      link.target = '_blank'; // Open in new tab
+      link.download = doc.title || 'document'; // Set download filename
+      
+      // Append to body, click, and remove
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      console.error('Error downloading document:', err);
+      toast.error('Failed to download document');
+    }
   };
 
   // Handle status update

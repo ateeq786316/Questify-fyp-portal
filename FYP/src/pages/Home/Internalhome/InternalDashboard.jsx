@@ -105,6 +105,110 @@ const InternalDashboard = () => {
     }
   };
 
+  const handlePreviewDocument = async (student) => {
+    try {
+      if (!student.finalReport) {
+        toast.error('No final report available for this student');
+        return;
+      }
+
+      const token = localStorage.getItem('internalToken');
+      if (!token) {
+        toast.error('Authentication token missing. Please log in again.');
+        return;
+      }
+      
+      // Now fetch the actual file directly
+      const apiUrl = `http://localhost:5000/api/internal/documents/${student.finalReport._id}/file`;
+      console.log('Fetching file from:', apiUrl);
+
+      // Show loading state
+      toast.info('Loading document...', { autoClose: false, toastId: 'loading-doc' });
+
+      const response = await fetch(apiUrl, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/pdf'
+        }
+      });
+
+      // Dismiss loading toast
+      toast.dismiss('loading-doc');
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('File fetch error:', errorData);
+        
+        // Handle specific error cases
+        if (response.status === 404) {
+          toast.error('Document file not found. Please contact support.');
+        } else if (response.status === 401) {
+          toast.error('Session expired. Please log in again.');
+        } else {
+          toast.error(errorData.msg || 'Failed to fetch document');
+        }
+        
+        throw new Error(errorData.msg || 'Failed to fetch document');
+      }
+
+      // Get the blob from the response
+      const blob = await response.blob();
+      
+      // Verify blob is valid
+      if (blob.size === 0) {
+        toast.error('Received empty document. Please try again.');
+        return;
+      }
+      
+      // Create a URL for the blob
+      const blobUrl = window.URL.createObjectURL(blob);
+      
+      // Create an iframe element
+      const iframe = document.createElement('iframe');
+      iframe.style.width = '100%';
+      iframe.style.height = '100vh';
+      iframe.style.border = 'none';
+      iframe.src = blobUrl;
+      
+      // Open in new window
+      const newWindow = window.open('', '_blank');
+      if (!newWindow) {
+        toast.error('Please allow popups for this website');
+        return;
+      }
+      
+      // Write the iframe to the new window
+      newWindow.document.write(`
+        <html>
+          <head>
+            <title>${student.name}'s Final Report</title>
+            <style>
+              body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; }
+            </style>
+          </head>
+          <body>
+            ${iframe.outerHTML}
+          </body>
+        </html>
+      `);
+      newWindow.document.close();
+      
+      // Clean up the URL object after the window loads
+      newWindow.onload = () => {
+        window.URL.revokeObjectURL(blobUrl);
+      };
+    } catch (error) {
+      console.error('Error previewing document:', error);
+      
+      // Handle specific error cases
+      if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+        toast.error('Network error. Please check your connection.');
+      } else {
+        toast.error(error.message || 'Failed to preview document. Please try again.');
+      }
+    }
+  };
+
   if (loading) {
   return (
     <div className="internal-dashboard">
@@ -181,14 +285,12 @@ const InternalDashboard = () => {
                       <td>{student.department}</td>
                       <td>
                         {student.finalReport ? (
-                          <a
-                            href={`http://localhost:5000/${student.finalReport.filePath}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                          <button
+                            onClick={() => handlePreviewDocument(student)}
                             className="view-report-btn"
                           >
                             View Report
-                          </a>
+                          </button>
                         ) : (
                           <span className="no-report">No Report</span>
                         )}

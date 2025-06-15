@@ -1,9 +1,9 @@
-.supervisor-evaluate-page {
-  min-height: 100vh;
+.sv-evaluate-page {
+  min-height: 120vh;
   background-color: #f5f5f5;
 }
 
-.supervisor-evaluate-container {
+.sv-evaluate-container {
   display: flex;
   min-height: calc(100vh - 64px);
 }
@@ -33,124 +33,186 @@
   background-color: #3498db;
 }
 
-.supervisor-evaluate-content {
+.sv-evaluate-content {
   flex: 1;
-  padding: 20px;
+  padding: 50px;
+  margin-left: var(--sidebar-width, 80px);
+  transition: margin-left 0.3s cubic-bezier(.4,0,.2,1);
 }
 
-.supervisor-evaluate-section {
+.sv-evaluate-section {
   background-color: white;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.supervisor-evaluate-section h2 {
+.sv-evaluate-section h2 {
   color: #2c3e50;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
+  font-size: 1.8rem;
+  font-weight: 600;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 15px;
 }
 
-.supervisor-evaluate-error {
-  color: #e74c3c;
-  padding: 10px;
+.sv-evaluate-error {
+  color: #dc3545;
+  padding: 12px;
   margin-bottom: 20px;
-  background-color: #fde8e8;
-  border-radius: 4px;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 8px;
+  font-size: 0.95rem;
 }
 
-.supervisor-evaluate-grid {
+.sv-evaluate-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 20px;
-  margin-top: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 25px;
+  margin-top: 25px;
 }
 
-.supervisor-evaluate-card {
+.sv-evaluate-card {
   background-color: white;
   border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 20px;
+  border-radius: 12px;
+  padding: 25px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.supervisor-evaluate-student-info {
-  margin-bottom: 20px;
+.sv-evaluate-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.supervisor-evaluate-student-info h3 {
+.sv-evaluate-student-info {
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.sv-evaluate-student-info h3 {
   color: #2c3e50;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
+  font-size: 1.3rem;
+  font-weight: 600;
 }
 
-.supervisor-evaluate-student-info p {
+.sv-evaluate-student-info p {
   color: #666;
-  margin: 5px 0;
+  margin: 8px 0;
+  font-size: 0.95rem;
 }
 
-.supervisor-evaluate-form {
+.sv-evaluate-form {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 20px;
 }
 
-.supervisor-evaluate-marks,
-.supervisor-evaluate-feedback {
+.sv-evaluate-marks,
+.sv-evaluate-feedback {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 8px;
 }
 
-.supervisor-evaluate-marks label,
-.supervisor-evaluate-feedback label {
+.sv-evaluate-marks label,
+.sv-evaluate-feedback label {
   color: #2c3e50;
   font-weight: 500;
+  font-size: 0.95rem;
 }
 
-.supervisor-evaluate-marks input {
-  padding: 8px;
+.sv-evaluate-marks input {
+  padding: 10px;
   border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 16px;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.supervisor-evaluate-feedback textarea {
-  padding: 8px;
+.sv-evaluate-marks input:focus {
+  border-color: #3498db;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+  outline: none;
+}
+
+.sv-evaluate-feedback textarea {
+  padding: 12px;
   border: 1px solid #ddd;
-  border-radius: 4px;
-  min-height: 100px;
+  border-radius: 6px;
+  min-height: 120px;
   resize: vertical;
-  font-size: 16px;
+  font-size: 0.95rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.supervisor-evaluate-submit {
+.sv-evaluate-feedback textarea:focus {
+  border-color: #3498db;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+  outline: none;
+}
+
+.sv-evaluate-submit {
   background-color: #3498db;
   color: white;
   border: none;
-  padding: 10px 20px;
-  border-radius: 4px;
+  padding: 12px 24px;
+  border-radius: 6px;
   cursor: pointer;
-  font-size: 16px;
-  transition: background-color 0.3s;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  margin-top: 10px;
 }
 
-.supervisor-evaluate-submit:hover {
+.sv-evaluate-submit:hover:not(:disabled) {
   background-color: #2980b9;
+  transform: translateY(-1px);
 }
 
-.supervisor-evaluate-submit:disabled {
+.sv-evaluate-submit:disabled {
   background-color: #bdc3c7;
   cursor: not-allowed;
+  transform: none;
 }
 
-.supervisor-evaluate-submit.evaluated {
+.sv-evaluate-submit.evaluated {
   background-color: #27ae60;
 }
 
-.supervisor-evaluate-loading {
+.sv-evaluate-submit.evaluated:hover {
+  background-color: #219a52;
+}
+
+.sv-evaluate-loading {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 200px;
-  font-size: 18px;
+  font-size: 1.1rem;
   color: #666;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .sv-evaluate-content {
+    margin-left: 0;
+    padding: 15px;
+  }
+
+  .sv-evaluate-section {
+    padding: 20px;
+  }
+
+  .sv-evaluate-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sv-evaluate-card {
+    padding: 20px;
+  }
 } 

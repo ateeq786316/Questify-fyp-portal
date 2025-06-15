@@ -664,3 +664,51 @@ table tr:hover {
     padding: 0.8rem;
   }
 }
+
+.filter-buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+.filter-buttons button {
+  width: 120px;
+  padding: 8px 16px;
+  font-size: 14px;
+  text-transform: capitalize;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  flex: 0 0 auto;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.filter-buttons button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.filter-buttons button.btn-primary {
+  background-color: #0047ab;
+  border-color: #0047ab;
+}
+
+.filter-buttons button.btn-secondary {
+  background-color: #6c757d;
+  border-color: #6c757d;
+}
+
+@media (max-width: 768px) {
+  .filter-buttons {
+    justify-content: center;
+  }
+  
+  .filter-buttons button {
+    width: 100px;
+    font-size: 13px;
+  }
+}

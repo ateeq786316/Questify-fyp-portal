@@ -5,7 +5,7 @@ import "../../../styles/StudentUploadDocument.css";
 import { Table, Form, Button, Alert, Card, Spinner } from "react-bootstrap";
 import { FaCloudUploadAlt, FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import { uploadDocument, getDocuments } from "../../../services/api";
-import { toast } from "react-toastify";
+import { showError, showSuccess, showWarning, showLoading, updateLoading } from "../../../utils/toastNotifications";
 
 const StudentUploadDocument = () => {
   const [selectedFiles, setSelectedFiles] = useState({});
@@ -15,32 +15,60 @@ const StudentUploadDocument = () => {
   const [error, setError] = useState(null);
 
   const documentSections = [
-    { title: "📜 Project Proposal", type: "proposal" },
-    { title: "📑 SRS ", type: "srs" },
-    { title: "📊 System Diagram", type: "diagram" },
-    { title: "📄 Final Report", type: "finalReport" },
+    { 
+      title: "📜 Project Proposal", 
+      type: "proposal",
+      folder: "proposals",
+      description: "Upload your project proposal document"
+    },
+    { 
+      title: "📑 SRS Document", 
+      type: "srs",
+      folder: "srs",
+      description: "Upload your Software Requirements Specification document"
+    },
+    { 
+      title: "📊 System Diagram", 
+      type: "diagram",
+      folder: "diagrams",
+      description: "Upload your system architecture diagram"
+    },
+    { 
+      title: "📄 Final Report", 
+      type: "finalReport",
+      folder: "finalReports",
+      description: "Upload your final project report"
+    },
+    { 
+      title: "📑 Presentation Slides", 
+      type: "slides",
+      folder: "slides",
+      description: "Upload your presentation slides"
+    }
   ];
 
   // Fetch user's documents on component mount
   useEffect(() => {
     const fetchDocuments = async () => {
+      const loadingToast = showLoading("Fetching your documents...");
       try {
         setLoading(true);
         setError(null);
         const response = await getDocuments();
         if (response.success) {
-          // Convert grouped documents into a flat array
           const flatDocuments = Object.values(response.documents).flat();
           setDocuments(flatDocuments);
+          updateLoading(loadingToast, "Documents loaded successfully", "success");
         } else {
           setDocuments([]);
           setError("Failed to fetch documents");
+          updateLoading(loadingToast, "Failed to fetch documents", "error");
         }
       } catch (err) {
         console.error("Error fetching documents:", err);
         setError(err.response?.data?.msg || "Failed to fetch documents");
         setDocuments([]);
-        toast.error("Failed to fetch documents");
+        updateLoading(loadingToast, err.response?.data?.msg || "Failed to fetch documents", "error");
       } finally {
         setLoading(false);
       }
@@ -51,13 +79,23 @@ const StudentUploadDocument = () => {
 
   const handleFileChange = (e, type) => {
     const file = e.target.files[0];
-    if (file && (file.type === "application/pdf" || file.type.includes("officedocument") || file.type.includes("word"))) {
-      setSelectedFiles({ ...selectedFiles, [type]: file });
-      setUploadStatus({ ...uploadStatus, [type]: null });
-    } else {
-      setUploadStatus({ ...uploadStatus, [type]: "invalid" });
-      setSelectedFiles({ ...selectedFiles, [type]: null });
-      toast.error("Invalid file type. Please upload PDF, DOC, or DOCX files only.");
+    if (file) {
+      const allowedTypes = {
+        proposal: ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"],
+        srs: ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"],
+        finalReport: ["application/pdf"],
+        diagram: ["application/pdf", "image/jpeg", "image/png"],
+        slides: ["application/pdf", "application/vnd.openxmlformats-officedocument.presentationml.presentation"]
+      };
+
+      if (allowedTypes[type]?.includes(file.type)) {
+        setSelectedFiles({ ...selectedFiles, [type]: file });
+        setUploadStatus({ ...uploadStatus, [type]: null });
+      } else {
+        setUploadStatus({ ...uploadStatus, [type]: "invalid" });
+        setSelectedFiles({ ...selectedFiles, [type]: null });
+        showError(`Invalid file type for ${type}. Please check the allowed file types.`);
+      }
     }
   };
 
@@ -77,15 +115,15 @@ const StudentUploadDocument = () => {
     e.preventDefault();
     if (!selectedFiles[type]) return;
 
-    // Check if upload is allowed
     if (!canUploadDocument(type)) {
-      toast.warning("You can only upload a new document after the previous one is rejected");
+      showWarning("You can only upload a new document after the previous one is rejected");
       return;
     }
 
+    const loadingToast = showLoading(`Uploading ${type} document...`);
     try {
       const formData = new FormData();
-      formData.append("file", selectedFiles[type]);
+      formData.append('file', selectedFiles[type]);
       formData.append("fileType", type);
       formData.append("title", `${type.charAt(0).toUpperCase() + type.slice(1)} Document`);
       formData.append("description", `Uploaded ${type} document`);
@@ -94,10 +132,9 @@ const StudentUploadDocument = () => {
 
       if (response.success) {
         setUploadStatus({ ...uploadStatus, [type]: "success" });
-        // Add the new document to the documents array
         setDocuments(prev => [...prev, response.document]);
         setSelectedFiles({ ...selectedFiles, [type]: null });
-        toast.success("Document uploaded successfully!");
+        updateLoading(loadingToast, "Document uploaded successfully!", "success");
         
         // Refresh the documents list
         const updatedResponse = await getDocuments();
@@ -109,7 +146,7 @@ const StudentUploadDocument = () => {
     } catch (err) {
       console.error("Error uploading document:", err);
       setUploadStatus({ ...uploadStatus, [type]: "error" });
-      toast.error(err.response?.data?.msg || "Failed to upload document");
+      updateLoading(loadingToast, err.response?.data?.msg || "Failed to upload document", "error");
     }
   };
 
@@ -165,7 +202,7 @@ const StudentUploadDocument = () => {
         <Sidebar />
         <div className="student-upload__content">
           <h1 className="dashboard-title text-center">📤 Upload Documents</h1>
-          <div className="upload-cards-container">
+          <div className="student-upload__cards">
             {documentSections.map((section) => {
               const latestDoc = getLatestDocument(section.type);
               const canUpload = canUploadDocument(section.type);
@@ -174,6 +211,7 @@ const StudentUploadDocument = () => {
                 <Card className="upload-card mb-4" key={section.type}>
                   <Card.Body>
                     <h2>{section.title}</h2>
+                    <p className="text-muted">{section.description}</p>
                     {latestDoc && (
                       <Alert variant={latestDoc.status === "rejected" ? "danger" : "info"} className="mb-3">
                         Latest Status: {latestDoc.status.toUpperCase()}
@@ -182,16 +220,29 @@ const StudentUploadDocument = () => {
                     )}
                     <Form onSubmit={(e) => handleUpload(e, section.type)}>
                       <Form.Group controlId={`formFile-${section.type}`} className="mb-3">
-                        <Form.Label>Select a document (PDF, DOC, DOCX)</Form.Label>
+                        <Form.Label>
+                          Select a document
+                          {section.type === "finalReport" && " (PDF only)"}
+                          {section.type === "diagram" && " (PDF, JPEG, PNG)"}
+                          {section.type === "slides" && " (PDF, PPTX)"}
+                          {(section.type === "proposal" || section.type === "srs") && " (PDF, DOC, DOCX)"}
+                        </Form.Label>
                         <Form.Control 
                           type="file" 
                           onChange={(e) => handleFileChange(e, section.type)}
                           disabled={!canUpload}
+                          accept={
+                            section.type === "finalReport" ? ".pdf" :
+                            section.type === "diagram" ? ".pdf,.jpg,.jpeg,.png" :
+                            section.type === "slides" ? ".pdf,.pptx" :
+                            ".pdf,.doc,.docx"
+                          }
                         />
                       </Form.Group>
                       <Button 
                         variant="primary" 
                         type="submit" 
+                        className="student-upload__button"
                         disabled={!selectedFiles[section.type] || !canUpload}
                       >
                         <FaCloudUploadAlt /> Upload
@@ -204,7 +255,7 @@ const StudentUploadDocument = () => {
                     )}
                     {uploadStatus[section.type] === "invalid" && (
                       <Alert variant="danger" className="mt-3">
-                        ❌ Invalid file format. Please upload a PDF or DOC file.
+                        ❌ Invalid file format. Please check the allowed file types above.
                       </Alert>
                     )}
                     {uploadStatus[section.type] === "success" && (
@@ -222,7 +273,7 @@ const StudentUploadDocument = () => {
           <Card className="uploaded-documents mb-4">
             <Card.Body>
               <h2>📜 Uploaded Documents</h2>
-              <Table striped bordered hover>
+              <Table striped bordered hover className="student-upload__table">
                 <thead>
                   <tr>
                     <th>Document Name</th>
@@ -237,7 +288,7 @@ const StudentUploadDocument = () => {
                     <tr key={doc._id}>
                       <td>{doc.title}</td>
                       <td>{doc.fileType}</td>
-                      <td className={doc.status === "approved" ? "text-success" : doc.status === "rejected" ? "text-danger" : "text-warning"}>
+                      <td className={doc.status === "approved" ? "student-upload__status-success" : doc.status === "rejected" ? "text-danger" : "student-upload__status-warning"}>
                         {doc.status === "approved" ? <FaCheckCircle /> : doc.status === "rejected" ? <FaTimesCircle /> : "⏳"} {doc.status.toUpperCase()}
                       </td>
                       <td>{doc.feedback || "Awaiting feedback"}</td>

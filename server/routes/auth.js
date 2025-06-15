@@ -33,8 +33,8 @@ const authController = require("../controllers/authController");
 // Configure multer storage
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    const fileType = req.body.fileType || "proposals";
-    const uploadPath = path.join(__dirname, "..", "uploads", fileType);
+    const uploadPath = path.join(__dirname, "..", "uploads", "temp");
+    console.log(`Saving file to temp directory: ${uploadPath}`); // Debug log
 
     // Create directory if it doesn't exist
     if (!fs.existsSync(uploadPath)) {
@@ -50,28 +50,9 @@ const storage = multer.diskStorage({
   },
 });
 
-// File filter
+// File filter - accept all files initially, we'll validate later
 const fileFilter = (req, file, cb) => {
-  // Accept PDF, DOC, DOCX, and image files
-  const allowedTypes = [
-    "application/pdf",
-    "application/msword",
-    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    "image/jpeg",
-    "image/png",
-    "image/gif",
-  ];
-
-  if (allowedTypes.includes(file.mimetype)) {
-    cb(null, true);
-  } else {
-    cb(
-      new Error(
-        "Invalid file type. Only PDF, Word documents, and images are allowed."
-      ),
-      false
-    );
-  }
+  cb(null, true);
 };
 
 // Configure multer upload with increased file size limit
@@ -174,6 +155,64 @@ router.post(
         });
       }
 
+      // Validate file type
+      const allowedTypes = {
+        proposal: [
+          "application/pdf",
+          "application/msword",
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        ],
+        srs: [
+          "application/pdf",
+          "application/msword",
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        ],
+        finalReport: ["application/pdf"],
+        diagram: ["application/pdf", "image/jpeg", "image/png"],
+        slides: [
+          "application/pdf",
+          "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        ],
+      };
+
+      if (!allowedTypes[fileType]?.includes(req.file.mimetype)) {
+        // Delete uploaded file if type is invalid
+        fs.unlinkSync(req.file.path);
+        return res.status(400).json({
+          success: false,
+          msg: `Invalid file type for ${fileType}. Please check the allowed file types.`,
+        });
+      }
+
+      // Map file types to their respective folders
+      const folderMap = {
+        proposal: "proposals",
+        srs: "srs",
+        finalReport: "finalReports",
+        diagram: "diagrams",
+        slides: "slides",
+      };
+
+      const folderName = folderMap[fileType];
+      if (!folderName) {
+        // Delete uploaded file if folder mapping fails
+        fs.unlinkSync(req.file.path);
+        return res.status(400).json({
+          success: false,
+          msg: "Invalid file type",
+        });
+      }
+
+      // Create the final destination directory
+      const finalPath = path.join(__dirname, "..", "uploads", folderName);
+      if (!fs.existsSync(finalPath)) {
+        fs.mkdirSync(finalPath, { recursive: true });
+      }
+
+      // Move file from temp to final location
+      const finalFilePath = path.join(finalPath, path.basename(req.file.path));
+      fs.renameSync(req.file.path, finalFilePath);
+
       // Check if student already has a document of this type
       const existingDoc = await Document.findOne({
         uploadedBy: decoded.id,
@@ -198,21 +237,21 @@ router.post(
       // If document exists and wasn't rejected, return error
       else if (existingDoc) {
         // Delete the newly uploaded file since we won't use it
-        fs.unlinkSync(req.file.path);
+        fs.unlinkSync(finalFilePath);
         return res.status(400).json({
           success: false,
           msg: `You already have a ${fileType} document that is ${existingDoc.status}. Please wait for it to be rejected before uploading a new one.`,
         });
       }
 
-      // Create new document
+      // Create new document with correct file path
       const document = new Document({
         title,
         description,
         fileType,
         filePath: path
-          .join(fileType, path.basename(req.file.path))
-          .replace(/\\/g, "/"), // Store relative path
+          .join(folderName, path.basename(finalFilePath))
+          .replace(/\\/g, "/"),
         uploadedBy: decoded.id,
         status: "pending",
       });

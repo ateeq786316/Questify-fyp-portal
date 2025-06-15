@@ -5,7 +5,7 @@ const userSchema = new mongoose.Schema({
   //Common Fields:name, email, password, contact, role, Common fields for to all users.
 
   name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
+  email: { type: String, required: true, lowercase: true, trim: true },
   password: { type: String, required: true },
   department: { type: String },
   contact: { type: String },
@@ -45,7 +45,7 @@ const userSchema = new mongoose.Schema({
   },
   projectStatus: {
     type: String,
-    enum: ["Proposed", "In Progress", "Completed", "Rejected", "Pending"],
+    enum: ["Proposed", "In Progress", "Completed", "Rejected", "Pending", "Approved"],
     default: "Pending",
   },
   proposalStatus: {
@@ -57,7 +57,7 @@ const userSchema = new mongoose.Schema({
     id: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     name: { type: String },
     department: { type: String },
-    email: { type: String },
+    email: { type: String, lowercase: true, trim: true },
   },
 
   //Supervisor Fields:name, email, password, contact, role, supervisorId, supervisorExpertise, currentStudents.

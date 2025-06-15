@@ -2,25 +2,32 @@ import { useState } from "react";
 import Navbar from "../../../components/Navbar.jsx";
 import "../../../styles/StudentLogin.css";
 import API from "../../../services/api";
+import { showError, showSuccess, showLoading, updateLoading } from "../../../utils/toastNotifications";
 
 function StudentLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   // Handle login form submission
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError("");
+    const loadingToast = showLoading("Logging in...");
+    setIsLoading(true);
+
     try {
       const response = await API.post("/auth/student/login", { email, password });
       const { data } = response;
       localStorage.setItem("studentToken", data.token);
-      console.log("Login successful:", data.student);
-      window.location.href = "/studentdashboard"; 
+      updateLoading(loadingToast, "Login successful! Redirecting...", "success");
+      setTimeout(() => {
+        window.location.href = "/studentdashboard";
+      }, 1500);
     } catch (err) {
       console.error("Login error:", err);
-      setError(err.response?.data?.msg || "Login failed. Please try again.");
+      updateLoading(loadingToast, err.response?.data?.msg || "Login failed. Please try again.", "error");
+    } finally {
+      setIsLoading(false);
     }
   };
   
@@ -39,7 +46,8 @@ function StudentLogin() {
                 id="email" 
                 placeholder="Enter your email" 
                 required 
-                onChange={(e) => setEmail(e.target.value)} 
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={isLoading}
               />
             </div>
             {/* Password Field */}
@@ -50,13 +58,18 @@ function StudentLogin() {
                 id="password" 
                 placeholder="Enter your password" 
                 required 
-                onChange={(e) => setPassword(e.target.value)} 
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={isLoading}
               />
             </div>
-            {/* Error Message */}
-            {error && <p className="student-login-error">{error}</p>}
             {/* Login Button */}
-            <button type="submit" className="student-login-button">Login</button>
+            <button 
+              type="submit" 
+              className="student-login-button"
+              disabled={isLoading}
+            >
+              {isLoading ? "Logging in..." : "Login"}
+            </button>
           </form>
         </div>
       </div>

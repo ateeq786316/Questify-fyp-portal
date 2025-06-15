@@ -224,10 +224,30 @@ exports.uploadStudents = async (req, res) => {
         .json({ success: false, msg: "No students data found in file." });
     }
 
+    // Validate email domains
+    const emailRegex = /@lgu\.edu\.pk$/;
+    const invalidEmails = [];
+    const validStudents = students.filter((student) => {
+      const email = student.Email || student.email;
+      if (!emailRegex.test(email)) {
+        invalidEmails.push(email);
+        return false;
+      }
+      return true;
+    });
+
+    if (invalidEmails.length > 0) {
+      return res.status(400).json({
+        success: false,
+        msg: "Invalid email domains found. Only @lgu.edu.pk emails are allowed for students.",
+        invalidEmails,
+      });
+    }
+
     // Detect duplicate emails within the uploaded Excel file
     const seenEmails = new Set();
     const fileDuplicates = [];
-    students.forEach((s) => {
+    validStudents.forEach((s) => {
       const email = s.Email || s.email;
       if (seenEmails.has(email)) {
         fileDuplicates.push(email);
@@ -237,7 +257,7 @@ exports.uploadStudents = async (req, res) => {
     });
 
     // Remove duplicates from studentsToInsert
-    const uniqueStudents = students.filter(
+    const uniqueStudents = validStudents.filter(
       (s, idx, arr) =>
         arr.findIndex(
           (stu) => (stu.Email || stu.email) === (s.Email || s.email)
@@ -254,7 +274,6 @@ exports.uploadStudents = async (req, res) => {
       studentId: s["Roll Number"] ? String(s["Roll Number"]) : undefined,
       batch: s.Batch ? String(s.Batch) : s.batch ? String(s.batch) : "",
     }));
-    console.log("fileDuplicates:", fileDuplicates);
 
     // Validate required fields
     for (const stu of studentsToInsert) {
@@ -271,7 +290,6 @@ exports.uploadStudents = async (req, res) => {
     const existingEmails = await User.find({
       email: { $in: studentsToInsert.map((s) => s.email) },
     }).select("email");
-    console.log("existingEmails:", existingEmails);
 
     const existingEmailSet = new Set(existingEmails.map((e) => e.email));
     const newStudents = studentsToInsert.filter(
@@ -280,8 +298,6 @@ exports.uploadStudents = async (req, res) => {
     const duplicateStudents = studentsToInsert.filter((s) =>
       existingEmailSet.has(s.email)
     );
-    console.log("newStudents:", newStudents);
-    console.log("duplicateStudents:", duplicateStudents);
 
     // Hash passwords for all new students before insert
     for (const stu of newStudents) {
@@ -302,12 +318,7 @@ exports.uploadStudents = async (req, res) => {
           email: s.email,
           studentId: s.studentId,
         }));
-        console.log("insertResult:", insertResult);
       } catch (err) {
-        console.log("insertMany error:", err);
-        if (err.errors) {
-          console.log("Validation errors:", err.errors);
-        }
         if (err.writeErrors) {
           errors.push(
             ...err.writeErrors.map((e) => ({
@@ -316,13 +327,9 @@ exports.uploadStudents = async (req, res) => {
             }))
           );
         } else {
-          // Log the full error for debugging
-          errors.push({ error: err.message, full: err });
-          console.log("Full insertMany error:", err);
+          errors.push({ error: err.message });
         }
       }
-    } else {
-      console.log("No new students to insert.");
     }
 
     const response = {
@@ -350,7 +357,6 @@ exports.uploadStudents = async (req, res) => {
         "Some students were not inserted due to duplicates or errors";
     }
 
-    console.log("Final response:", response);
     res.status(200).json(response);
   } catch (err) {
     console.error("Error uploading students:", err);
@@ -388,10 +394,31 @@ exports.uploadSupervisors = async (req, res) => {
         .status(400)
         .json({ success: false, msg: "No supervisors data found in file." });
     }
+
+    // Validate email domains
+    const emailRegex = /@lgu\.edu\.pk$/;
+    const invalidEmails = [];
+    const validSupervisors = supervisors.filter((supervisor) => {
+      const email = supervisor.Email || supervisor.email;
+      if (!emailRegex.test(email)) {
+        invalidEmails.push(email);
+        return false;
+      }
+      return true;
+    });
+
+    if (invalidEmails.length > 0) {
+      return res.status(400).json({
+        success: false,
+        msg: "Invalid email domains found. Only @lgu.edu.pk emails are allowed for supervisors.",
+        invalidEmails,
+      });
+    }
+
     // Detect duplicate emails within the uploaded Excel file
     const seenEmails = new Set();
     const fileDuplicates = [];
-    supervisors.forEach((s) => {
+    validSupervisors.forEach((s) => {
       const email = s.Email || s.email;
       if (seenEmails.has(email)) {
         fileDuplicates.push(email);
@@ -399,13 +426,15 @@ exports.uploadSupervisors = async (req, res) => {
         seenEmails.add(email);
       }
     });
+
     // Remove duplicates from supervisorsToInsert
-    const uniqueSupervisors = supervisors.filter(
+    const uniqueSupervisors = validSupervisors.filter(
       (s, idx, arr) =>
         arr.findIndex(
           (sup) => (sup.Email || sup.email) === (s.Email || s.email)
         ) === idx
     );
+
     const supervisorsToInsert = uniqueSupervisors.map((s) => ({
       name: s.Name || s.name,
       email: s.Email || s.email,
@@ -421,6 +450,7 @@ exports.uploadSupervisors = async (req, res) => {
         : [],
       batch: s.Batch ? String(s.Batch) : s.batch ? String(s.batch) : "",
     }));
+
     // Validate required fields
     for (const sup of supervisorsToInsert) {
       if (
@@ -436,10 +466,12 @@ exports.uploadSupervisors = async (req, res) => {
         });
       }
     }
+
     // Check for existing emails
     const existingEmails = await User.find({
       email: { $in: supervisorsToInsert.map((s) => s.email) },
     }).select("email");
+
     const existingEmailSet = new Set(existingEmails.map((e) => e.email));
     const newSupervisors = supervisorsToInsert.filter(
       (s) => !existingEmailSet.has(s.email)
@@ -447,12 +479,15 @@ exports.uploadSupervisors = async (req, res) => {
     const duplicateSupervisors = supervisorsToInsert.filter((s) =>
       existingEmailSet.has(s.email)
     );
+
     // Hash passwords for all new supervisors before insert
     for (const sup of newSupervisors) {
       sup.password = await bcrypt.hash(String(sup.password), 10);
     }
+
     let result = { insertedCount: 0, insertedSupervisors: [] };
     let errors = [];
+
     if (newSupervisors.length > 0) {
       try {
         const insertResult = await User.insertMany(newSupervisors, {
@@ -473,10 +508,11 @@ exports.uploadSupervisors = async (req, res) => {
             }))
           );
         } else {
-          errors.push({ error: err.message, full: err });
+          errors.push({ error: err.message });
         }
       }
     }
+
     const response = {
       success: true,
       msg: "Supervisor upload completed",
@@ -496,10 +532,12 @@ exports.uploadSupervisors = async (req, res) => {
         errors: errors,
       },
     };
+
     if (duplicateSupervisors.length > 0 || errors.length > 0) {
       response.warning =
         "Some supervisors were not inserted due to duplicates or errors";
     }
+
     res.status(200).json(response);
   } catch (err) {
     console.error("Server error uploading supervisors:", err);
@@ -522,21 +560,21 @@ exports.downloadStudentTemplate = async (req, res) => {
       {
         "Roll Number": "197",
         Name: "ATEEQ",
-        Email: "fa-21-BSCS-197@lgu.edu.pk",
+        Email: "fa-21-bscs-197@lgu.edu.pk",
         Department: "Computer Science",
         Batch: "2021",
         Contact: "03001234567",
-        Password: "12345678",
+        Password: "12345",
         Role: "student",
       },
       {
         "Roll Number": "167",
         Name: "TALHA",
-        Email: "fa-21-BSCS-167@lgu.edu.pk",
+        Email: "fa-21-bscs-167@lgu.edu.pk",
         Department: "Computer Science",
         Batch: "2021",
         Contact: "03007654321",
-        Password: "12345678",
+        Password: "12345",
         Role: "student",
       },
     ];
@@ -641,8 +679,8 @@ exports.downloadSupervisorTemplate = async (req, res) => {
     // Only include the Supervisor Template sheet for direct data entry
     const templateData = [
       {
-        Name: "Dr. John Smith",
-        Email: "john.smith@example.com",
+        Name: "Rabia Khan",
+        Email: "Rabia_Khan@lgu.edu.pk",
         Password: "supervisor123",
         Department: "Computer Science",
         Contact: "03001234567",
@@ -651,8 +689,8 @@ exports.downloadSupervisorTemplate = async (req, res) => {
         Role: "supervisor",
       },
       {
-        Name: "Dr. Jane Doe",
-        Email: "jane.doe@example.com",
+        Name: "Ahsan Ali",
+        Email: "Ahsan_Ali@lgu.edu.pk",
         Password: "supervisor456",
         Department: "Software Engineering",
         Contact: "03007654321",
@@ -717,18 +755,30 @@ exports.addSingleSupervisor = async (req, res) => {
       supervisorExpertise,
       role,
     } = req.body;
+
     if (!name || !email || !password || !department || !role) {
       return res.status(400).json({
         success: false,
         msg: "Missing required fields (name, email, password, department, role).",
       });
     }
+
     if (role !== "supervisor") {
       return res.status(400).json({
         success: false,
         msg: "Role must be 'supervisor' for this operation.",
       });
     }
+
+    // Validate email domain
+    const emailRegex = /@lgu\.edu\.pk$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        msg: "Invalid email domain. Only @lgu.edu.pk emails are allowed for supervisors.",
+      });
+    }
+
     // Check for duplicate email
     const existing = await User.findOne({ email });
     if (existing) {
@@ -737,9 +787,10 @@ exports.addSingleSupervisor = async (req, res) => {
         msg: `A user with email ${email} already exists.`,
       });
     }
+
     // Hash password
-    const bcrypt = require("bcryptjs");
     const hashedPassword = await bcrypt.hash(password, 10);
+
     // Create supervisor
     const supervisor = new User({
       name,
@@ -753,6 +804,7 @@ exports.addSingleSupervisor = async (req, res) => {
         ? supervisorExpertise.split(",").map((s) => s.trim())
         : [],
     });
+
     await supervisor.save();
     res
       .status(200)
@@ -761,7 +813,7 @@ exports.addSingleSupervisor = async (req, res) => {
     console.error("Error adding single supervisor:", err);
     res.status(500).json({
       success: false,
-      msg: "Error Invalid mail formate of adding supervisor.",
+      msg: "Error adding supervisor.",
       error: err.message,
     });
   }

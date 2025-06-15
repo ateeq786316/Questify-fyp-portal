@@ -242,8 +242,9 @@ icon-wrapper:hover::after{
 bell-icon{
   transform: rotate(15deg);
   max-width: 100%;
-  width: 24px; /* Example */
-  height: 24px; /* Example */
+  width: 24px; 
+  height: 24px;
+  
 }
 icon-wrapper:hover .bell-icon
 {

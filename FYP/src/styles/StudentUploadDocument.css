@@ -3,12 +3,18 @@
     min-height: 100vh;
 }
 
-.dashboard-container {
+.student-upload__layout {
     display: flex;
-    padding-top: 0px; /* Prevents content from hiding under navbar */
+    padding-top: 0px;
 }
 
-.dashboard-content {
+.student-upload__content {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 70px 0px 0px 70px;
+}
+
+.student-upload__dashboard {
     padding: 20px;
     background: rgba(255, 255, 255, 0.32);
     border-radius: 10px;
@@ -17,48 +23,41 @@
     width: 100%;
 }
 
-.upload-section {
+.student-upload__section {
     background: #f1f1f1;
     padding: 20px;
     border-radius: 8px;
     text-align: center;
 }
 
-.documents-list table {
+.student-upload__table {
     width: 100%;
 }
 
-.text-success {
+.student-upload__status-success {
     color: green;
 }
 
-.text-warning {
+.student-upload__status-warning {
     color: orange;
 }
 
-button {
+.student-upload__button {
     display: flex;
     align-items: center;
     gap: 5px;
 }
 
-.upload-cards-container {
+.student-upload__cards {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 24px;
     width: 100%;
     margin-bottom: 32px;
-    
 }
 
 @media (max-width: 900px) {
-    .upload-cards-container {
+    .student-upload__cards {
         grid-template-columns: 1fr;
     }
-}
-
-.student-upload__content {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 70px 0px 0px 70px ;
 }

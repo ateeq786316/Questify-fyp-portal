@@ -13,10 +13,11 @@ require("dotenv").config();
 
 exports.studentLogin = async (req, res) => {
   const { email, password } = req.body;
-  console.log("Login attempt with:", email);
 
+  const lowercasedEmail = email.toLowerCase();
+  console.log("Login attempt with:", lowercasedEmail);
   try {
-    const user = await User.findOne({ email, role: "student" });
+    const user = await User.findOne({ email: lowercasedEmail, role: "student" });
     if (!user) {
       return res.status(404).json({ msg: "Student not found" });
     }

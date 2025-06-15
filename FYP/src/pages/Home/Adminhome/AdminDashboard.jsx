@@ -20,8 +20,8 @@ const AdminDashboard = () => {
   const [stats, setStats] = useState({
     enrolledStudents: 0,
     totalSupervisors: 0,
-    activeStudents: 1,
-    pendingStudents: 1,
+    activeStudents: 0,
+    pendingStudents: 0,
   });
 
   const [studentGroups, setStudentGroups] = useState([]);
@@ -453,7 +453,7 @@ const AdminDashboard = () => {
 
   // Ensure we have valid stats data before creating chart data
   const chartData = [
-    { name: 'Active', value: stats?.activeStudents || 0 },
+    { name: 'Approved', value: stats?.ApprovedStudents || 0 },
     { name: 'Pending', value: stats?.pendingStudents || 0 },
   ];
 
@@ -481,7 +481,7 @@ const AdminDashboard = () => {
             <div className="stat-card">
               <h3>Student Status</h3>
               <div className="status-group">
-            <p>Active: <span>{stats?.activeStudents || 0}</span></p>
+            <p>Active: <span>{stats?.ApprovedStudents || 0}</span></p>
             <p>Pending: <span>{stats?.pendingStudents || 0}</span></p>
               </div>
             </div>

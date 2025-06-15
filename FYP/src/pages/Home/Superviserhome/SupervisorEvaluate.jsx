@@ -6,6 +6,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import SupervisorSidebar from './SupervisorSidebar';
 
+
 const SupervisorEvaluate = () => {
   const [students, setStudents] = useState([]);
   const [evaluations, setEvaluations] = useState({});
@@ -124,12 +125,12 @@ const SupervisorEvaluate = () => {
 
   if (loading) {
     return (
-      <div className="supervisor-evaluate-page">
+      <div className="sv-evaluate-page">
         <Navbar />
-        <div className="supervisor-evaluate-container">
+        <div className="sv-evaluate-container">
           <SupervisorSidebar />
-          <div className="supervisor-evaluate-content">
-            <div className="supervisor-evaluate-loading">Loading students...</div>
+          <div className="sv-evaluate-content">
+            <div className="sv-evaluate-loading">Loading students...</div>
           </div>
         </div>
       </div>
@@ -137,31 +138,31 @@ const SupervisorEvaluate = () => {
   }
 
   return (
-    <div className="supervisor-evaluate-page">
+    <div className="sv-evaluate-page">
       <Navbar />
-      <div className="supervisor-evaluate-container">
+      <div className="sv-evaluate-container">
         <SupervisorSidebar />
-        <div className="supervisor-evaluate-content">
-          <div className="supervisor-evaluate-section">
+        <div className="sv-evaluate-content">
+          <div className="sv-evaluate-section">
             <h2>Student Evaluation</h2>
             
-            {error && <div className="supervisor-evaluate-error">{error}</div>}
+            {error && <div className="sv-evaluate-error">{error}</div>}
 
-            <div className="supervisor-evaluate-grid">
+            <div className="sv-evaluate-grid">
               {students.map(student => {
                 const evaluation = evaluations[student._id];
                 const isEvaluated = evaluation?.status === 'evaluated';
 
                 return (
-                  <div key={student._id} className="supervisor-evaluate-card">
-                    <div className="supervisor-evaluate-student-info">
+                  <div key={student._id} className="sv-evaluate-card">
+                    <div className="sv-evaluate-student-info">
                       <h3>{student.name}</h3>
                       <p>ID: {student.studentId}</p>
                       <p>Project: {student.projectTitle}</p>
                     </div>
                     
-                    <div className="supervisor-evaluate-form">
-                      <div className="supervisor-evaluate-marks">
+                    <div className="sv-evaluate-form">
+                      <div className="sv-evaluate-marks">
                         <label>Marks (out of 50):</label>
                         <input
                           type="number"
@@ -173,7 +174,7 @@ const SupervisorEvaluate = () => {
                         />
                       </div>
                       
-                      <div className="supervisor-evaluate-feedback">
+                      <div className="sv-evaluate-feedback">
                         <label>Feedback:</label>
                         <textarea
                           value={evaluation?.supervisorMarks?.feedback || ''}
@@ -184,7 +185,7 @@ const SupervisorEvaluate = () => {
                       </div>
 
                       <button
-                        className={`supervisor-evaluate-submit ${isEvaluated ? 'evaluated' : ''}`}
+                        className={`sv-evaluate-submit ${isEvaluated ? 'evaluated' : ''}`}
                         onClick={() => handleSubmit(student._id)}
                         disabled={submitting}
                       >
