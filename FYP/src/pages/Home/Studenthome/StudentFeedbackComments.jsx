@@ -100,13 +100,13 @@ const StudentFeedbackComments = () => {
           <h1 className="stfc-title text-center">💬 Feedback & Comments</h1>
 
           <div className="stfc-grid">
-            {documents.map((doc) => (
+                  {documents.map((doc) => (
               <Card className="stfc-doc-card" key={doc._id}>
                 <Card.Header className="stfc-card-header">
                   <h3 className="stfc-doc-title">{doc.title}</h3>
                   <div className="stfc-status">{getStatusBadge(doc.status)}</div>
                 </Card.Header>
-                <Card.Body>
+              <Card.Body>
                   <div className="stfc-feedback">
                     <h4>Feedback:</h4>
                     <p>{doc.feedback || "No remarks yet."}</p>
@@ -115,39 +115,39 @@ const StudentFeedbackComments = () => {
                   <div className="stfc-comments-section">
                     <h4>Comments:</h4>
                     <div className="stfc-comments-list">
-                      {doc.comments && doc.comments.length > 0 ? (
-                        doc.comments.map((comment, index) => (
+                  {doc.comments && doc.comments.length > 0 ? (
+                    doc.comments.map((comment, index) => (
                           <div key={index} className={`stfc-comment ${comment.sender.role === "student" ? "stfc-comment-student" : "stfc-comment-supervisor"}`}>
                             <div className="stfc-comment-header">
                               <strong>{comment.sender.name}</strong>
                               <span className="stfc-comment-date">{formatDate(comment.date)}</span>
                             </div>
                             <p className="stfc-comment-message">{comment.message}</p>
-                          </div>
-                        ))
-                      ) : (
+                      </div>
+                    ))
+                  ) : (
                         <p className="stfc-no-comments">No comments yet.</p>
-                      )}
-                    </div>
+                  )}
+                </div>
 
                     <Form onSubmit={(e) => handleCommentSubmit(e, doc._id)} className="stfc-comment-form">
                       <Form.Group className="d-flex gap-2">
-                        <Form.Control
-                          type="text"
-                          placeholder="Write a comment..."
-                          value={newComment}
-                          onChange={(e) => setNewComment(e.target.value)}
+                    <Form.Control
+                      type="text"
+                      placeholder="Write a comment..."
+                      value={newComment}
+                      onChange={(e) => setNewComment(e.target.value)}
                           className="stfc-comment-input"
-                        />
+                    />
                         <Button variant="primary" type="submit" className="stfc-comment-submit">
-                          <FaPaperPlane /> Send
-                        </Button>
-                      </Form.Group>
-                    </Form>
+                      <FaPaperPlane /> Send
+                    </Button>
+                  </Form.Group>
+                </Form>
                   </div>
-                </Card.Body>
-              </Card>
-            ))}
+              </Card.Body>
+            </Card>
+          ))}
           </div>
         </div>
       </div>

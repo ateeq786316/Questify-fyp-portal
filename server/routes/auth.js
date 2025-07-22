@@ -52,7 +52,7 @@ const storage = multer.diskStorage({
 
 // File filter - accept all files initially, we'll validate later
 const fileFilter = (req, file, cb) => {
-  cb(null, true);
+    cb(null, true);
 };
 
 // Configure multer upload with increased file size limit

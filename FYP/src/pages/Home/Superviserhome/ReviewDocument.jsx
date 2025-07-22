@@ -147,9 +147,9 @@ const ReviewDocument = () => {
   // Handle document preview
   const handlePreviewDocument = async (doc) => {
     try {
-      const token = localStorage.getItem('supervisorToken');
-      const url = `http://localhost:5000/api/supervisor/documents/${doc._id}/file`;
-      
+    const token = localStorage.getItem('supervisorToken');
+    const url = `http://localhost:5000/api/supervisor/documents/${doc._id}/file`;
+    
       // Create a temporary link element
       const link = document.createElement('a');
       link.href = `${url}?token=${token}`;

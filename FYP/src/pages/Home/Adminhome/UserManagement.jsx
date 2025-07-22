@@ -303,7 +303,7 @@ const UserManagement = () => {
                         <Form.Label>Project Status</Form.Label>
                         <Form.Select name="projectStatus" value={editFormData.projectStatus || 'Pending'} onChange={handleEditFormChange}>
                           <option value="Pending">Pending</option>
-                          <option value="Reviewed">Reviewed</option>
+                          {/* <option value="Reviewed">Reviewed</option> */}
                           <option value="Approved">Approved</option>
                           <option value="Rejected">Rejected</option>
                         </Form.Select>
