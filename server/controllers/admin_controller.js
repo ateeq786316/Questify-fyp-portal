@@ -32,21 +32,25 @@ exports.getDashboardStats = async (req, res) => {
     });
     console.log("Pending students:", pendingStudents);
 
-    res.status(200).json({
-      success: true,
-      stats: {
-        enrolledStudents: totalStudents,
-        totalSupervisors: totalSupervisors,
-        activeStudents: activeStudents,
-        pendingStudents: pendingStudents,
-      },
-    });
+    res
+      .status(200)
+      .json({
+        success: true,
+        stats: {
+          enrolledStudents: totalStudents,
+          totalSupervisors: totalSupervisors,
+          activeStudents: activeStudents,
+          pendingStudents: pendingStudents,
+        },
+      });
   } catch (err) {
     console.error("Error fetching dashboard stats:", err);
-    res.status(500).json({
-      success: false,
-      msg: "Error fetching dashboard statistics",
-    });
+    res
+      .status(500)
+      .json({
+        success: false,
+        msg: "Unable to retrieve dashboard statistics. Please try again later.",
+      });
   }
 };
 
@@ -113,22 +117,26 @@ exports.getStudentGroups = async (req, res) => {
     const groupList = Object.values(groups);
     console.log("Grouped students into", groupList.length, "groups");
 
-    res.status(200).json({
-      success: true,
-      groups: groupList,
-      pagination: {
-        currentPage: page,
-        totalPages,
-        totalGroups: totalGroups.length,
-        hasMore: page < totalPages,
-      },
-    });
+    res
+      .status(200)
+      .json({
+        success: true,
+        groups: groupList,
+        pagination: {
+          currentPage: page,
+          totalPages,
+          totalGroups: totalGroups.length,
+          hasMore: page < totalPages,
+        },
+      });
   } catch (err) {
     console.error("Error fetching student groups:", err);
-    res.status(500).json({
-      success: false,
-      msg: "Error fetching student groups",
-    });
+    res
+      .status(500)
+      .json({
+        success: false,
+        msg: "Unable to fetch student groups. Please try again later.",
+      });
   }
 };
 
@@ -152,16 +160,15 @@ exports.getMilestones = async (req, res) => {
       milestones = await Milestone.insertMany(defaultMilestones);
     }
 
-    res.status(200).json({
-      success: true,
-      milestones,
-    });
+    res.status(200).json({ success: true, milestones });
   } catch (err) {
     console.error("Error fetching milestones:", err);
-    res.status(500).json({
-      success: false,
-      msg: "Error fetching milestones",
-    });
+    res
+      .status(500)
+      .json({
+        success: false,
+        msg: "Unable to retrieve milestones. Please try again later.",
+      });
   }
 };
 
@@ -185,16 +192,15 @@ exports.saveMilestones = async (req, res) => {
 
     const updatedMilestones = await Promise.all(updatePromises);
 
-    res.status(200).json({
-      success: true,
-      milestones: updatedMilestones,
-    });
+    res.status(200).json({ success: true, milestones: updatedMilestones });
   } catch (err) {
     console.error("Error saving milestones:", err);
-    res.status(500).json({
-      success: false,
-      msg: "Error saving milestones",
-    });
+    res
+      .status(500)
+      .json({
+        success: false,
+        msg: "Unable to save milestones. Please try again later.",
+      });
   }
 };
 
@@ -204,7 +210,9 @@ exports.uploadStudents = async (req, res) => {
     // 1. Check for file
     if (!req.file) {
       console.log("No file uploaded.");
-      return res.status(400).json({ success: false, msg: "No file uploaded." });
+      return res
+        .status(400)
+        .json({ success: false, msg: "Please upload a valid file." });
     }
 
     // 2. Parse Excel file
@@ -221,7 +229,10 @@ exports.uploadStudents = async (req, res) => {
       console.log("No students data found in file.");
       return res
         .status(400)
-        .json({ success: false, msg: "No students data found in file." });
+        .json({
+          success: false,
+          msg: "No student data found in the uploaded file.",
+        });
     }
 
     // Validate email domains
@@ -237,11 +248,13 @@ exports.uploadStudents = async (req, res) => {
     });
 
     if (invalidEmails.length > 0) {
-      return res.status(400).json({
-        success: false,
-        msg: "Invalid email domains found. Only @lgu.edu.pk emails are allowed for students.",
-        invalidEmails,
-      });
+      return res
+        .status(400)
+        .json({
+          success: false,
+          msg: "Some emails in the file are not valid institutional emails. Only @lgu.edu.pk addresses are allowed.",
+          invalidEmails,
+        });
     }
 
     // Detect duplicate emails within the uploaded Excel file
@@ -278,11 +291,12 @@ exports.uploadStudents = async (req, res) => {
     // Validate required fields
     for (const stu of studentsToInsert) {
       if (!stu.name || !stu.email || !stu.password || !stu.department) {
-        console.log("Missing required fields in:", stu);
-        return res.status(400).json({
-          success: false,
-          msg: "Missing required fields (name, email, password, department) in one or more students.",
-        });
+        return res
+          .status(400)
+          .json({
+            success: false,
+            msg: "Some required fields are missing in the uploaded data. Please check the template.",
+          });
       }
     }
 
@@ -360,11 +374,12 @@ exports.uploadStudents = async (req, res) => {
     res.status(200).json(response);
   } catch (err) {
     console.error("Error uploading students:", err);
-    res.status(500).json({
-      success: false,
-      msg: "Server error uploading students.",
-      error: err.message,
-    });
+    res
+      .status(500)
+      .json({
+        success: false,
+        msg: "Unable to process the upload at this time. Please try again later.",
+      });
   }
 };
 
@@ -373,7 +388,9 @@ exports.uploadSupervisors = async (req, res) => {
   try {
     // 1. Check for file
     if (!req.file) {
-      return res.status(400).json({ success: false, msg: "No file uploaded." });
+      return res
+        .status(400)
+        .json({ success: false, msg: "Please upload a valid file." });
     }
     // 2. Parse Excel file
     let workbook;
@@ -392,7 +409,10 @@ exports.uploadSupervisors = async (req, res) => {
     if (!Array.isArray(supervisors) || supervisors.length === 0) {
       return res
         .status(400)
-        .json({ success: false, msg: "No supervisors data found in file." });
+        .json({
+          success: false,
+          msg: "No supervisor data found in the uploaded file.",
+        });
     }
 
     // Validate email domains
@@ -408,11 +428,13 @@ exports.uploadSupervisors = async (req, res) => {
     });
 
     if (invalidEmails.length > 0) {
-      return res.status(400).json({
-        success: false,
-        msg: "Invalid email domains found. Only @lgu.edu.pk emails are allowed for supervisors.",
-        invalidEmails,
-      });
+      return res
+        .status(400)
+        .json({
+          success: false,
+          msg: "Some emails in the file are not valid institutional emails. Only @lgu.edu.pk addresses are allowed.",
+          invalidEmails,
+        });
     }
 
     // Detect duplicate emails within the uploaded Excel file
@@ -460,10 +482,12 @@ exports.uploadSupervisors = async (req, res) => {
         !sup.department ||
         !sup.role
       ) {
-        return res.status(400).json({
-          success: false,
-          msg: "Missing required fields (name, email, password, department, role) in one or more supervisors.",
-        });
+        return res
+          .status(400)
+          .json({
+            success: false,
+            msg: "Some required fields are missing in the uploaded data. Please check the template.",
+          });
       }
     }
 
@@ -541,11 +565,12 @@ exports.uploadSupervisors = async (req, res) => {
     res.status(200).json(response);
   } catch (err) {
     console.error("Server error uploading supervisors:", err);
-    res.status(500).json({
-      success: false,
-      msg: "Server error uploading supervisors.",
-      error: err.message,
-    });
+    res
+      .status(500)
+      .json({
+        success: false,
+        msg: "Unable to process the upload at this time. Please try again later.",
+      });
   }
 };
 
@@ -628,29 +653,32 @@ exports.addSingleStudent = async (req, res) => {
     const { name, email, password, department, batch, contact, role } =
       req.body;
     if (!name || !email || !password || !department || !role) {
-      return res.status(400).json({
-        success: false,
-        msg: "Missing required fields (name, email, password, department, role).",
-      });
+      return res
+        .status(400)
+        .json({
+          success: false,
+          msg: "All required fields must be filled out.",
+        });
     }
     if (role !== "student") {
-      return res.status(400).json({
-        success: false,
-        msg: "Role must be 'student' for this operation.",
-      });
+      return res
+        .status(400)
+        .json({
+          success: false,
+          msg: "Role must be 'student' for this operation.",
+        });
     }
-    // Check for duplicate email
     const existing = await User.findOne({ email });
     if (existing) {
-      return res.status(400).json({
-        success: false,
-        msg: `A user with email ${email} already exists.`,
-      });
+      return res
+        .status(400)
+        .json({
+          success: false,
+          msg: "A user with this email already exists.",
+        });
     }
-    // Hash password
     const bcrypt = require("bcryptjs");
     const hashedPassword = await bcrypt.hash(password, 10);
-    // Create student
     const student = new User({
       name,
       email,
@@ -664,11 +692,12 @@ exports.addSingleStudent = async (req, res) => {
     res.status(200).json({ success: true, msg: "Student added successfully." });
   } catch (err) {
     console.error("Error adding single student:", err);
-    res.status(500).json({
-      success: false,
-      msg: "Error Invalid mail formate of adding student.",
-      error: err.message,
-    });
+    res
+      .status(500)
+      .json({
+        success: false,
+        msg: "Unable to add student. Please check the email format and try again.",
+      });
   }
 };
 
@@ -755,43 +784,41 @@ exports.addSingleSupervisor = async (req, res) => {
       supervisorExpertise,
       role,
     } = req.body;
-
     if (!name || !email || !password || !department || !role) {
-      return res.status(400).json({
-        success: false,
-        msg: "Missing required fields (name, email, password, department, role).",
-      });
+      return res
+        .status(400)
+        .json({
+          success: false,
+          msg: "All required fields must be filled out.",
+        });
     }
-
     if (role !== "supervisor") {
-      return res.status(400).json({
-        success: false,
-        msg: "Role must be 'supervisor' for this operation.",
-      });
+      return res
+        .status(400)
+        .json({
+          success: false,
+          msg: "Role must be 'supervisor' for this operation.",
+        });
     }
-
-    // Validate email domain
     const emailRegex = /@lgu\.edu\.pk$/;
     if (!emailRegex.test(email)) {
-      return res.status(400).json({
-        success: false,
-        msg: "Invalid email domain. Only @lgu.edu.pk emails are allowed for supervisors.",
-      });
+      return res
+        .status(400)
+        .json({
+          success: false,
+          msg: "Only @lgu.edu.pk emails are allowed for supervisors.",
+        });
     }
-
-    // Check for duplicate email
     const existing = await User.findOne({ email });
     if (existing) {
-      return res.status(400).json({
-        success: false,
-        msg: `A user with email ${email} already exists.`,
-      });
+      return res
+        .status(400)
+        .json({
+          success: false,
+          msg: "A user with this email already exists.",
+        });
     }
-
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create supervisor
     const supervisor = new User({
       name,
       email,
@@ -804,18 +831,18 @@ exports.addSingleSupervisor = async (req, res) => {
         ? supervisorExpertise.split(",").map((s) => s.trim())
         : [],
     });
-
     await supervisor.save();
     res
       .status(200)
       .json({ success: true, msg: "Supervisor added successfully." });
   } catch (err) {
     console.error("Error adding single supervisor:", err);
-    res.status(500).json({
-      success: false,
-      msg: "Error adding supervisor.",
-      error: err.message,
-    });
+    res
+      .status(500)
+      .json({
+        success: false,
+        msg: "Unable to add supervisor. Please check the details and try again.",
+      });
   }
 };
 
@@ -830,17 +857,15 @@ exports.getUsers = async (req, res) => {
 
     const users = await User.find(filter).select("-password").sort({ name: 1 });
 
-    res.status(200).json({
-      success: true,
-      users,
-    });
+    res.status(200).json({ success: true, users });
   } catch (err) {
     console.error("Error fetching users:", err);
-    res.status(500).json({
-      success: false,
-      msg: "Error fetching users",
-      error: err.message,
-    });
+    res
+      .status(500)
+      .json({
+        success: false,
+        msg: "Unable to retrieve users. Please try again later.",
+      });
   }
 };
 
@@ -859,33 +884,31 @@ exports.updateUser = async (req, res) => {
     }).select("-password");
 
     if (!user) {
-      return res.status(404).json({
-        success: false,
-        msg: "User not found",
-      });
+      return res
+        .status(404)
+        .json({
+          success: false,
+          msg: "User not found. Please refresh and try again.",
+        });
     }
 
-    res.status(200).json({
-      success: true,
-      msg: "User updated successfully",
-      user,
-    });
+    res
+      .status(200)
+      .json({ success: true, msg: "User updated successfully", user });
   } catch (err) {
     console.error("Error updating user:", err);
 
     // Handle validation errors specifically
     if (err.name === "ValidationError") {
-      return res.status(400).json({
-        success: false,
-        msg: err.message, // Send the validation error message from Mongoose/schema
-      });
+      return res.status(400).json({ success: false, msg: err.message });
     }
 
-    res.status(500).json({
-      success: false,
-      msg: "Error updating user",
-      error: err.message,
-    });
+    res
+      .status(500)
+      .json({
+        success: false,
+        msg: "Unable to update user. Please check the details and try again.",
+      });
   }
 };
 
@@ -897,22 +920,22 @@ exports.deleteUser = async (req, res) => {
     const user = await User.findByIdAndDelete(id);
 
     if (!user) {
-      return res.status(404).json({
-        success: false,
-        msg: "User not found",
-      });
+      return res
+        .status(404)
+        .json({
+          success: false,
+          msg: "User not found. Please refresh and try again.",
+        });
     }
 
-    res.status(200).json({
-      success: true,
-      msg: "User deleted successfully",
-    });
+    res.status(200).json({ success: true, msg: "User deleted successfully" });
   } catch (err) {
     console.error("Error deleting user:", err);
-    res.status(500).json({
-      success: false,
-      msg: "Error deleting user",
-      error: err.message,
-    });
+    res
+      .status(500)
+      .json({
+        success: false,
+        msg: "Unable to delete user. Please try again later.",
+      });
   }
 };

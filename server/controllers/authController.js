@@ -20,7 +20,7 @@ exports.studentSignup = async (req, res) => {
     if (existingStudent) {
       return res.status(400).json({
         success: false,
-        msg: "Email or Roll Number already registered",
+        msg: "A student with this email or roll number is already registered.",
       });
     }
 
@@ -35,7 +35,7 @@ exports.studentSignup = async (req, res) => {
       if (now < existingTempSignup.otpExpiry) {
         return res.status(400).json({
           success: false,
-          msg: "A signup request is already pending. Please wait for the OTP to expire or check your email.",
+          msg: "A signup request for this email is already pending. Please wait for the OTP to expire or check your email for the OTP.",
         });
       } else {
         // If OTP has expired, delete the old record
@@ -50,7 +50,7 @@ exports.studentSignup = async (req, res) => {
       // 1 minute cooldown
       return res.status(429).json({
         success: false,
-        msg: "Please wait before requesting another OTP",
+        msg: "You are requesting OTPs too quickly. Please wait a minute before trying again.",
       });
     }
 
@@ -79,22 +79,19 @@ exports.studentSignup = async (req, res) => {
       await TempSignup.deleteOne({ email });
       return res.status(500).json({
         success: false,
-        msg: "Failed to send verification email",
+        msg: "Could not send verification email. Please ensure the email address is valid and try again.",
       });
     }
 
     // Update rate limiting
     otpRequests.set(email, now);
 
-    res.status(200).json({
-      success: true,
-      msg: "OTP sent successfully",
-    });
+    res.status(200).json({ success: true, msg: "OTP sent successfully" });
   } catch (error) {
     console.error("Signup error:", error);
     res.status(500).json({
       success: false,
-      msg: "Error in signup process",
+      msg: "Unable to process your signup at this time. Please try again later.",
     });
   }
 };
@@ -109,7 +106,7 @@ exports.verifyOTP = async (req, res) => {
     if (!tempSignup) {
       return res.status(400).json({
         success: false,
-        msg: "Invalid or expired signup request",
+        msg: "Your signup request is invalid or has expired. Please sign up again.",
       });
     }
 
@@ -118,7 +115,7 @@ exports.verifyOTP = async (req, res) => {
       await TempSignup.deleteOne({ email });
       return res.status(400).json({
         success: false,
-        msg: "OTP has expired. Please request a new OTP.",
+        msg: "Your OTP has expired. Please request a new one.",
       });
     }
 
@@ -126,7 +123,7 @@ exports.verifyOTP = async (req, res) => {
     if (otp !== tempSignup.otp) {
       return res.status(400).json({
         success: false,
-        msg: "Invalid OTP",
+        msg: "The OTP you entered is incorrect. Please try again.",
       });
     }
 
@@ -156,16 +153,14 @@ exports.verifyOTP = async (req, res) => {
       { expiresIn: "24h" }
     );
 
-    res.status(201).json({
-      success: true,
-      msg: "Account created successfully",
-      token,
-    });
+    res
+      .status(201)
+      .json({ success: true, msg: "Account created successfully", token });
   } catch (error) {
     console.error("OTP verification error:", error);
     res.status(500).json({
       success: false,
-      msg: "Error in verification process",
+      msg: "Unable to verify your OTP at this time. Please try again later.",
     });
   }
 };

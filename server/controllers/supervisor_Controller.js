@@ -21,7 +21,7 @@ exports.getAssignedStudents = async (req, res) => {
     console.error("Error fetching assigned students:", err);
     res.status(500).json({
       success: false,
-      msg: "Error fetching assigned students",
+      msg: "Unable to fetch assigned students. Please try again later.",
     });
   }
 };
@@ -52,7 +52,7 @@ exports.getEvaluations = async (req, res) => {
     console.error("Error fetching evaluations:", err);
     res.status(500).json({
       success: false,
-      msg: "Error fetching evaluations",
+      msg: "Unable to retrieve evaluations at this time. Please try again later.",
     });
   }
 };
@@ -73,7 +73,7 @@ exports.evaluateStudent = async (req, res) => {
     if (!student) {
       return res.status(404).json({
         success: false,
-        msg: "Student not found or not assigned to this supervisor",
+        msg: "This student is not assigned to you or does not exist.",
       });
     }
 
@@ -81,7 +81,7 @@ exports.evaluateStudent = async (req, res) => {
     if (marks < 0 || marks > 50) {
       return res.status(400).json({
         success: false,
-        msg: "Marks must be between 0 and 50",
+        msg: "Marks must be a number between 0 and 50.",
       });
     }
 
@@ -126,8 +126,7 @@ exports.evaluateStudent = async (req, res) => {
     console.error("Error evaluating student:", err);
     res.status(500).json({
       success: false,
-      msg: "Error evaluating student",
-      error: err.message,
+      msg: "Unable to submit evaluation at this time. Please try again later.",
     });
   }
 };

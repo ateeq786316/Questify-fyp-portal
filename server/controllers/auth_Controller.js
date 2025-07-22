@@ -17,15 +17,22 @@ exports.studentLogin = async (req, res) => {
   const lowercasedEmail = email.toLowerCase();
   console.log("Login attempt with:", lowercasedEmail);
   try {
-    const user = await User.findOne({ email: lowercasedEmail, role: "student" });
+    const user = await User.findOne({
+      email: lowercasedEmail,
+      role: "student",
+    });
     if (!user) {
-      return res.status(404).json({ msg: "Student not found" });
+      return res
+        .status(400)
+        .json({ success: false, msg: "Student not found." });
     }
 
     // Use the comparePassword method
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
-      return res.status(400).json({ msg: "Invalid credentials" });
+      return res
+        .status(400)
+        .json({ success: false, msg: "Invalid email or password." });
     }
 
     // Generate JWT token
@@ -36,14 +43,13 @@ exports.studentLogin = async (req, res) => {
     delete userData.password;
 
     // Send token and user details in response
-    res.status(200).json({
-      success: true,
-      token,
-      student: userData,
-    });
+    res.status(200).json({ success: true, token, student: userData });
   } catch (err) {
     console.error("Login error in controller:", err);
-    res.status(500).json({ msg: "Server error", error: err.message });
+    res.status(500).json({
+      success: false,
+      msg: "Please try again later.",
+    });
   }
 };
 
@@ -346,37 +352,30 @@ exports.chatbot = async (req, res) => {
 // Admin login
 exports.adminLogin = async (req, res) => {
   const { email, password } = req.body;
-  console.log("Admin login attempt with:", email);
-
   try {
     const admin = await User.findOne({ email, role: "admin" });
     if (!admin) {
-      return res.status(404).json({ msg: "Admin not found" });
+      return res.status(400).json({
+        success: false,
+        msg: "No admin account found for this email. Please check your credentials.",
+      });
     }
-
-    // Use the comparePassword method
-    const isMatch = admin.comparePassword(password);
+    const isMatch = await admin.comparePassword(password);
     if (!isMatch) {
-      return res.status(400).json({ msg: "Invalid credentials" });
+      return res
+        .status(400)
+        .json({ success: false, msg: "Incorrect password. Please try again." });
     }
-
-    // Generate JWT token
     const token = generateToken(admin);
-
-    // Remove password from response
     const adminData = admin.toObject();
     delete adminData.password;
-
-    // Send token and admin details in response
-    res.status(200).json({
-      success: true,
-      token,
-      admin: adminData,
-    });
-    console.log("Generated admin token:", token);
+    res.status(200).json({ success: true, token, admin: adminData });
   } catch (err) {
     console.error("Admin login error:", err);
-    res.status(500).json({ msg: "Server error", error: err.message });
+    res.status(500).json({
+      success: false,
+      msg: "Unable to process your request at the moment. Please try again later.",
+    });
   }
 };
 
@@ -453,16 +452,12 @@ exports.getAllSupervisors = async (req, res) => {
     const supervisors = await User.find({ role: "supervisor" })
       .select("name department supervisorExpertise email")
       .sort({ name: 1 });
-
-    res.status(200).json({
-      success: true,
-      supervisors,
-    });
+    res.status(200).json({ success: true, supervisors });
   } catch (err) {
     console.error("Error fetching supervisors:", err);
     res.status(500).json({
       success: false,
-      msg: "Error fetching supervisors",
+      msg: "Unable to retrieve supervisor list at this time. Please try again later.",
     });
   }
 };
@@ -472,39 +467,30 @@ exports.createSupervisorRequest = async (req, res) => {
   try {
     const { supervisorId } = req.body;
     const studentId = req.user.id;
-
-    // Get student details to get project information
     const student = await User.findById(studentId);
     if (!student) {
       return res.status(404).json({
         success: false,
-        msg: "Student not found",
+        msg: "Student record not found. Please refresh and try again.",
       });
     }
-
-    // Check if student already has a pending request
     const existingRequest = await SupervisorRequest.findOne({
       studentId,
       status: "pending",
     });
-
     if (existingRequest) {
       return res.status(400).json({
         success: false,
         msg: "You already have a pending supervisor request",
       });
     }
-
-    // Create new request with project details
     const request = new SupervisorRequest({
       studentId,
       supervisorId,
       projectTitle: student.projectTitle || "Not specified",
       projectDescription: student.projectDescription || "Not specified",
     });
-
     await request.save();
-
     res.status(201).json({
       success: true,
       msg: "Supervisor request submitted successfully",
@@ -514,7 +500,7 @@ exports.createSupervisorRequest = async (req, res) => {
     console.error("Error creating supervisor request:", err);
     res.status(500).json({
       success: false,
-      msg: "Error creating supervisor request",
+      msg: "Unable to submit supervisor request at this time. Please try again later.",
     });
   }
 };
@@ -523,20 +509,15 @@ exports.createSupervisorRequest = async (req, res) => {
 exports.getStudentRequests = async (req, res) => {
   try {
     const studentId = req.user.id;
-
     const requests = await SupervisorRequest.find({ studentId })
       .populate("supervisorId", "name department supervisorExpertise")
       .sort({ createdAt: -1 });
-
-    res.status(200).json({
-      success: true,
-      requests,
-    });
+    res.status(200).json({ success: true, requests });
   } catch (err) {
     console.error("Error fetching student requests:", err);
     res.status(500).json({
       success: false,
-      msg: "Error fetching supervisor requests",
+      msg: "Unable to retrieve supervisor requests at this time. Please try again later.",
     });
   }
 };
@@ -544,43 +525,30 @@ exports.getStudentRequests = async (req, res) => {
 // Supervisor login
 exports.supervisorLogin = async (req, res) => {
   const { email, password } = req.body;
-  console.log("Supervisor login attempt with:", email);
-
   try {
     const supervisor = await User.findOne({ email, role: "supervisor" });
     if (!supervisor) {
-      return res
-        .status(404)
-        .json({ success: false, msg: "Supervisor not found" });
+      return res.status(400).json({
+        success: false,
+        msg: "No supervisor account found for this email. Please check your credentials.",
+      });
     }
-
-    // Use the comparePassword method
-    const isMatch = supervisor.comparePassword(password);
+    const isMatch = await supervisor.comparePassword(password);
     if (!isMatch) {
       return res
         .status(400)
-        .json({ success: false, msg: "Invalid credentials" });
+        .json({ success: false, msg: "Incorrect password. Please try again." });
     }
-
-    // Generate JWT token
     const token = generateToken(supervisor);
-
-    // Remove password from response
     const supervisorData = supervisor.toObject();
     delete supervisorData.password;
-
-    // Send token and supervisor details in response
-    res.status(200).json({
-      success: true,
-      token,
-      supervisor: supervisorData,
-    });
-    console.log("Generated supervisor token:", token);
+    res.status(200).json({ success: true, token, supervisor: supervisorData });
   } catch (err) {
     console.error("Supervisor login error:", err);
-    res
-      .status(500)
-      .json({ success: false, msg: "Server error", error: err.message });
+    res.status(500).json({
+      success: false,
+      msg: "Unable to process your request at the moment. Please try again later.",
+    });
   }
 };
 
@@ -607,14 +575,18 @@ exports.internalLogin = async (req, res) => {
 
     if (!internal) {
       console.log("Internal examiner not found");
-      return res.status(404).json({ msg: "Internal examiner not found" });
+      return res
+        .status(400)
+        .json({ success: false, msg: "Internal examiner not found." });
     }
 
     // Use the comparePassword method
     const isMatch = await internal.comparePassword(password);
     if (!isMatch) {
       console.log("Invalid credentials for internal examiner:", internal.name);
-      return res.status(400).json({ msg: "Invalid credentials" });
+      return res
+        .status(400)
+        .json({ success: false, msg: "Invalid email or password." });
     }
 
     const token = generateToken(internal);
@@ -625,52 +597,42 @@ exports.internalLogin = async (req, res) => {
     const internalData = internal.toObject();
     delete internalData.password;
 
-    res.status(200).json({
-      success: true,
-      token,
-      internal: internalData,
-    });
+    res.status(200).json({ success: true, token, internal: internalData });
   } catch (err) {
     console.error("Internal examiner login error:", err);
-    res.status(500).json({ msg: "Server error", error: err.message });
+    res.status(500).json({
+      success: false,
+      msg: "Please try again later.",
+    });
   }
 };
 
 // External login
 exports.externalLogin = async (req, res) => {
   const { email, password } = req.body;
-  console.log("\n=== External Examiner Login Attempt ===");
-  console.log("Email:", email);
-
   try {
     const external = await User.findOne({ email, role: "external" });
     if (!external) {
-      console.log("External examiner not found");
-      return res.status(404).json({ msg: "External examiner not found" });
+      return res.status(400).json({
+        success: false,
+        msg: "No account found for this email. Please check your credentials.",
+      });
     }
-
-    // Use the comparePassword method
     const isMatch = await external.comparePassword(password);
     if (!isMatch) {
-      console.log("Invalid credentials for external examiner:", external.name);
-      return res.status(400).json({ msg: "Invalid credentials" });
+      return res
+        .status(400)
+        .json({ success: false, msg: "Incorrect password. Please try again." });
     }
-
     const token = generateToken(external);
-    console.log("External examiner logged in successfully:");
-    console.log("Name:", external.name);
-    console.log("Token:", token);
-
     const externalData = external.toObject();
     delete externalData.password;
-
-    res.status(200).json({
-      success: true,
-      token,
-      external: externalData,
-    });
+    res.status(200).json({ success: true, token, external: externalData });
   } catch (err) {
     console.error("External examiner login error:", err);
-    res.status(500).json({ msg: "Server error", error: err.message });
+    res.status(500).json({
+      success: false,
+      msg: "Unable to process your request at the moment. Please try again later.",
+    });
   }
 };

@@ -60,7 +60,7 @@ Always maintain a professional and helpful tone.`;
   useEffect(() => {
     const token = localStorage.getItem("studentToken");
     if (!token) {
-      navigate("/studentlogin");
+      navigate("/login");
     }
   }, [navigate]);
 
@@ -167,7 +167,7 @@ Always maintain a professional and helpful tone.`;
       // Handle authentication error
       if (err.message === "Please log in to continue") {
         localStorage.removeItem("studentToken");
-        navigate("/studentlogin");
+        navigate("/login");
         return;
       }
       

@@ -33,19 +33,7 @@ API.interceptors.response.use(
       localStorage.removeItem("supervisorToken");
       localStorage.removeItem("internalToken");
       localStorage.removeItem("externalToken");
-      // Redirect based on current path
-      const path = window.location.pathname;
-      if (path.startsWith("/admin")) {
-        window.location.href = "/adminlogin";
-      } else if (path.startsWith("/supervisor")) {
-        window.location.href = "/supervisorlogin";
-      } else if (path.startsWith("/internal")) {
-        window.location.href = "/internallogin";
-      } else if (path.startsWith("/external")) {
-        window.location.href = "/externallogin";
-      } else {
-        window.location.href = "/studentlogin";
-      }
+      window.location.href = "/login";
     }
     return Promise.reject(error);
   }

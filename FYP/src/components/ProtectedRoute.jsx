@@ -40,14 +40,7 @@ const ProtectedRoute = ({ children }) => {
 
   // Redirect to login if not authenticated
   if (!isAuthenticated) {
-    const path = location.pathname;
-    if (path.startsWith('/admin') || path === '/usermanagement' || path === '/admindashboard') {
-      return <Navigate to="/adminlogin" state={{ from: location }} replace />;
-    }
-    if (path.startsWith('/supervisor')) return <Navigate to="/supervisorlogin" state={{ from: location }} replace />;
-    if (path.startsWith('/internal')) return <Navigate to="/internallogin" state={{ from: location }} replace />;
-    if (path.startsWith('/external')) return <Navigate to="/externallogin" state={{ from: location }} replace />;
-    return <Navigate to="/studentlogin" state={{ from: location }} replace />;
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   // Render children if authenticated
