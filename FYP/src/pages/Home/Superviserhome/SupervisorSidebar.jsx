@@ -6,7 +6,7 @@ const menuItems = [
   { to: '/supervisordashboard', icon: '🏠', text: 'Home' },
   { to: '/supervisor/reviewdocument', icon: '📄', text: 'Review Document' },
   { to: '/supervisor/evaluate', icon: '✅', text: 'Evaluate' },
-  { to: '/supervisor/communication', icon: '💬', text: 'Communication' },
+  // { to: '/supervisor/communication', icon: '💬', text: 'Communication' },
   { to: '#about', icon: 'ℹ️', text: 'About', hash: true },
 ];
 

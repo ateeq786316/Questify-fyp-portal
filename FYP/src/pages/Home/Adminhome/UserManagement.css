@@ -22,7 +22,7 @@ html, body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   display: flex;
   min-height: 100vh;
-  background-color: #f5f7fa; /* Light background */
+  background-color: #ffffff; /* Light background */
 }
 
 /* Sidebar Styles */

@@ -23,38 +23,18 @@ const Chatbot = () => {
   const navigate = useNavigate();
 
   // System prompt for the chatbot
-  const systemPrompt = `You are an AI assistant for the "Questify FYP Portal", a web platform built for Lahore Garrison University.
-You ONLY assist users with tasks, questions, and issues related to this platform. Do NOT answer general queries.
+  const systemPrompt = `You are an AI assistant for the "Questify FYP Portal" at Lahore Garrison University.
+You help students with ALL questions related to their Final Year Project (FYP), including:
+- Suggesting FYP project ideas (with brief descriptions and possible technologies)
+- Providing helpful links and resources for FYP (such as research, documentation, tools, and tutorials)
+- Explaining FYP processes (proposal, documentation, evaluation, etc.)
+- Answering questions about the Questify FYP Portal features and usage
+- Introducing yourself if asked
 
-Available Features:
-1. Project Proposal Submission
-   - Submit project proposals
-   - Upload proposal documents
-   - Add team members
-   - Track proposal status
-
-2. Document Management
-   - Upload SRS documents
-   - Upload system diagrams
-   - Upload final reports
-   - Track document status and feedback
-
-3. Communication
-   - Chat with supervisors
-   - Schedule Google Meet sessions
-   - View and respond to feedback
-   - Track project progress
-
-4. Project Tracking
-   - View milestone deadlines
-   - Track project status
-   - Monitor evaluation progress
-   - View grading and feedback
-
-If the user asks about anything unrelated to these features (like entertainment, unrelated tech, personal advice), respond:
-"I can only assist with Questify FYP Portal-related queries. Please ask me about project proposals, document submissions, communication with supervisors, or project tracking."
-
-Always maintain a professional and helpful tone.`;
+If a student asks for FYP ideas, provide 3-5 creative, relevant project ideas with a short description and suggested technologies.
+If a student asks for resources, provide helpful links (official docs, tutorials, research papers, etc.).
+If a student asks about you, introduce yourself as Questify, the FYP Portal AI assistant.
+Always be professional, helpful, and supportive. Reply to all questions related to Final Year Projects (FYP).`;
 
   // Check authentication on component mount
   useEffect(() => {
@@ -118,35 +98,23 @@ Always maintain a professional and helpful tone.`;
       // Format the response
       let botResponse = response.data.candidates[0].content.parts[0].text
         .split("\n")
-        .slice(0, 10)
+        .slice(0, 15)
         .join("\n")
         .trim();
 
-      // Clean and structure the response
+      // Allow markdown links and basic formatting, but clean up excessive whitespace
       botResponse = botResponse
-        // Remove markdown formatting
-        .replace(/\*\*/g, '')
-        .replace(/\*/g, '')
-        .replace(/_/g, '')
-        // Convert to simple bullet points
-        .replace(/^[-•*]\s/gm, '• ')
+        // Convert plain URLs to markdown links if not already
+        .replace(/(https?:\/\/[^\s]+)/g, url => `[${url}](${url})`)
         // Add proper spacing
         .replace(/\n/g, '\n\n')
-        // Capitalize first letter of each line
-        .replace(/(^\w|\.\s+\w)/gm, letter => letter.toUpperCase())
         // Remove extra spaces
-        .replace(/\s+/g, ' ')
-        // Format sections
-        .replace(/(\d+\.\s)/g, '\n$1')
-        .replace(/(Project Idea:)/g, '\n$1')
-        .replace(/(Complexity:)/g, '\n$1')
-        .replace(/(Focus:)/g, '\n$1')
-        .replace(/(Technologies:)/g, '\n$1')
+        .replace(/ +/g, ' ')
         .trim();
 
-      // Add a friendly prefix if it's a greeting
-      if (input.toLowerCase().includes('hello') || input.toLowerCase().includes('hi')) {
-        botResponse = '👋 ' + botResponse;
+      // Self-introduction fallback
+      if (/who are you|your name|about you|introduce yourself/i.test(input)) {
+        botResponse = "I'm Questify, your AI assistant for FYP help and guidance at Lahore Garrison University. " + botResponse;
       }
       
       // Update user message status

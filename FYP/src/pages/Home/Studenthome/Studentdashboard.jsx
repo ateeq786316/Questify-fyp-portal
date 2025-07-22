@@ -246,7 +246,7 @@ const StudentDashboard = () => {
                         {studentDetails.evaluation.externalMarks?.marks ? (
                           <>
                             <span>{studentDetails.evaluation.externalMarks.marks}</span>
-                            <span>/ 50</span>
+                            <span>/ 100</span>
                           </>
                         ) : (
                           <span>Not evaluated</span>
@@ -272,7 +272,7 @@ const StudentDashboard = () => {
                           return (
                             <>
                               <span>{total}</span>
-                              <span>/ 150</span>
+                              <span>/ 200</span>
                             </>
                           );
                         })()}

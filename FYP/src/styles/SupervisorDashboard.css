@@ -1,0 +1,20 @@
+.action-buttons{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    
+}
+.approve{
+    background-color: #68d468;
+    color: #000000;
+    padding: 5px;
+    border-radius: 5px;
+}
+.reject{
+    background-color: #f35f5f;
+    color: #000000;
+    padding: 5px;
+    border-radius: 5px;
+}
+

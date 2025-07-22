@@ -628,7 +628,7 @@ const AdminDashboard = () => {
               </div>
             )}
 
-            <div className="milestone-actions">
+            {/* <div className="milestone-actions">
               <button onClick={saveMilestones} className="save-button">
                 <FaSave /> Save Milestones
               </button>
@@ -640,7 +640,7 @@ const AdminDashboard = () => {
                   <FaPlus /> Add Milestone
                 </button>
               )}
-        </div>
+        </div> */}
       </div>
     </AdminSidebarLayout>
   );

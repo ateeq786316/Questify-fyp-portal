@@ -321,7 +321,7 @@ const Milestones = () => {
           </div>
         )}
 
-        <div className="milestone-actions">
+        {/* <div className="milestone-actions">
           <button onClick={saveMilestones} className="save-button">
             <FaSave /> Save All Changes
           </button>
@@ -333,7 +333,7 @@ const Milestones = () => {
               <FaPlus /> Add New Milestone
             </button>
           )}
-        </div>
+        </div> */}
       </div>
     </AdminSidebarLayout>
   );

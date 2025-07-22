@@ -128,23 +128,8 @@ router.get("/documents/:documentId/file", internalAuth, async (req, res) => {
       ? filePath.split("\\").pop()
       : filePath.split("/").pop();
 
-    // Construct the full path based on fileType
-    let fullPath;
-    if (fileType === "finalReport") {
-      fullPath = path.join(
-        __dirname,
-        "..",
-        "uploads",
-        "finalReports",
-        fileName
-      );
-    } else if (fileType === "srs") {
-      fullPath = path.join(__dirname, "..", "uploads", "srs", fileName);
-    } else if (fileType === "proposal") {
-      fullPath = path.join(__dirname, "..", "uploads", "proposals", fileName);
-    } else {
-      fullPath = path.join(__dirname, "..", "uploads", fileName);
-    }
+    // Construct the full path by joining uploads directory and relative filePath
+    const fullPath = path.join(__dirname, "..", "uploads", document.filePath);
 
     // Log the path for debugging
     console.log("Looking for file at:", fullPath);
@@ -159,9 +144,25 @@ router.get("/documents/:documentId/file", internalAuth, async (req, res) => {
       });
     }
 
-    // Set appropriate headers for PDF
-    res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", "inline; filename=" + fileName);
+    // Set appropriate headers for PDF and other types
+    const ext = path.extname(fullPath).toLowerCase();
+    const contentType =
+      {
+        ".pdf": "application/pdf",
+        ".doc": "application/msword",
+        ".docx":
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        ".jpg": "image/jpeg",
+        ".jpeg": "image/jpeg",
+        ".png": "image/png",
+        ".pptx":
+          "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+      }[ext] || "application/octet-stream";
+    res.setHeader("Content-Type", contentType);
+    res.setHeader(
+      "Content-Disposition",
+      "inline; filename=" + path.basename(fullPath)
+    );
 
     // Send the file
     res.sendFile(fullPath);

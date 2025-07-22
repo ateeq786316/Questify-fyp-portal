@@ -10,6 +10,7 @@ const Document = require("../models/Document");
 const SupervisorRequest = require("../models/SupervisorRequest");
 const Evaluation = require("../models/Evaluation");
 require("dotenv").config();
+const path = require("path");
 
 exports.studentLogin = async (req, res) => {
   const { email, password } = req.body;
@@ -411,9 +412,14 @@ exports.submitProjectProposal = async (req, res) => {
     }
 
     // Create new document record
+    const uploadsDir = path.join(__dirname, "..", "uploads");
+    // Get the relative path from uploads directory
+    let relativePath = path
+      .relative(uploadsDir, req.file.path)
+      .replace(/\\/g, "/");
     const document = new Document({
       fileType: "proposal",
-      filePath: req.file.path,
+      filePath: relativePath,
       uploadedBy: studentId,
       title: title,
       description: description,

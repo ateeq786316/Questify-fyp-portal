@@ -22,9 +22,14 @@ exports.uploadDocument = async (req, res) => {
         msg: "The selected document type is not supported. Please choose a valid type.",
       });
     }
+    // Always store the relative path from uploads directory
+    const uploadsDir = path.join(__dirname, "..", "uploads");
+    let relativePath = path
+      .relative(uploadsDir, req.file.path)
+      .replace(/\\/g, "/");
     const document = new Document({
       fileType,
-      filePath: req.file.path.replace(/\\/g, "/"),
+      filePath: relativePath,
       uploadedBy: studentId,
       title: title || req.file.originalname,
       description: description || "",
@@ -93,8 +98,11 @@ exports.deleteDocument = async (req, res) => {
         msg: "The document you are trying to delete does not exist or has already been removed.",
       });
     }
-    if (fs.existsSync(document.filePath)) {
-      fs.unlinkSync(document.filePath);
+    // Always resolve the absolute path from uploads directory
+    const uploadsDir = path.join(__dirname, "..", "uploads");
+    const absolutePath = path.join(uploadsDir, document.filePath);
+    if (fs.existsSync(absolutePath)) {
+      fs.unlinkSync(absolutePath);
     }
     await document.remove();
     res.status(200).json({
