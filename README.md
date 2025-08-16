@@ -1,165 +1,3 @@
-Empowering universities with a smart, centralized platform to streamline FYP proposal submissions, milestone tracking, evaluations, and real-time supervisor-student collaboration.
-
-📱 Overview
-
-Questify is a MERN-based web portal designed for universities to manage Final Year Projects efficiently. It reduces paperwork, standardizes evaluations, and enhances communication between students, supervisors, and administrators.
-
-With features like project proposal submission, milestone tracking, real-time supervisor dashboards, automated notifications, and grading consistency, Questify transforms how universities handle FYPs.
-
-👨‍💻 Developed By
-
-Ateeq ur Rehman
-Muhammad Talha 
-
-Supervisor: Miss Rabia Khan
-📧 Email: Rabia_khan@lgu.edu.pk
-
-🚀 Features
-
-📑 Project Proposal Submission
-Upload and manage proposals with structured approval workflow.
-✅ Milestone & Progress Tracking
-Students log updates, supervisors approve/reject milestones.
-📂 Document Upload & Storage
-Centralized space for uploading reports, presentations, and code.
-🧑‍🏫 Supervisor Dashboard
-Real-time tracking of student progress and evaluations.
-🛠️ Admin Panel
-Manage users, proposals, approvals, and grading policies.
-🔔 Notifications & Alerts
-Automated reminders for deadlines, feedback, and approvals.
-📊 Evaluation & Grading
-Streamlined rubric-based grading for fairness and transparency.
-
-🧑‍💻 Tech Stack
-Layer	Technology
-Frontend	React (Vite) + Tailwind CSS
-Backend	Node.js + Express.js
-Database	MongoDB (Compass)
-Auth & Security	JWT Authentication + bcrypt
-File Storage	Cloud / Local Storage (Multer)
-Communication	CORS + REST API
-
-🖼️ Screenshots
-<img width="1919" height="881" alt="portal-page" src="https://github.com/user-attachments/assets/ad0a2a2a-62fc-4ed7-ba28-d6200b460fe2" />
-<img width="1919" height="880" alt="login" src="https://github.com/user-attachments/assets/ff620425-c929-4b0a-95c9-c5424c2cc704" />
-<img width="1901" height="879" alt="student-dashboard" src="https://github.com/user-attachments/assets/2285bfc7-ac8f-4d62-9967-68c538c330b4" />
-<img width="1901" height="879" alt="Screenshot 2025-05-13 124021" src="https://github.com/user-attachments/assets/5a5b9004-7b6d-4d6c-b380-627438178f14" />
-<img width="1900" height="874" alt="Screenshot 2025-05-13 124140" src="https://github.com/user-attachments/assets/b3e66f7b-bc89-477e-883f-2fae69a5d2f3" />
-<img width="1919" height="872" alt="Screenshot 2025-05-13 124400" src="https://github.com/user-attachments/assets/67381117-b9cf-49c4-9f9b-41fe826181c9" />
-<img width="1919" height="874" alt="Screenshot 2025-03-20 212826" src="https://github.com/user-attachments/assets/c04e8ca9-7ea0-4df2-a8aa-dab863c47c9f" />
-
-
-<img width="1901" height="878" alt="supervisor-dashboard" src="https://github.com/user-attachments/assets/1c2748cd-d264-4bed-8138-ffb67e93f9fa" />
-<img width="1919" height="872" alt="supervisor-dashboard documents checking" src="https://github.com/user-attachments/assets/226aa440-2848-41dc-97ef-195773ce229a" />
-<img width="1764" height="878" alt="Screenshot 2025-05-21 033535" src="https://github.com/user-attachments/assets/02613fcd-e9e4-4d28-9b42-823eb71d7b65" />
-<img width="1898" height="878" alt="supervisor-dashboard evaluation" src="https://github.com/user-attachments/assets/9ceec120-1758-4064-b95f-e0fbe8bc6da9" />
-
-
-
-<img width="1716" height="878" alt="admin-dashboard" src="https://github.com/user-attachments/assets/09d0891c-5b2a-4d16-b602-d542ca5d9ab2" />
-<img width="1902" height="875" alt="internal-dashboard" src="https://github.com/user-attachments/assets/8c74c7f3-97ef-405e-adce-d7a7822e3d5b" />
-<img width="1900" height="879" alt="external-dashboard" src="https://github.com/user-attachments/assets/e9722181-d253-4750-bd29-bcba2c5df047" />
-
-
-Login Page, 
-Student,  
-Supervisor , 
-Admin,
-Internal,
-External
-
-
-🔧 Setup Instructions
-📋 Prerequisites
-
-Node.js (Latest LTS)
-
-MongoDB Compass / Atlas account
-
-Git & VS Code
-
-🧑‍💻 Clone the Repository
-git clone https://github.com/ateeq786316/Questify-fyp-portal.git
-cd Questify-FYP-Portal
-
-📦 Install Dependencies
-#new termainal 
-cd fyp
-npm install
-
-#new termainal 
-cd server
-npm install
-
-⚙️ Configure Environment
-
-Create a .env file in the server with:
-
-MONGO_URI=mongodb://127.0.0.1:27017/FYP_LGU
-JWT_SECRET=
-PORT = 5000
-NODE_ENV=development
-
-# gemini key 
-GEMINI_API_KEY=
-REACT_APP_API_URL=http://localhost:5000/api
-
-#for mail create an app password from email
-EMAIL_USER=
-EMAIL_PASS=
-
-
-
-▶️ Run the App
-
-Backend:
-npm start
-
-Frontend:
-npm run dev
-
-📦 Deployment
-
-Frontend: Vercel / Netlify
-
-Backend: Render 
-
-Database: MongoDB Atlas
-
-👥 Team Contributions
-
-Ateeq ur Rehman
-🔹 Role: Full-Stack Developer
-🔹 Work: Backend APIs, Auth system, Database integration
-
-Muhammad Talha
-🔹 Role: Frontend Developer
-🔹 Work: UI Design, React Components, Supervisor Dashboard
-
-Supervisor: Miss Rabia Khan
-🔹 Guidance, review, and evaluation framework
-
-🤝 Contributing
-Contributions are welcome!
-Fork the repo
-Create your feature branch:
-git checkout -b feature/your-feature
-Commit your changes:
-git commit -m 'Add new feature'
-Push to the branch:
-git push origin feature/your-feature
-
-
-Open a Pull Request
-
-🙏 Acknowledgements
-MERN Stack Community
-MongoDB Atlas
-OpenAI / AI-assisted feedback
-University peers and testers
-⚡ Questify – Streamlining Final Year Project Management
-========================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================
 
 📘 Questify FYP Portal
 
@@ -331,6 +169,144 @@ MIT License
 MERN Stack Open Source Community
 Faculty Support & Guidance
 Testing feedback from fellow students
+=========================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================================
+
+Empowering universities with a smart, centralized platform to streamline FYP proposal submissions, milestone tracking, evaluations, and real-time supervisor-student collaboration.
+
+📱 Overview
+
+Questify is a MERN-based web portal designed for universities to manage Final Year Projects efficiently. It reduces paperwork, standardizes evaluations, and enhances communication between students, supervisors, and administrators.
+
+With features like project proposal submission, milestone tracking, real-time supervisor dashboards, automated notifications, and grading consistency, Questify transforms how universities handle FYPs.
+
+👨‍💻 Developed By
+
+Ateeq ur Rehman
+Muhammad Talha 
+
+Supervisor: Miss Rabia Khan
+📧 Email: Rabia_khan@lgu.edu.pk
+
+🚀 Features
+
+📑 Project Proposal Submission
+Upload and manage proposals with structured approval workflow.
+✅ Milestone & Progress Tracking
+Students log updates, supervisors approve/reject milestones.
+📂 Document Upload & Storage
+Centralized space for uploading reports, presentations, and code.
+🧑‍🏫 Supervisor Dashboard
+Real-time tracking of student progress and evaluations.
+🛠️ Admin Panel
+Manage users, proposals, approvals, and grading policies.
+🔔 Notifications & Alerts
+Automated reminders for deadlines, feedback, and approvals.
+📊 Evaluation & Grading
+Streamlined rubric-based grading for fairness and transparency.
+
+🧑‍💻 Tech Stack
+Layer	Technology
+Frontend	React (Vite) + Tailwind CSS
+Backend	Node.js + Express.js
+Database	MongoDB (Compass)
+Auth & Security	JWT Authentication + bcrypt
+File Storage	Cloud / Local Storage (Multer)
+Communication	CORS + REST API
+
+🖼️ Screenshots
+
+Login Page, Student,  Supervisor , Admin,Internal, External
+
+
+🔧 Setup Instructions
+📋 Prerequisites
+
+Node.js (Latest LTS)
+
+MongoDB Compass / Atlas account
+
+Git & VS Code
+
+🧑‍💻 Clone the Repository
+git clone https://github.com/ateeq786316/Questify-fyp-portal.git
+cd Questify-FYP-Portal
+
+📦 Install Dependencies
+#new termainal 
+cd fyp
+npm install
+
+#new termainal 
+cd server
+npm install
+
+⚙️ Configure Environment
+
+Create a .env file in the server with:
+
+MONGO_URI=mongodb://127.0.0.1:27017/FYP_LGU
+JWT_SECRET=
+PORT = 5000
+NODE_ENV=development
+
+# gemini key 
+GEMINI_API_KEY=
+REACT_APP_API_URL=http://localhost:5000/api
+
+#for mail create an app password from email
+EMAIL_USER=
+EMAIL_PASS=
+
+
+
+▶️ Run the App
+
+Backend:
+npm start
+
+Frontend:
+npm run dev
+
+📦 Deployment
+
+Frontend: Vercel / Netlify
+
+Backend: Render 
+
+Database: MongoDB Atlas
+
+👥 Team Contributions
+
+Ateeq ur Rehman
+🔹 Role: Full-Stack Developer
+🔹 Work: Backend APIs, Auth system, Database integration
+
+Muhammad Talha
+🔹 Role: Frontend Developer
+🔹 Work: UI Design, React Components, Supervisor Dashboard
+
+Supervisor: Miss Rabia Khan
+🔹 Guidance, review, and evaluation framework
+
+🤝 Contributing
+Contributions are welcome!
+Fork the repo
+Create your feature branch:
+git checkout -b feature/your-feature
+Commit your changes:
+git commit -m 'Add new feature'
+Push to the branch:
+git push origin feature/your-feature
+
+
+Open a Pull Request
+
+🙏 Acknowledgements
+MERN Stack Community
+MongoDB Atlas
+OpenAI / AI-assisted feedback
+University peers and testers
+⚡ Questify – Streamlining Final Year Project Management
 
 
 #commands to push to git hub
