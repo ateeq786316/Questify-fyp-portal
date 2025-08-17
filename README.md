@@ -160,6 +160,17 @@ Backend can be deployed on Render / Railway / Heroku
 MongoDB hosted on MongoDB Atlas
 
 ## 👥 Team Contributions
+ *Ateeq ur Rehman*
+🔹 Role: Full-Stack Developer
+🔹 Work: Backend APIs, Auth system, Database integration
+
+*Muhammad Talha*
+🔹 Role: Frontend Developer
+🔹 Work: UI Design, React Components, Supervisor Dashboard
+
+*Supervisor: Miss Rabia Khan*
+🔹 Guidance, review, and evaluation framework
+
 *Ateeq ur Rehman*
 Lead Full-Stack Developer
 Designed database schema & API architecture
