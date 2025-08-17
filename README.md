@@ -160,29 +160,18 @@ Backend can be deployed on Render / Railway / Heroku
 MongoDB hosted on MongoDB Atlas
 
 ## 👥 Team Contributions
- *Ateeq ur Rehman*
-🔹 Role: Full-Stack Developer
-🔹 Work: Backend APIs, Auth system, Database integration
 
-*Muhammad Talha*
-🔹 Role: Frontend Developer
+**Ateeq ur Rehman**
+🔹 Role: Lead Full-Stack Developer  
+🔹 Work: Backend APIs, Auth system, Database integration, Designed database schema & API architecture, Built supervisor/admin dashboard features, Implemented secure file uploads and error handling
+
+**Muhammad Talha**
+🔹 Role: Frontend Developer  
 🔹 Work: UI Design, React Components, Supervisor Dashboard
 
-*Supervisor: Miss Rabia Khan*
-🔹 Guidance, review, and evaluation framework
-
-*Ateeq ur Rehman*
-Lead Full-Stack Developer
-Designed database schema & API architecture
-Developed React-based student dashboard
-Integrated authentication & user roles
-Backend Developer
-Worked on proposal submission, approvals, and grading system
-Built supervisor/admin dashboard features
-Implemented secure file uploads and error handling
-*Supervisor: Miss Rabia Khan* 
-Guided system requirements & evaluation design
-Provided academic oversight
+**Supervisor: Miss Rabia Khan**
+🔹 Role: Academic Supervisor  
+🔹 Work: Guided system requirements & evaluation design, Provided academic oversight, Guidance, review, and evaluation framework
 
 ## 🧠 Challenges Solved
 Designing scalable database relationships for students, supervisors, and projects
