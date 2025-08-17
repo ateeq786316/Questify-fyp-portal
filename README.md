@@ -1,9 +1,9 @@
 
-📘 Questify FYP Portal
+## 📘 Questify FYP Portal
 
 A MERN-based Final Year Project Management Platform
 
-🚀 Overview
+## 🚀 Overview
 
 Questify FYP Portal is a web-based platform designed to streamline and digitize Final Year Project (FYP) management for students, supervisors, and administrators.
 
@@ -11,41 +11,41 @@ It centralizes proposal submission, milestone tracking, supervisor feedback, gra
 
 Built on the MERN Stack (MongoDB, Express, React, Node.js), Questify ensures scalability, flexibility, and modern user experience for academic institutions.
 
-✨ Key Features
-🎯 Project Management
+## ✨ Key Features
+*🎯 Project Management*
 
 Project proposal submission with document uploads
 Automated supervisor assignment and approval workflow
 Progress and milestone tracking with deadlines
 Admin panel for proposal approval and final grading
 
-👨‍🏫 Supervisor Dashboard
+*👨‍🏫 Supervisor Dashboard*
 Real-time student progress monitoring
 Feedback and evaluation system
 Document access and review in one place
 
-📊 Student Dashboard
+*📊 Student Dashboard*
 Upload proposals, reports, and deliverables
 Track project progress and supervisor feedback
 Receive real-time notifications on approvals or comments
 
-🛠️ Admin Panel
+*🛠️ Admin Panel*
 Manage users (students, supervisors, examiners)
 Approve/reject proposals and reports
 Assign supervisors and committees
 Monitor overall FYP process at a glance
 
-🔔 Communication & Notifications
+*🔔 Communication & Notifications*
 Real-time notification system for updates and approvals
 Supervisor-student feedback loop for better communication
 
-📑 Additional Features
+*📑 Additional Features*
 Role-based authentication (Student, Supervisor, Admin)
 Error-handling with user-friendly error messages
 Secure document upload and storage
 Consistent grading and evaluation process
 
-🧑‍💻 Tech Stack
+## 🧑‍💻 Tech Stack
 Layer	Technology
 Frontend	React.js, HTML5, CSS3, Tailwind/Bootstrap
 Backend	Node.js, Express.js
@@ -53,7 +53,7 @@ Database	MongoDB (Compass for management)
 Authentication	JWT (JSON Web Tokens), bcrypt for password security
 Deployment	(Heroku / Render / Railway / Local Deployment Options)
 Tools	Git, GitHub, Postman, VS Code
-🖼️ Screenshotsno
+
 
 ### Portal Interface Screenshots
 
@@ -99,7 +99,7 @@ Tools	Git, GitHub, Postman, VS Code
 
 **Login Page, Student, Supervisor, Admin, Internal, External**
 
-⚙️ Setup Instructions
+## ⚙️ Setup Instructions
 📋 Prerequisites
 
 Node.js (Latest LTS version)
@@ -107,11 +107,11 @@ MongoDB (Local or Atlas Cloud)
 Git & GitHub
 VS Code
 
-🧑‍💻 Clone the Repository
+## 🧑‍💻 Clone the Repository
 git clone https://github.com/ateeq786316/Questify-fyp-portal.git
 cd Questify-FYP-Portal
 
-📦 Install Dependencies
+## 📦 Install Dependencies
 Backend:
 cd server
 npm install
@@ -120,7 +120,7 @@ Frontend:
 cd fyp
 npm install
 
-🔐 Configure Environment Variables
+## 🔐 Configure Environment Variables
 Create a .env file in the server with:
 
 MONGO_URI=mongodb://127.0.0.1:27017/FYP_LGU
@@ -136,7 +136,7 @@ REACT_APP_API_URL=http://localhost:5000/api
 EMAIL_USER=
 EMAIL_PASS=
 
-▶️ Run the App
+## ▶️ Run the App
 
 Start Backend:
 
@@ -153,14 +153,14 @@ The app will be available at:
 http://localhost:3000 (frontend)
 http://localhost:5000 (backend API)
 
-📦 Deployment
+## 📦 Deployment
 For deployment:
 Frontend can be deployed on Vercel / Netlify
 Backend can be deployed on Render / Railway / Heroku
 MongoDB hosted on MongoDB Atlas
 
-👥 Team Contributions
-Ateeq ur Rehman
+## 👥 Team Contributions
+*Ateeq ur Rehman*
 Lead Full-Stack Developer
 Designed database schema & API architecture
 Developed React-based student dashboard
@@ -169,20 +169,20 @@ Backend Developer
 Worked on proposal submission, approvals, and grading system
 Built supervisor/admin dashboard features
 Implemented secure file uploads and error handling
-Supervisor: Miss Rabia Khan
+*Supervisor: Miss Rabia Khan* 
 Guided system requirements & evaluation design
 Provided academic oversight
 
-🧠 Challenges Solved
+## 🧠 Challenges Solved
 Designing scalable database relationships for students, supervisors, and projects
 Fixing non-user-friendly error messages by creating descriptive alerts for better UX
 Managing real-time updates and notifications with minimal delays
 Ensuring data consistency in grading and approvals across multiple roles
 
-📜 License
+## 📜 License
 MIT License
 
-🙏 Acknowledgements
+## 🙏 Acknowledgements
 MERN Stack Open Source Community
 Faculty Support & Guidance
 Testing feedback from fellow students
