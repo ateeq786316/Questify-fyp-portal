@@ -61,25 +61,37 @@ Tools	Git, GitHub, Postman, VS Code
 |-------------|--------------|
 | ![portal-page](https://github.com/user-attachments/assets/ad0a2a2a-62fc-4ed7-ba28-d6200b460fe2) | ![login](https://github.com/user-attachments/assets/ff620425-c929-4b0a-95c9-c5424c2cc704) |
 
+&nbsp;
+
 | Student Dashboard | Student Features |
 |-------------------|------------------|
 | ![student-dashboard](https://github.com/user-attachments/assets/2285bfc7-ac8f-4d62-9967-68c538c330b4) | ![Screenshot 2025-05-13 124021](https://github.com/user-attachments/assets/5a5b9004-7b6d-4d6c-b380-627438178f14) |
+
+&nbsp;
 
 | Student Dashboard 2 | Student Dashboard 3 |
 |---------------------|---------------------|
 | ![Screenshot 2025-05-13 124140](https://github.com/user-attachments/assets/b3e66f7b-bc89-477e-883f-2fae69a5d2f3) | ![Screenshot 2025-05-13 124400](https://github.com/user-attachments/assets/67381117-b9cf-49c4-9f9b-41fe826181c9) |
 
+&nbsp;
+
 | Student Dashboard 4 | Supervisor Dashboard |
 |---------------------|---------------------|
 | ![Screenshot 2025-05-13 124400](https://github.com/user-attachments/assets/67381117-b9cf-49c4-9f9b-41fe826181c9) | ![supervisor-dashboard](https://github.com/user-attachments/assets/1c2748cd-d264-4bed-8138-ffb67e93f9fa) |
+
+&nbsp;
 
 | Supervisor Documents | Supervisor Evaluation |
 |---------------------|----------------------|
 | ![supervisor-dashboard documents checking](https://github.com/user-attachments/assets/226aa440-2848-41dc-97ef-195773ce229a) | ![Screenshot 2025-05-21 033535](https://github.com/user-attachments/assets/02613fcd-e9e4-4d28-9b42-823eb71d7b65) |
 
+&nbsp;
+
 | Admin Dashboard | Internal Dashboard |
 |-----------------|-------------------|
 | ![admin-dashboard](https://github.com/user-attachments/assets/09d0891c-5b2a-4d16-b602-d542ca5d9ab2) | ![internal-dashboard](https://github.com/user-attachments/assets/8c74c7f3-97ef-405e-adce-d7a7822e3d5b) |
+
+&nbsp;
 
 | External Dashboard |
 |-------------------|
