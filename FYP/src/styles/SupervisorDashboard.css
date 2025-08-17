@@ -1,4 +1,4 @@
-.action-buttons{
+/* .action-buttons{
     display: flex;
     justify-content: center;
     align-items: center;
@@ -18,3 +18,226 @@
     border-radius: 5px;
 }
 
+.section-header{
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #333;
+} */
+
+/* Main container for the entire dashboard */
+.dashboard-container {
+    display: flex;
+    min-height: 100vh;
+    background-color: #ffffff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    /* color: #333; */
+}
+
+/* Main content area, excluding the sidebar and navbar */
+.main-content {
+    flex-grow: 1;
+    padding: 30px;
+    margin-left: 250px; /* Adjust this to match the sidebar width */
+    transition: margin-left 0.3s ease;
+    padding-top: 80px; /* Adjust this to make space for the navbar */
+}
+
+/* Styles for the supervisor details section */
+.supervisor-details {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.supervisor-details h2 {
+    font-size: 1.8rem;
+    color: #1a237e;
+    margin-bottom: 10px;
+}
+
+.supervisor-details p {
+    font-size: 1rem;
+    color: #666;
+    margin-top: 20px;
+    font-weight: bold;
+}
+
+.supervisor-details ul {
+    list-style-type: none;
+    padding: 0;
+    margin-top: 10px;
+}
+
+.supervisor-details li {
+    background-color: #e8eaf6;
+    color: #333;
+    padding: 8px 12px;
+    border-radius: 8px;
+    margin-bottom: 5px;
+    display: inline-block;
+    margin-right: 10px;
+    font-size: 0.9rem;
+}
+
+/* Container for the approved students and pending requests */
+.grid-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+/* Common styling for the student and request sections */
+.approved-students,
+.requests {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Header for each section (Approved Students, Pending Requests) */
+.section-header {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #333;
+}
+
+/* Table styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+table thead {
+    background-color: #f5f5f5;
+    border-radius: 8px;
+}
+
+table th,
+table td {
+    padding: 15px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+table th {
+    font-weight: 600;
+    color: #555;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+}
+
+table tbody tr:hover {
+    background-color: #fafafa;
+}
+
+/* Styles for the action buttons column */
+.action-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Base style for all buttons */
+.action-buttons button {
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+.action-buttons button:hover {
+    transform: translateY(-2px);
+}
+
+/* Specific style for the Approve button */
+.approve {
+    background-color: #68d468;
+    color: #000000;
+    padding: 8px 16px;
+    border-radius: 5px;
+}
+
+.approve:hover {
+    background-color: #5cb85c;
+}
+
+/* Specific style for the Reject button */
+.reject {
+    background-color: #f35f5f;
+    color: #000000;
+    padding: 8px 16px;
+    border-radius: 5px;
+}
+
+.reject:hover {
+    background-color: #d9534f;
+}
+
+/* Style for the loading and error messages */
+.loading, .error {
+    text-align: center;
+    font-size: 1.2rem;
+    margin-top: 50px;
+}
+
+.error {
+    color: #d9534f;
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 1024px) {
+    .grid-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        margin-left: 0;
+        /* padding: 20px; */
+    }
+
+    .supervisor-details {
+        padding: 20px;
+    }
+
+    .approved-students,
+    .requests {
+        padding: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-content {
+        /* padding: 15px; */
+    }
+
+    .supervisor-details h2 {
+        font-size: 1.5rem;
+    }
+
+    .section-header {
+        font-size: 1.2rem;
+    }
+
+    table th, table td {
+        padding: 10px;
+        font-size: 0.8rem;
+    }
+    
+    .action-buttons {
+        gap: 5px;
+    }
+    
+    .action-buttons button {
+        padding: 6px 12px;
+    }
+}

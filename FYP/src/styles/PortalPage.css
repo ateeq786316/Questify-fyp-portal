@@ -69,6 +69,7 @@
   -webkit-text-fill-color: transparent; /* Make the text transparent to show the gradient */
   text-align: center; /* Center the heading */
   margin-bottom: 5px; /* Add some space below the heading */
+  margin-top: 90px;
   text-shadow: 2px 2px 4px rgba(132, 131, 131, 0.3); /* Add a text shadow */
 }
   
