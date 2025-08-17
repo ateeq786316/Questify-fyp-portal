@@ -164,9 +164,11 @@ MongoDB hosted on MongoDB Atlas
 **Ateeq ur Rehman**   
 
 🔹 Role: Lead Full-Stack Developer   
-🔹 Work: Backend APIs, Auth system, Database integration, Designed database schema & API architecture, Built supervisor/admin dashboard features, Implemented secure file uploads and error handling
+🔹 Work: Backend APIs, Auth system, Database integration, Designed database schema & API architecture,        
+    Built supervisor/admin   dashboard features, Implemented secure file uploads and error handling
 
-**Muhammad Talha**
+**Muhammad Talha**     
+
 🔹 Role: Frontend Developer  
 🔹 Work: UI Design, React Components, Supervisor Dashboard
 
