@@ -53,7 +53,7 @@ Database	MongoDB (Compass for management)
 Authentication	JWT (JSON Web Tokens), bcrypt for password security
 Deployment	(Heroku / Render / Railway / Local Deployment Options)
 Tools	Git, GitHub, Postman, VS Code
-🖼️ Screenshots
+🖼️ Screenshotsno
 
 ### Portal Interface Screenshots
 
