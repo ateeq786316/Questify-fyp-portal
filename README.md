@@ -172,8 +172,10 @@ MongoDB hosted on MongoDB Atlas
 🔹 Role: Frontend Developer  
 🔹 Work: UI Design, React Components, Supervisor Dashboard
 
-**Supervisor: Miss Rabia Khan**
-🔹 Role: Academic Supervisor  
+**Supervisor: Miss Rabia Khan**  
+
+🔹 Role: Academic Supervisor    
+
 🔹 Work: Guided system requirements & evaluation design, Provided academic oversight, Guidance, review, and evaluation framework
 
 ## 🧠 Challenges Solved
