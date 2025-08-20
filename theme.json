@@ -1,0 +1,558 @@
+{
+  "$schema": "https://example.com/design-system.schema.json",
+  "designSystem": {
+    "name": "EduLearn",
+    "version": "2.0.0",
+    "description": "Machine-readable UI/UX design language for education/admin dashboards. Prioritizes clarity, accessibility, and rich micro-interactions without reproducing any specific image contents.",
+    "metadata": {
+      "created": "2025-08-19",
+      "lastUpdated": "2025-08-19",
+      "author": "AI Design Architect",
+      "license": "MIT",
+      "technologyAgnostic": true
+    },
+    "brands": {
+      "primary": {
+        "logotype": { "kind": "wordmark", "text": "EduLearn" },
+        "mark": { "kind": "abstract", "hint": "geometric academic motif" }
+      }
+    }
+  },
+  "libraries": {
+    "css": ["tailwindcss@latest"],
+    "js": ["react", "shadcn/ui"],
+    "plugins": [
+      "chart.js",
+      "flatpickr",
+      "daterangepicker",
+      "dragula",
+      "dropzone",
+      "rangeslider",
+      "quill",
+      "select2",
+      "nestable",
+      "fancytree",
+      "vectormap",
+      "sweetalert2"
+    ],
+    "fonts": ["Inter", "Open Sans"]
+  },
+  "tokens": {
+    "color": {
+      "ref": {
+        "violet": "#6F42C1",
+        "violet-600": "#6F42C1",
+        "violet-100": "#E4C5F9",
+        "yellow-400": "#FAD02E",
+        "green-600": "#28A745",
+        "red-600": "#DC3545",
+        "amber-500": "#FFC107",
+        "cyan-600": "#17A2B8",
+        "gray-50": "#F8F9FB",
+        "gray-100": "#F5F5F7",
+        "gray-200": "#EAEAF0",
+        "gray-300": "#E0E0E0",
+        "gray-500": "#6A6A6A",
+        "gray-800": "#333333",
+        "gray-900": "#1A1A1A",
+        "ink-900": "#0D0D12",
+        "indigo-900": "#1A1A2E",
+        "indigo-800": "#2B2B48",
+        "white": "#FFFFFF",
+        "black": "#000000"
+      },
+      "sys": {
+        "primary": "{color.ref.violet-600}",
+        "onPrimary": "{color.ref.white}",
+        "primary-soft": "{color.ref.violet-100}",
+        "secondary": "{color.ref.yellow-400}",
+        "onSecondary": "{color.ref.ink-900}",
+        "accent": "{color.ref.yellow-400}",
+        "success": "{color.ref.green-600}",
+        "warning": "{color.ref.amber-500}",
+        "error": "{color.ref.red-600}",
+        "info": "{color.ref.cyan-600}",
+        "focus": "rgba(111,66,193,0.35)",
+        "border": "{color.ref.gray-300}",
+        "muted": "{color.ref.gray-500}",
+        "text": "{color.ref.gray-900}",
+        "text-subtle": "{color.ref.gray-500}",
+        "surface": "{color.ref.white}",
+        "background": "{color.ref.gray-100}",
+        "elevation-01": "rgba(0,0,0,0.05)",
+        "elevation-02": "rgba(0,0,0,0.08)",
+        "elevation-03": "rgba(0,0,0,0.15)"
+      },
+      "themes": {
+        "light": {
+          "background": "{color.ref.gray-100}",
+          "surface": "{color.ref.white}",
+          "text": "{color.ref.gray-900}",
+          "text-inverse": "{color.ref.white}",
+          "overlay": "rgba(0,0,0,0.5)"
+        },
+        "dark": {
+          "background": "{color.ref.indigo-900}",
+          "surface": "{color.ref.indigo-800}",
+          "text": "{color.ref.white}",
+          "text-inverse": "{color.ref.gray-900}",
+          "overlay": "rgba(0,0,0,0.6)",
+          "border": "rgba(255,255,255,0.12)",
+          "muted": "rgba(255,255,255,0.65)"
+        }
+      },
+      "dataviz": {
+        "categorical10": [
+          "{color.ref.violet-600}",
+          "#3BAA8C",
+          "#F28E2B",
+          "#E15759",
+          "#76B7B2",
+          "#59A14F",
+          "#EDC948",
+          "#B07AA1",
+          "#FF9DA7",
+          "#9C755F"
+        ],
+        "sequential5": ["#EEF2FF", "#C7D2FE", "#A5B4FC", "#7C3AED", "#5B21B6"],
+        "diverging7": ["#4B9CD3", "#98C1D9", "#E0FBFC", "#F8F9FB", "#FDE68A", "#F59E0B", "#B45309"]
+      }
+    },
+    "typography": {
+      "families": {
+        "primary": "\"Inter\", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif",
+        "secondary": "\"Open Sans\", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif",
+        "mono": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", monospace"
+      },
+      "sizes": {
+        "display-2xl": "64px",
+        "display-xl": "48px",
+        "h1": "40px",
+        "h2": "32px",
+        "h3": "28px",
+        "h4": "24px",
+        "h5": "20px",
+        "h6": "18px",
+        "body-lg": "18px",
+        "body": "16px",
+        "body-sm": "14px",
+        "caption": "12px",
+        "legal": "11px"
+      },
+      "lineHeights": {
+        "tight": 1.15,
+        "snug": 1.25,
+        "normal": 1.5,
+        "relaxed": 1.65
+      },
+      "weights": { "light": 300, "regular": 400, "medium": 500, "semibold": 600, "bold": 700, "extrabold": 800 },
+      "tracking": { "tight": "-0.01em", "normal": "0em", "wide": "0.02em" }
+    },
+    "radius": { "xs": "4px", "sm": "6px", "md": "10px", "lg": "14px", "xl": "20px", "pill": "999px", "2xl": "24px" },
+    "shadow": {
+      "xs": "0 1px 2px rgba(0,0,0,0.04)",
+      "sm": "0 1px 4px rgba(0,0,0,0.06)",
+      "md": "0 4px 12px rgba(0,0,0,0.08)",
+      "lg": "0 10px 24px rgba(0,0,0,0.12)",
+      "xl": "0 18px 40px rgba(0,0,0,0.18)",
+      "focus": "0 0 0 3px {color.sys.focus}"
+    },
+    "space": { "base": 4, "xs": 4, "sm": 8, "md": 12, "lg": 16, "xl": 24, "2xl": 32, "3xl": 48, "gutter": 24 },
+    "zIndex": { "base": 0, "dropdown": 1000, "sticky": 1020, "fixed": 1030, "overlay": 1040, "modal": 1050, "popover": 1060, "toast": 1070 },
+    "breakpoints": { "xs": 360, "sm": 640, "md": 768, "lg": 1024, "xl": 1280, "2xl": 1536 },
+    "grid": { "columns": 12, "columnGap": 16, "rowGap": 16, "maxWidth": 1280, "containerPadding": 16 },
+    "motion": {
+      "durations": {
+        "instant": 50,
+        "fast": 120,
+        "base": 200,
+        "slow": 300,
+        "slower": 450,
+        "expand": 500,
+        "glitch-slice": 80
+      },
+      "easings": {
+        "standard": "cubic-bezier(0.2, 0.0, 0.0, 1.0)",
+        "emphasized": "cubic-bezier(0.2, 0.0, 0, 1)",
+        "decel": "cubic-bezier(0, 0, 0.2, 1)",
+        "accel": "cubic-bezier(0.4, 0.0, 1, 1)",
+        "spring-soft": { "type": "spring", "stiffness": 160, "damping": 22, "mass": 1 },
+        "spring-gentle": { "type": "spring", "stiffness": 110, "damping": 18, "mass": 1.2 }
+      },
+      "transform": {
+        "tiltMaxDeg": 5,
+        "scaleHoverSm": 1.02,
+        "scaleActive": 0.98,
+        "parallaxDepths": [0.15, 0.35, 0.6]
+      }
+    },
+    "a11y": {
+      "contrastMin": 4.5,
+      "focusVisible": true,
+      "hitAreaMin": { "width": 44, "height": 44 },
+      "motionReduceFallback": true,
+      "screenReaderOnlyClass": "sr-only"
+    },
+    "density": { "comfortable": 1, "compact": 0.9, "cozy": 0.95 }
+  },
+  "interactionDesign": {
+    "principles": [
+      "Direct manipulation with subtle physics.",
+      "State clarity via color + motion.",
+      "Predictable, reversible interactions.",
+      "Latency masked with optimistic UI where safe."
+    ],
+    "states": {
+      "focusRing": { "style": "{tokens.shadow.focus}", "offset": 2, "radiusStrategy": "match-component" },
+      "disabled": { "opacity": 0.5, "cursor": "not-allowed", "pointerEvents": "none" },
+      "loading": { "cursor": "progress", "announce": "polite" }
+    },
+    "hoverEffects": {
+      "default": { "durationMs": "{tokens.motion.durations.base}", "easing": "{tokens.motion.easings.decel}", "translateY": -2, "shadow": "md" },
+      "elevatedCard": { "durationMs": 220, "easing": "{tokens.motion.easings.decel}", "scale": 1.02, "shadow": "lg" },
+      "link": { "underlineOffsetPx": 2, "thicknessPx": 2, "decorationTransitionMs": 160 }
+    },
+    "tiltInteractions": {
+      "enabled": true,
+      "maxAngleDeg": "{tokens.motion.transform.tiltMaxDeg}",
+      "perspectivePx": 1000,
+      "resetDurationMs": 300,
+      "easing": "cubic-bezier(0.25,0.46,0.45,0.94)",
+      "glare": { "enabled": true, "maxOpacity": 0.25, "color": "rgba(255,255,255,0.35)" }
+    },
+    "scrollAnimations": {
+      "reveal": {
+        "triggerOffsetPx": 80,
+        "once": true,
+        "staggerMs": 60,
+        "variants": [
+          { "name": "fade-up", "yFrom": 16, "opacityFrom": 0, "durationMs": 300, "easing": "{tokens.motion.easings.decel}" },
+          { "name": "fade-in", "opacityFrom": 0, "durationMs": 240, "easing": "{tokens.motion.easings.decel}" },
+          { "name": "slide-in-left", "xFrom": -24, "opacityFrom": 0, "durationMs": 320 }
+        ]
+      },
+      "parallax": {
+        "enabled": true,
+        "layers": [
+          { "selector": "[data-parallax='bg']", "speed": 0.15 },
+          { "selector": "[data-parallax='mid']", "speed": 0.35 },
+          { "selector": "[data-parallax='fg']", "speed": 0.6 }
+        ],
+        "clamp": true
+      },
+      "momentum": { "enabled": true, "deceleration": 0.95, "bounce": 0.2, "overscrollGlow": false }
+    },
+    "glitchAnimations": {
+      "enabled": true,
+      "useCases": ["error-banner", "loading-skeleton-accent"],
+      "frequencyHz": 6,
+      "intensity": 0.35,
+      "durationMs": "{tokens.motion.durations.glitch-slice}",
+      "channels": {
+        "rgbSplitPx": { "min": -2, "max": 2 },
+        "scanlineOpacity": 0.12,
+        "tintColors": ["#ff004d", "#00e5ff", "#7cff00"]
+      },
+      "slices": { "min": 2, "max": 5, "offsetPx": { "min": -6, "max": 6 } }
+    },
+    "drag": {
+      "thresholdPx": 4,
+      "easing": "{tokens.motion.easings.spring-gentle}",
+      "snap": { "enabled": true, "to": "grid|item|container", "tolerancePx": 8 },
+      "ghost": { "opacity": 0.85, "scale": 1.02 }
+    },
+    "feedback": {
+      "toast": { "timeoutMs": 3500, "position": "top-right", "gapPx": 12, "maxVisible": 3 },
+      "validation": {
+        "inline": true,
+        "icons": true,
+        "colors": { "success": "{tokens.color.sys.success}", "warning": "{tokens.color.sys.warning}", "error": "{tokens.color.sys.error}" }
+      }
+    }
+  },
+  "animationPresets": {
+    "buttonHover": { "scale": 1.02, "shadow": "md", "durationMs": 180, "easing": "{tokens.motion.easings.decel}" },
+    "buttonPress": { "scale": 0.98, "durationMs": 90, "easing": "{tokens.motion.easings.accel}" },
+    "fabFloat": { "y": [-2, 0], "durationMs": 1600, "easing": "ease-in-out", "repeat": "infinite", "yoyo": true },
+    "modalIn": { "opacityFrom": 0, "yFrom": 12, "durationMs": 260, "easing": "{tokens.motion.easings.decel}" },
+    "modalOut": { "opacityTo": 0, "yTo": 12, "durationMs": 220, "easing": "{tokens.motion.easings.accel}" },
+    "accordion": { "durationMs": 240, "easing": "{tokens.motion.easings.decel}", "heightAuto": true },
+    "tooltip": { "durationMs": 140, "offsetPx": 8, "easing": "{tokens.motion.easings.decel}" },
+    "progressIndeterminate": { "durationMs": 1800, "timing": "linear" }
+  },
+  "structure": {
+    "regions": {
+      "sidebar": { "widthPx": 240, "collapsedWidthPx": 64, "bg": "{tokens.color.sys.surface}", "text": "{tokens.color.sys.text}" },
+      "header": { "heightPx": 64, "bg": "{tokens.color.sys.surface}", "shadow": "sm" },
+      "content": { "paddingPx": 24, "maxWidthPx": "{tokens.grid.maxWidth}" }
+    },
+    "layouts": {
+      "dashboard": { "grid": [4, 4, 4], "gapPx": 16, "cardsPerRowLg": 3 },
+      "form": { "columns": 12, "labelSpan": 3, "fieldSpan": 9, "gapPx": 16 },
+      "auth": { "centered": true, "cardWidthPx": 420, "brandSlot": true }
+    }
+  },
+  "components": {
+    "Button": {
+      "variants": {
+        "solid": { "bg": "{tokens.color.sys.primary}", "text": "{tokens.color.sys.onPrimary}", "hover": "buttonHover", "press": "buttonPress" },
+        "outline": { "bg": "transparent", "border": "{tokens.color.sys.primary}", "text": "{tokens.color.sys.primary}" },
+        "ghost": { "bg": "transparent", "text": "{tokens.color.sys.text}", "hoverBg": "{tokens.color.sys.primary-soft}" },
+        "link": { "text": "{tokens.color.sys.primary}", "underlineOnHover": true }
+      },
+      "sizes": { "sm": { "px": 12, "py": 8, "radius": "pill" }, "md": { "px": 16, "py": 12, "radius": "pill" }, "lg": { "px": 20, "py": 14, "radius": "pill" } },
+      "icons": { "leading": true, "trailing": true, "gapPx": 8 },
+      "states": ["default", "hover", "focus", "active", "loading", "disabled"],
+      "a11y": { "role": "button", "keyShortcuts": ["Enter", "Space"], "ariaBusyOnLoading": true }
+    },
+    "Badge": {
+      "variants": { "neutral": "{tokens.color.sys.muted}", "success": "{tokens.color.sys.success}", "warning": "{tokens.color.sys.warning}", "error": "{tokens.color.sys.error}", "info": "{tokens.color.sys.info}" },
+      "shape": ["rounded", "pill"],
+      "sizes": ["sm", "md"]
+    },
+    "FAB": { "shape": "circular", "elevation": "lg", "animation": "fabFloat", "sizePx": 56, "iconOnly": true },
+    "Carousel": {
+      "type": "infinite",
+      "axis": "x",
+      "itemGapPx": 12,
+      "peekPx": 24,
+      "autoplay": { "enabled": true, "delayMs": 4500, "pauseOnHover": true },
+      "controls": { "arrows": true, "dots": true },
+      "drag": { "enabled": true, "thresholdPx": 6, "inertia": true }
+    },
+    "Modal": {
+      "backdrop": { "color": "{tokens.color.themes.light.overlay}", "blurPx": 6, "dismissOnBackdrop": true },
+      "in": "modalIn",
+      "out": "modalOut",
+      "sizes": { "sm": 420, "md": 640, "lg": 880, "xl": 1140 },
+      "a11y": { "role": "dialog", "ariaModal": true, "trapFocus": true, "closeOnEsc": true }
+    },
+    "Dropdown": {
+      "trigger": ["click", "hover-intent"],
+      "menu": { "elevation": "lg", "radius": "md", "paddingPx": 8, "maxHeightPx": 320, "scrollShadow": true },
+      "placement": "bottom-start",
+      "keyboard": { "wrap": true, "typeahead": true }
+    },
+    "Sortable": { "library": "dragula|sortablejs", "handleSelector": "[data-handle]", "animationMs": 180, "ghost": true, "drag": "{interactionDesign.drag}" },
+    "Nav": { "orientation": ["horizontal", "vertical"], "activeIndicator": { "type": "underline", "thicknessPx": 2, "transitionMs": 220 } },
+    "Breadcrumbs": { "separator": "›", "overflow": "collapse-middle", "maxItems": 5 },
+    "Pagination": { "size": "md", "compact": true, "showEdge": true, "keyboard": { "prev": "ArrowLeft", "next": "ArrowRight" } },
+    "Alert": { "tone": ["info", "success", "warning", "error"], "dismissible": true, "icon": true, "elevation": "sm" },
+    "Callout": { "accentBar": true, "tone": ["primary", "neutral", "warning"], "radius": "lg" },
+    "Tooltip": { "delayInMs": 120, "delayOutMs": 80, "placement": "top", "animation": "tooltip" },
+    "Accordion": { "multiple": false, "collapsible": true, "animation": "accordion", "iconRotationDeg": 90 },
+    "Tabs": { "style": "underline|contained|pills", "activateOnFocus": false, "indicator": { "durationMs": 220 } },
+    "Process": { "orientation": "horizontal", "steps": { "min": 2, "max": 6 }, "connectorStyle": "line" },
+    "ProgressBar": { "sizes": ["xs", "sm", "md"], "indeterminate": { "animation": "progressIndeterminate" } },
+    "Spinner": { "type": "stroke", "strokeWidth": 3, "sizePx": 20, "durationMs": 900 },
+    "Timeline": { "variant": "vertical", "dotSizes": { "md": 10 }, "lineWidthPx": 2, "alternate": true },
+    "TimelineActivity": { "avatar": true, "timestampFormat": "relative|absolute" },
+    "UserCard": { "layout": "media-left", "radius": "xl", "elevation": "md", "actionSlots": ["primary", "secondary"] },
+    "SweetAlert": { "library": "sweetalert2", "defaults": { "showCancelButton": true, "confirmButtonColor": "{tokens.color.sys.primary}" } },
+    "Notification": { "position": "top-right", "stacking": true, "maxVisible": 3, "elevation": "xl", "zIndex": "{tokens.zIndex.toast}" },
+    "AdvancedMedia": { "responsive": true, "lazyLoad": true, "skeleton": true },
+    "DropdownGrid": { "columns": { "sm": 2, "md": 3, "lg": 4 }, "gapPx": 12, "tileRatio": "4:3" },
+    "BorderUtilities": { "radiusScale": "{tokens.radius}", "borderColor": "{tokens.color.sys.border}" },
+    "DraggablePortlet": { "grid": "{tokens.grid}", "sortable": "{components.Sortable}" },
+    "Switch": { "type": "switch", "thumbSizePx": 18, "trackHeightPx": 24, "animationMs": 180 },
+    "DatePaginator": { "range": "week|month", "keyboard": true, "inertia": true },
+    "HorizontalTimeline": { "snapToStep": true, "stepWidthPx": 120 },
+    "Nestable": { "maxDepth": 5, "drag": "{interactionDesign.drag}" },
+    "Ribbons": { "positions": ["top-left", "top-right"], "colors": ["primary", "success", "warning", "error"] },
+    "Charts": {
+      "providers": ["chart.js", "morris", "sparkline", "flot", "jquery-knob"],
+      "defaults": {
+        "fontFamily": "{tokens.typography.families.primary}",
+        "legendPosition": "bottom",
+        "animationDurationMs": 600,
+        "colors": "{tokens.color.dataviz.categorical10}"
+      }
+    },
+    "Widgets": {
+      "Statistic": { "trend": ["up", "down", "flat"], "format": "compact|currency|percent" },
+      "ChatBox": { "bubbles": { "radius": "xl" }, "timestamp": "relative" },
+      "Social": { "networkBadges": true },
+      "Weather": { "unit": "metric|imperial" },
+      "Blog": { "cardVariant": "elevated" },
+      "PricingTable": { "highlightPlan": "recommended" },
+      "Calendar": { "rangeSelect": true, "dragToCreate": true },
+      "Mailbox": { "threePane": true },
+      "Taskboard": { "kanban": true, "swimlanes": true },
+      "ComingSoon": { "countdown": true, "emailCapture": true },
+      "LiveChat": { "presence": true }
+    },
+    "Forms": {
+      "inputs": {
+        "default": { "radius": "md", "border": "{tokens.color.sys.border}", "focusShadow": "{tokens.shadow.focus}", "paddingPx": 12 },
+        "material": { "underline": true, "labelFloat": true },
+        "states": {
+          "success": { "border": "{tokens.color.sys.success}" },
+          "warning": { "border": "{tokens.color.sys.warning}" },
+          "error": { "border": "{tokens.color.sys.error}" }
+        },
+        "combined": { "gapPx": 8 }
+      },
+      "controls": {
+        "checkbox": { "custom": true, "radius": "sm", "checkAnimationMs": 120 },
+        "radio": { "custom": true, "dotSizePx": 6 }
+      },
+      "passwordStrength": { "minLength": 8, "rules": ["cases", "digits", "symbols"], "barColors": ["error", "warning", "success"] },
+      "layouts": { "stacked": true, "inline": true, "twoColumn": true, "gridGapPx": 16 },
+      "pickers": {
+        "color": { "format": "hex|rgba", "recentSwatches": 6 },
+        "dateTime": { "lib": "flatpickr", "range": true, "time": true },
+        "select": { "lib": "select2", "search": true, "virtualized": true },
+        "upload": { "lib": "dropzone", "multi": true, "preview": true }
+      },
+      "validation": { "strategy": "onSubmit|onBlur|onChange", "schema": "zod|yup", "a11y": { "ariaDescribedBy": true } },
+      "wizard": { "steps": 3, "showProgress": true, "persistState": true },
+      "formatters": { "mask": true, "examples": ["phone", "cnic", "credit-card"] },
+      "editors": {
+        "code": { "monaco": true, "language": "auto" },
+        "markdown": { "lib": "quill", "toolbar": "full" },
+        "xeditable": { "inline": true }
+      }
+    },
+    "Pages": {
+      "SupportTicket": { "form": "{components.Forms}", "attachments": true },
+      "Invoice": { "printStyles": true, "currency": "PKR|USD|EUR" },
+      "Profile": { "sections": ["about", "activity", "security"] },
+      "Auth": { "login": true, "register": true, "lock": true, "recover": true },
+      "Errors": { "404": true, "500": true },
+      "Maintenance": { "messageSlot": true },
+      "Blank": { "container": true },
+      "Pace": { "progressAuto": true },
+      "Settings": { "account": true, "privacy": true, "emailNotifications": true, "password": true }
+    }
+  },
+  "styleGuidelines": {
+    "visualLanguage": {
+      "tone": ["modern", "clean", "spacious"],
+      "depth": { "useShadows": true, "blendModes": false, "subtleGradients": true },
+      "hierarchy": { "headlineScale": ["display-xl", "h1", "h2", "h3"], "bodyScale": ["body-lg", "body", "body-sm", "caption"] },
+      "iconography": { "set": "rounded-geom", "stroke": 1.75, "sizesPx": [16, 20, 24] },
+      "illustration": { "styleHint": "geometric/abstract", "noPhotographicReplication": true }
+    },
+    "content": {
+      "headingsCase": "sentence",
+      "buttonsCase": "title",
+      "linkStyle": { "underlineOnHover": true },
+      "emptyStates": { "icon": true, "primaryAction": true, "secondaryAction": "learn-more" }
+    },
+    "aiReplicationNotes": [
+      "Respect semantic tokens (sys.*) across themes.",
+      "Use motion only to communicate state; keep durations <= 500ms.",
+      "Prefer density=comfortable; allow compact for tables.",
+      "All components must pass WCAG AA color contrast."
+    ]
+  },
+  "charts": {
+    "chartjs": {
+      "defaults": {
+        "responsive": true,
+        "maintainAspectRatio": false,
+        "animations": { "duration": 600, "easing": "easeOutCubic" },
+        "plugins": { "legend": { "position": "bottom" }, "tooltip": { "mode": "index", "intersect": false } },
+        "scales": { "grid": { "color": "rgba(0,0,0,0.06)" } }
+      },
+      "line": { "borderWidth": 2, "tension": 0.35, "pointRadius": 2 },
+      "bar": { "borderRadius": 6, "categoryPercentage": 0.7, "barPercentage": 0.9 },
+      "pie": { "offset": 2, "borderWidth": 0 }
+    },
+    "sparkline": { "heightPx": 32, "strokeWidth": 2, "fillOpacity": 0.15 },
+    "flot": { "grid": { "hoverable": true }, "lines": { "show": true } },
+    "knob": { "thickness": 0.2, "readOnly": false }
+  },
+  "accessibility": {
+    "ariaMappings": {
+      "Accordion": { "root": "region", "trigger": "button", "panel": "region" },
+      "Tabs": { "list": "tablist", "tab": "tab", "panel": "tabpanel" },
+      "Modal": { "dialog": "dialog" },
+      "Tooltip": { "trigger": "button|link|any", "popup": "tooltip" }
+    },
+    "keyboard": {
+      "rovingTabIndex": true,
+      "modalCloseKeys": ["Escape"],
+      "menuNav": { "prev": "ArrowUp", "next": "ArrowDown", "home": "Home", "end": "End" }
+    },
+    "announcements": { "loading": "polite", "errors": "assertive" }
+  },
+  "implementationMappings": {
+    "tailwind": {
+      "Button": {
+        "solid.md": "inline-flex items-center justify-center px-4 py-3 rounded-full shadow-sm transition will-change-transform focus:outline-none focus:ring-2 focus:ring-offset-2",
+        "color.primary": "bg-[var(--ds-primary)] text-white hover:brightness-105 active:scale-95"
+      },
+      "Card": "rounded-xl bg-[var(--ds-surface)] shadow-md p-6"
+    },
+    "shadcn": {
+      "Button": { "base": "button", "variantMap": { "solid": "default", "outline": "outline", "ghost": "ghost", "link": "link" } },
+      "Dialog": { "base": "dialog" }
+    },
+    "cssVars": {
+      "--ds-primary": "{tokens.color.sys.primary}",
+      "--ds-surface": "{tokens.color.sys.surface}",
+      "--ds-text": "{tokens.color.sys.text}"
+    }
+  },
+  "validation": {
+    "ranges": {
+      "radiusPx": { "min": 0, "max": 40 },
+      "durationMs": { "min": 50, "max": 800 },
+      "tiltDeg": { "min": 0, "max": 10 }
+    },
+    "regex": {
+      "hexColor": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$",
+      "ratio": "^[0-9]+:[0-9]+$"
+    }
+  },
+  "themes": {
+    "light": { "tokens": { "background": "{tokens.color.themes.light.background}", "surface": "{tokens.color.themes.light.surface}", "text": "{tokens.color.themes.light.text}" } },
+    "dark": { "tokens": { "background": "{tokens.color.themes.dark.background}", "surface": "{tokens.color.themes.dark.surface}", "text": "{tokens.color.themes.dark.text}" } }
+  },
+  "audit": {
+    "performanceBudgets": { "jsKb": 250, "cssKb": 80, "fontCount": 2 },
+    "metrics": { "fcpMs": 1800, "lcpMs": 2500, "inpMs": 200, "cls": 0.1 }
+  },
+  "presets": {
+    "cards": {
+      "elevated": { "radius": "xl", "shadow": "md", "paddingPx": 20, "hover": "{interactionDesign.hoverEffects.elevatedCard}" },
+      "outlined": { "radius": "lg", "border": "{tokens.color.sys.border}", "paddingPx": 16 }
+    },
+    "tables": {
+      "rowHeightPx": 48,
+      "zebra": true,
+      "hoverBg": "{tokens.color.sys.primary-soft}",
+      "resizableColumns": true,
+      "density": "compact"
+    }
+  },
+  "pages": {
+    "Auth": {
+      "Login": { "layout": "auth", "providers": ["email", "google", "github"], "showPasswordToggle": true },
+      "Register": { "termsCheckbox": true },
+      "Recover": { "emailOnly": true }
+    },
+    "Errors": { "404": { "cta": "Go Home" }, "500": { "cta": "Retry" } }
+  },
+  "telemetry": {
+    "eventNames": [
+      "button_click",
+      "dropdown_open",
+      "modal_open",
+      "form_submit",
+      "validation_error",
+      "tab_change",
+      "accordion_toggle"
+    ],
+    "payloadShape": { "component": "string", "variant": "string", "durationMs": "number", "success": "boolean" }
+  },
+  "i18n": { "rtl": true, "dateLocale": "auto", "numberFormat": "compact" },
+  "security": { "focusTrapEscapeOnly": true, "clipboardWriteConfirm": true },
+  "migration": {
+    "fromV1": [
+      { "token": "color.primary", "to": "tokens.color.sys.primary" },
+      { "component": "Button.primary", "to": "components.Button.variants.solid" }
+    ]
+  }
+}
